@@ -1,13 +1,13 @@
 module.exports = {
   root: true,
-  extends: ["next/core-web-vitals", "prettier"],
-  ignorePatterns: ["node_modules", ".next", "dist"],
+  extends: ['next/core-web-vitals', 'prettier'],
+  ignorePatterns: ['node_modules', '.next', 'dist'],
   overrides: [
     {
-      files: ["*.ts", "*.tsx"],
+      files: ['*.ts', '*.tsx'],
       parserOptions: {
-        project: "./tsconfig.base.json"
-      }
-    }
-  ]
+        project: './tsconfig.base.json',
+      },
+    },
+  ],
 };
