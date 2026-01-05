@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   root: true,
   extends: ['next/core-web-vitals', 'prettier'],
@@ -6,7 +8,8 @@ module.exports = {
     {
       files: ['*.ts', '*.tsx'],
       parserOptions: {
-        project: './tsconfig.base.json',
+        project: path.join(__dirname, 'tsconfig.base.json'),
+        tsconfigRootDir: __dirname,
       },
     },
   ],
