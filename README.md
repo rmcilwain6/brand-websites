@@ -47,3 +47,55 @@ pnpm format
   - `packages/ui` (shared React components)
   - `packages/core` (types, utilities, zod schemas)
   - `packages/db` (database placeholder)
+
+## API Contract
+
+All APIs follow a shared request/response contract defined in `packages/core/src/api`.
+
+**Success response shape**
+
+```json
+{
+  "ok": true,
+  "data": {}
+}
+```
+
+**Error response shape**
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Request body validation failed.",
+    "details": []
+  }
+}
+```
+
+**Schema location**
+
+- Add request/response schemas to `packages/core/src/schemas/<feature>.ts`.
+
+**Adding a new endpoint**
+
+1. Define a Zod schema in `packages/core/src/schemas/<feature>.ts`.
+2. Use `parseJson` for request validation in the route handler.
+3. Return responses with `jsonOk` / `jsonError` so the shape stays consistent.
+
+**Example route handler**
+
+```ts
+import { ExampleSchema, jsonError, jsonOk, parseJson } from '@repo/core';
+
+export const POST = async (req: Request): Promise<Response> => {
+  const result = await parseJson(req, ExampleSchema);
+
+  if (!result.ok) {
+    return jsonError(result.error);
+  }
+
+  return jsonOk({ received: true });
+};
+```
