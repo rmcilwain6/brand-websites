@@ -5,12 +5,7 @@ export class ApiClientError extends Error {
   details?: unknown;
   status: number;
 
-  constructor(
-    code: ApiErrorCode,
-    message: string,
-    details: unknown,
-    status: number
-  ) {
+  constructor(code: ApiErrorCode, message: string, details: unknown, status: number) {
     super(message);
     this.code = code;
     this.details = details;
@@ -19,10 +14,7 @@ export class ApiClientError extends Error {
   }
 }
 
-export const apiFetch = async <T>(
-  input: RequestInfo,
-  init?: RequestInit
-): Promise<T> => {
+export const apiFetch = async <T>(input: RequestInfo, init?: RequestInit): Promise<T> => {
   const response = await fetch(input, init);
   let payload: ApiResponse<T> | undefined;
 

@@ -18,7 +18,7 @@ export const parseJson = async <T>(
         'VALIDATION_ERROR',
         'Invalid JSON payload.',
         error instanceof Error ? error.message : error
-      ),
+      )
     };
   }
 
@@ -31,7 +31,7 @@ export const parseJson = async <T>(
         'VALIDATION_ERROR',
         'Request body validation failed.',
         parsed.error.issues
-      ),
+      )
     };
   }
 

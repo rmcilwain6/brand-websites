@@ -6,7 +6,7 @@ export const apiErrorStatusMap: Record<ApiErrorCode, number> = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
-  INTERNAL: 500,
+  INTERNAL: 500
 };
 
 export const createApiError = (
@@ -16,5 +16,5 @@ export const createApiError = (
 ): ApiError => ({
   code,
   message,
-  details,
+  details
 });
