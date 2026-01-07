@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run --config ../../vitest.config.ts"
   },
   "dependencies": {
     "@repo/core": "workspace:*",
