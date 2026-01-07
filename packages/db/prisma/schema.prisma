@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum GalleryStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Gallery {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  description String?
+  location    String?
+  status      GalleryStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  images      GalleryImage[]
+}
+
+model ImageAsset {
+  id        String         @id @default(cuid())
+  src       String
+  alt       String
+  caption   String?
+  width     Int?
+  height    Int?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  galleries GalleryImage[]
+}
+
+model GalleryImage {
+  id           String     @id @default(cuid())
+  galleryId    String
+  imageAssetId String
+  order        Int
+  isCover      Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  gallery      Gallery    @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  imageAsset   ImageAsset @relation(fields: [imageAssetId], references: [id], onDelete: Cascade)
+
+  @@unique([galleryId, imageAssetId])
+  @@index([galleryId])
+}

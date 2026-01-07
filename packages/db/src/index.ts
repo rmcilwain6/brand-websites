@@ -1,1 +1,7 @@
-export const placeholder = 'Database package will be implemented later.';
+export { prisma } from './client';
+export type {
+  Gallery,
+  GalleryImage,
+  ImageAsset,
+  GalleryStatus
+} from '@prisma/client';

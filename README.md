@@ -24,6 +24,42 @@ pnpm --filter admin dev
 pnpm --filter reed-web dev
 ```
 
+## Database (Prisma)
+
+Set the database URL in each app environment file:
+
+```bash
+# apps/admin/.env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/evrydayarchive
+
+# apps/evrydayarchive-web/.env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/evrydayarchive
+```
+
+Generate the Prisma client and run the development migration:
+
+```bash
+pnpm --filter @repo/db db:generate
+pnpm --filter @repo/db db:migrate
+```
+
+## Admin authentication
+
+The admin app uses a single password-based session. Configure these values in
+`apps/admin/.env`:
+
+```bash
+ADMIN_PASSWORD=your-strong-password
+AUTH_SECRET=some-random-string
+```
+
+## Creating the first gallery
+
+1. Start the admin app: `pnpm --filter admin dev`.
+2. Visit `/login` and sign in with `ADMIN_PASSWORD`.
+3. Create a gallery in `/galleries`, then add image assets by URL and attach them.
+4. Set the gallery status to `PUBLISHED` to expose it on the public `/portfolio` page.
+
 ## Build
 
 ```bash
