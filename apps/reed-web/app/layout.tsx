@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 export const metadata = {
   title: 'Reed',
-  description: 'A minimal Reed site placeholder.',
+  description: 'A minimal Reed site placeholder.'
 };
 
 const RootLayout = ({ children }: { children: ReactNode }) => {

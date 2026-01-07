@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 export const metadata = {
   title: 'Evryday Archive',
-  description: 'Daily artifacts and stories.',
+  description: 'Daily artifacts and stories.'
 };
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
