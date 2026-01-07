@@ -57,12 +57,6 @@ CI coverage run:
 pnpm test:ci
 ```
 
-Turborepo pipeline:
-
-```bash
-pnpm turbo test
-```
-
 Tests live alongside core logic in `packages/**/src/**/*.test.ts` and alongside route handlers in
 `apps/**/app/**/route.test.ts`. Start by testing shared schema and API helpers in `packages/core`.
 
