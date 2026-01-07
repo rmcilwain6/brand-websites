@@ -20,21 +20,11 @@ export default defineConfig({
       'apps/**/app/**/__tests__/**/*.test.ts',
       'apps/**/app/**/*.test.ts'
     ],
-    exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/.next/**',
-      '**/.turbo/**'
-    ],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.next/**', '**/.turbo/**'],
     coverage: {
       provider: 'v8',
       include: ['packages/core/src/**'],
-      exclude: [
-        '**/*.test.ts',
-        '**/node_modules/**',
-        '**/dist/**',
-        '**/.next/**'
-      ]
+      exclude: ['**/*.test.ts', '**/node_modules/**', '**/dist/**', '**/.next/**']
     }
   }
 });
