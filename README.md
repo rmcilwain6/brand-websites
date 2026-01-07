@@ -45,6 +45,8 @@ Run the Vitest suite from the repo root:
 pnpm test
 ```
 
+Pull requests run `pnpm test` automatically in CI.
+
 Watch mode:
 
 ```bash
