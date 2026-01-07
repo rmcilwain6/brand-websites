@@ -1,0 +1,12 @@
+# dependencies
+node_modules
+.pnpm-store
+
+# build output
+.next
+dist
+out
+coverage
+
+# lockfiles
+pnpm-lock.yaml

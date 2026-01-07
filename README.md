@@ -37,6 +37,29 @@ pnpm lint
 pnpm format
 ```
 
+## Testing
+
+Run the Vitest suite from the repo root:
+
+```bash
+pnpm test
+```
+
+Watch mode:
+
+```bash
+pnpm test:watch
+```
+
+CI coverage run:
+
+```bash
+pnpm test:ci
+```
+
+Tests live alongside core logic in `packages/**/src/**/*.test.ts` and alongside route handlers in
+`apps/**/app/**/route.test.ts`. Start by testing shared schema and API helpers in `packages/core`.
+
 ## Workspace layout
 
 - Apps live in `apps/`
