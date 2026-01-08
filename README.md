@@ -24,15 +24,19 @@ pnpm --filter admin dev
 pnpm --filter reed-web dev
 ```
 
-## Database (Prisma)
+## Database (Local Dev)
 
-Set the database URL in each app environment file:
+Set the database URL in each app environment file (and optionally
+`packages/db/.env` for Prisma commands):
 
 ```bash
 # apps/admin/.env
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/evrydayarchive
 
 # apps/evrydayarchive-web/.env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/evrydayarchive
+
+# packages/db/.env (optional for Prisma CLI)
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/evrydayarchive
 ```
 
@@ -42,6 +46,18 @@ Generate the Prisma client and run the development migration:
 pnpm --filter @repo/db db:generate
 pnpm --filter @repo/db db:migrate
 ```
+
+Reset the database (drops all tables/data in the target database):
+
+```bash
+# interactive confirmation
+pnpm --filter @repo/db db:reset
+
+# non-interactive (dangerous)
+pnpm --filter @repo/db db:reset:force
+```
+
+Note: reset does not create the database itself. The database must already exist.
 
 ## Admin authentication
 
