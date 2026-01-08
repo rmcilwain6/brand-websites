@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  env:
+    DATABASE_URL: postgresql://user:pass@localhost:5000/db?schema=public
 
 jobs:
   test:
@@ -42,6 +44,9 @@ jobs:
 
       - name: Run typecheck
         run: pnpm typecheck
+
+      - name: Log database DATABASE_URL
+        run: node -e "console.log('HAS_DATABASE_URL', Boolean(process.env.DATABASE_URL))"
 
       - name: Run build
         run: pnpm build
