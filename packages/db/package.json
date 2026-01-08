@@ -11,16 +11,19 @@
     "schema": "prisma/schema.prisma"
   },
   "scripts": {
+    "generate": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
     "db:reset:force": "prisma migrate reset --force",
     "db:studio": "prisma studio",
     "db:status": "prisma migrate status",
+    "typecheck": "pnpm run generate && tsc --noEmit --incremental false",
     "test": "vitest run --config ../../vitest.config.ts"
   },
   "dependencies": {
-    "@prisma/client": "5.18.0"
+    "@prisma/client": "5.18.0",
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "prisma": "5.18.0"

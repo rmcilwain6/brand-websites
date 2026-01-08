@@ -1,24 +1,32 @@
-import { createApiError, jsonError, jsonOk } from '@repo/core';
-import { prisma } from '../../lib/db';
+import { ApiClientError, apiFetch, createApiError, jsonError, jsonOk } from '@repo/core';
 import { getPublicEnv } from '../../lib/env';
+
+type GallerySummary = {
+  id: string;
+  slug: string;
+  title: string;
+  location: string | null;
+  images: Array<{
+    imageAsset: {
+      src: string;
+      alt: string;
+    };
+  }>;
+};
 
 export const GET = async (): Promise<Response> => {
   try {
-    getPublicEnv();
-    const galleries = await prisma.gallery.findMany({
-      where: { status: 'PUBLISHED' },
-      orderBy: { publishedAt: 'desc' },
-      include: {
-        images: {
-          where: { isCover: true },
-          include: { imageAsset: true },
-          take: 1
-        }
-      }
-    });
+    const { NEXT_PUBLIC_API_BASE_URL } = getPublicEnv();
+    const galleries = await apiFetch<GallerySummary[]>(
+      `${NEXT_PUBLIC_API_BASE_URL}/api/public/galleries`
+    );
 
     return jsonOk(galleries);
-  } catch {
+  } catch (error) {
+    if (error instanceof ApiClientError) {
+      return jsonError(createApiError(error.code, error.message, error.details));
+    }
+
     return jsonError(createApiError('INTERNAL', 'Unable to load galleries.'));
   }
 };

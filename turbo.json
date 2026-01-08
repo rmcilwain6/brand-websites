@@ -1,5 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["DATABASE_URL", "NEXT_PUBLIC_API_BASE_URL", "SKIP_ENV_VALIDATION"],
   "tasks": {
     "dev": {
       "cache": false,

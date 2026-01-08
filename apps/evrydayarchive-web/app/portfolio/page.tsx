@@ -1,22 +1,28 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { prisma } from '../lib/db';
+import { apiFetch } from '@repo/core';
+
 import { getPublicEnv } from '../lib/env';
 
+type GallerySummary = {
+  id: string;
+  slug: string;
+  title: string;
+  location: string | null;
+  images: Array<{
+    imageAsset: {
+      src: string;
+      alt: string;
+    };
+  }>;
+};
+
 const PortfolioPage = async () => {
-  getPublicEnv();
-  const galleries = await prisma.gallery.findMany({
-    where: { status: 'PUBLISHED' },
-    orderBy: { publishedAt: 'desc' },
-    include: {
-      images: {
-        where: { isCover: true },
-        include: { imageAsset: true },
-        take: 1
-      }
-    }
-  });
+  const { NEXT_PUBLIC_API_BASE_URL } = getPublicEnv();
+  const galleries = await apiFetch<GallerySummary[]>(
+    `${NEXT_PUBLIC_API_BASE_URL}/api/public/galleries`
+  );
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-16">
