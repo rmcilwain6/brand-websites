@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { prisma } from '../lib/db';
+import { prisma } from '@repo/db';
 import { getPublicEnv } from '../lib/env';
 
 const PortfolioPage = async () => {

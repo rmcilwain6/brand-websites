@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
-import { prisma } from '../../lib/db';
+import { prisma } from '@repo/db';
 import { getPublicEnv } from '../../lib/env';
 
 const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
