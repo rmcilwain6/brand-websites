@@ -16,6 +16,7 @@
     "db:reset": "prisma migrate reset",
     "db:reset:force": "prisma migrate reset --force",
     "db:studio": "prisma studio",
+    "db:status": "prisma migrate status",
     "test": "vitest run --config ../../vitest.config.ts"
   },
   "dependencies": {
