@@ -41,7 +41,7 @@ jobs:
         run: pnpm --filter @repo/db generate
 
       - name: Run typecheck
-        run: pnpm -r typecheck
+        run: pnpm typecheck
 
       - name: Run build
         run: pnpm turbo run build
