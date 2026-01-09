@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, prisma } from '@repo/db';
 
 import {
   GalleryCreateSchema,
@@ -7,7 +7,6 @@ import {
   jsonOk,
   parseJson
 } from '@repo/core';
-import { prisma } from '../../lib/db';
 import { requireAdminSession } from '../../lib/auth';
 
 export const GET = async (req: Request): Promise<Response> => {

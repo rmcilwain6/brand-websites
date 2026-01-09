@@ -1,5 +1,5 @@
 import { createApiError, jsonError, jsonOk } from '@repo/core';
-import { prisma } from '../../../lib/db';
+import { prisma } from '@repo/db';
 
 export const GET = async (): Promise<Response> => {
   try {

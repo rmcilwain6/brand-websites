@@ -1,7 +1,6 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, prisma } from '@repo/db';
 
 import { createApiError, jsonError, jsonOk } from '@repo/core';
-import { prisma } from '../../../../../lib/db';
 import { requireAdminSession } from '../../../../../lib/auth';
 
 export const DELETE = async (
