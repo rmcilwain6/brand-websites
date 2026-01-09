@@ -5,7 +5,10 @@ export type GalleryStatus = z.infer<typeof GalleryStatusSchema>;
 
 export const GalleryCreateSchema = z.object({
   title: z.string().min(2),
-  slug: z.string().min(2).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and dashes.'),
+  slug: z
+    .string()
+    .min(2)
+    .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and dashes.'),
   description: z.string().optional(),
   location: z.string().optional()
 });

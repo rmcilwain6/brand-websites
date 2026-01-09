@@ -12,11 +12,9 @@ type SessionPayload = {
   exp: number;
 };
 
-const base64UrlEncode = (value: string): string =>
-  Buffer.from(value).toString('base64url');
+const base64UrlEncode = (value: string): string => Buffer.from(value).toString('base64url');
 
-const base64UrlDecode = (value: string): string =>
-  Buffer.from(value, 'base64url').toString('utf8');
+const base64UrlDecode = (value: string): string => Buffer.from(value, 'base64url').toString('utf8');
 
 const sign = (value: string, secret: string): string => {
   const signature = createHmac('sha256', secret).update(value).digest();
@@ -79,8 +77,7 @@ export const verifyAdminPassword = (password: string | null): boolean =>
 
 export const getSessionCookieName = (): string => SESSION_COOKIE_NAME;
 
-export const getSessionMaxAgeSeconds = (): number =>
-  Math.floor(SESSION_MAX_AGE_MS / 1000);
+export const getSessionMaxAgeSeconds = (): number => Math.floor(SESSION_MAX_AGE_MS / 1000);
 
 export const getSessionTokenFromRequest = (req: Request): string | undefined => {
   const cookieHeader = req.headers.get('cookie');
@@ -90,9 +87,7 @@ export const getSessionTokenFromRequest = (req: Request): string | undefined => 
   }
 
   const cookies = cookieHeader.split(';').map((cookie) => cookie.trim());
-  const sessionCookie = cookies.find((cookie) =>
-    cookie.startsWith(`${SESSION_COOKIE_NAME}=`)
-  );
+  const sessionCookie = cookies.find((cookie) => cookie.startsWith(`${SESSION_COOKIE_NAME}=`));
 
   if (!sessionCookie) {
     return undefined;

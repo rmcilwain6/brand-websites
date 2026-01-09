@@ -35,7 +35,10 @@ const GalleriesPage = async () => {
         ) : (
           <ul className="divide-y divide-slate-100">
             {galleries.map((gallery) => (
-              <li key={gallery.id} className="grid grid-cols-[1.5fr_1fr_140px] gap-4 px-4 py-4 text-sm">
+              <li
+                key={gallery.id}
+                className="grid grid-cols-[1.5fr_1fr_140px] gap-4 px-4 py-4 text-sm"
+              >
                 <div>
                   <p className="font-semibold text-slate-900">{gallery.title}</p>
                   <p className="text-xs text-slate-500">/{gallery.slug}</p>

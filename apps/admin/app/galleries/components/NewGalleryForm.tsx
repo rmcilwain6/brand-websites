@@ -16,7 +16,8 @@ const NewGalleryForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (field: keyof typeof initialState) =>
+  const handleChange =
+    (field: keyof typeof initialState) =>
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setFormState((prev) => ({ ...prev, [field]: event.target.value }));
     };

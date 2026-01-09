@@ -1,12 +1,6 @@
 import { Prisma, prisma } from '@repo/db';
 
-import {
-  GalleryUpdateSchema,
-  createApiError,
-  jsonError,
-  jsonOk,
-  parseJson
-} from '@repo/core';
+import { GalleryUpdateSchema, createApiError, jsonError, jsonOk, parseJson } from '@repo/core';
 import { requireAdminSession } from '../../../lib/auth';
 
 export const GET = async (
