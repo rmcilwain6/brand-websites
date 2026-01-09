@@ -286,9 +286,7 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
             Image URL
             <input
               value={assetForm.src}
-              onChange={(event) =>
-                setAssetForm((prev) => ({ ...prev, src: event.target.value }))
-              }
+              onChange={(event) => setAssetForm((prev) => ({ ...prev, src: event.target.value }))}
               className="rounded-md border border-slate-200 px-3 py-2 text-sm"
               required
             />
@@ -297,9 +295,7 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
             Alt text
             <input
               value={assetForm.alt}
-              onChange={(event) =>
-                setAssetForm((prev) => ({ ...prev, alt: event.target.value }))
-              }
+              onChange={(event) => setAssetForm((prev) => ({ ...prev, alt: event.target.value }))}
               className="rounded-md border border-slate-200 px-3 py-2 text-sm"
               required
             />
@@ -416,9 +412,7 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
                     className="h-12 w-12 rounded-md object-cover"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">
-                      {image.imageAsset.alt}
-                    </p>
+                    <p className="text-sm font-semibold text-slate-800">{image.imageAsset.alt}</p>
                     <p className="text-xs text-slate-500">
                       Order {image.order} {image.isCover ? '• Cover' : ''}
                     </p>

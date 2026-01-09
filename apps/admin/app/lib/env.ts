@@ -1,9 +1,8 @@
-import { adminAuthEnvSchema, databaseEnvSchema, loadEnv } from '@repo/core';
+import { adminAuthEnvSchema, loadEnv } from '@repo/core';
 
-const envSchema = databaseEnvSchema.merge(adminAuthEnvSchema);
+const envSchema = adminAuthEnvSchema;
 
 type AdminEnv = {
-  DATABASE_URL: string;
   ADMIN_PASSWORD: string;
   AUTH_SECRET: string;
 };

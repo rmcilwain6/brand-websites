@@ -15,7 +15,10 @@ export class ApiClientError extends Error {
 }
 
 export const apiFetch = async <T>(input: RequestInfo, init?: RequestInit): Promise<T> => {
-  const response = await fetch(input, init);
+  const response = await fetch(input, {
+    ...init,
+    cache: init?.cache ?? 'no-store'
+  });
   let payload: ApiResponse<T> | undefined;
 
   try {

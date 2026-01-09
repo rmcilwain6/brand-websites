@@ -1,14 +1,20 @@
-import { databaseEnvSchema, loadEnv } from '@repo/core';
+import { z } from 'zod';
+
+import { loadEnv } from '@repo/core';
 
 type PublicEnv = {
-  DATABASE_URL: string;
+  NEXT_PUBLIC_API_BASE_URL: string;
 };
 
 let cachedEnv: PublicEnv | null = null;
 
 export const getPublicEnv = () => {
   if (!cachedEnv) {
-    cachedEnv = loadEnv(databaseEnvSchema) as PublicEnv;
+    const envSchema = z.object({
+      NEXT_PUBLIC_API_BASE_URL: z.string().min(1)
+    });
+
+    cachedEnv = loadEnv(envSchema) as PublicEnv;
   }
 
   return cachedEnv;

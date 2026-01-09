@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import GalleryEditor from '../components/GalleryEditor';
-import { prisma } from '../../lib/db';
+import { prisma } from '@repo/db';
 
 const GalleryDetailPage = async ({ params }: { params: { id: string } }) => {
   const gallery = await prisma.gallery.findUnique({

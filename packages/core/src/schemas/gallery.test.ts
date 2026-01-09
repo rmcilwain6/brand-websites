@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  GalleryCreateSchema,
-  GalleryPublishSchema,
-  ImageAssetCreateSchema
-} from './gallery';
+import { GalleryCreateSchema, GalleryPublishSchema, ImageAssetCreateSchema } from './gallery';
 
 describe('Gallery schemas', () => {
   it('accepts a valid gallery create payload', () => {

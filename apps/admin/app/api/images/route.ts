@@ -1,5 +1,5 @@
 import { ImageAssetCreateSchema, createApiError, jsonError, jsonOk, parseJson } from '@repo/core';
-import { prisma } from '../../lib/db';
+import { prisma } from '@repo/db';
 import { requireAdminSession } from '../../lib/auth';
 
 export const POST = async (req: Request): Promise<Response> => {

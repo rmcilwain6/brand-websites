@@ -1,9 +1,5 @@
 import { z } from 'zod';
 
-export const databaseEnvSchema = z.object({
-  DATABASE_URL: z.string().min(1)
-});
-
 export const adminAuthEnvSchema = z.object({
   ADMIN_PASSWORD: z.string().min(1),
   AUTH_SECRET: z.string().min(1)

@@ -1,19 +1,24 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-
-vi.mock('@repo/db', () => ({
-  prisma: {
-    gallery: {
-      findMany: vi.fn()
-    }
-  }
-}));
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('GET /api/galleries', () => {
   beforeEach(async () => {
-    const { prisma } = await import('@repo/db');
-    const mockFindMany = vi.mocked(prisma.gallery.findMany);
-    mockFindMany.mockResolvedValue([]);
-    process.env.DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/evrydayarchive';
+    process.env.NEXT_PUBLIC_API_BASE_URL = 'https://api.example.test';
+    globalThis.fetch = vi.fn(async () => {
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          data: []
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('returns a success response', async () => {

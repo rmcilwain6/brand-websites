@@ -1,7 +1,10 @@
 export { prisma } from './client';
+export { getDbEnv } from './env';
 export type {
   Gallery,
   GalleryImage,
   ImageAsset,
-  GalleryStatus
+  GalleryStatus,
+  Prisma as PrismaTypes
 } from '@prisma/client';
+export { Prisma } from '@prisma/client';
