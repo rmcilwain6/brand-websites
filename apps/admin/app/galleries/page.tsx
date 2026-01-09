@@ -1,6 +1,6 @@
+import { prisma } from '@repo/db';
 import Link from 'next/link';
 
-import { prisma } from '@repo/db';
 
 const GalleriesPage = async () => {
   const galleries = await prisma.gallery.findMany({

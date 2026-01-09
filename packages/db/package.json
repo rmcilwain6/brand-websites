@@ -18,7 +18,7 @@
     "db:reset:force": "prisma migrate reset --force",
     "db:studio": "prisma studio",
     "db:status": "prisma migrate status",
-    "typecheck": "pnpm run generate && tsc --noEmit --incremental false",
+    "typecheck": "tsc --noEmit --incremental false",
     "test": "vitest run --config ../../vitest.config.ts"
   },
   "dependencies": {
