@@ -5,5 +5,6 @@ export type {
   GalleryImage,
   ImageAsset,
   GalleryStatus,
-  Prisma
+  Prisma as PrismaTypes
 } from '@prisma/client';
+export { Prisma } from '@prisma/client';
