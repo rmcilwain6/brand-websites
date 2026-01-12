@@ -32,3 +32,40 @@ export const GalleryImageAttachSchema = z.object({
 export const GalleryPublishSchema = z.object({
   status: GalleryStatusSchema
 });
+
+export const GalleryCoverImageSchema = z.object({
+  src: z.string().url(),
+  alt: z.string().min(1)
+});
+
+export const GalleryListItemSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  location: z.string().nullable(),
+  coverImage: GalleryCoverImageSchema.nullable(),
+  imageCount: z.number().int().nonnegative()
+});
+
+export const GalleryListResponseSchema = z.array(GalleryListItemSchema);
+
+export const GalleryImageSchema = z.object({
+  id: z.string(),
+  order: z.number().int().nonnegative(),
+  src: z.string().url(),
+  alt: z.string().min(1),
+  caption: z.string().nullable()
+});
+
+export const GalleryDetailSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  location: z.string().nullable(),
+  images: z.array(GalleryImageSchema)
+});
+
+export type GalleryListItem = z.infer<typeof GalleryListItemSchema>;
+export type GalleryListResponse = z.infer<typeof GalleryListResponseSchema>;
+export type GalleryDetail = z.infer<typeof GalleryDetailSchema>;

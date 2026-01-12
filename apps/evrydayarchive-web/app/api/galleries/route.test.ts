@@ -2,18 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('GET /api/galleries', () => {
   beforeEach(async () => {
-    process.env.NEXT_PUBLIC_API_BASE_URL = 'https://api.example.test';
+    process.env.ADMIN_API_BASE_URL = 'https://api.example.test';
     globalThis.fetch = vi.fn(async () => {
-      return new Response(
-        JSON.stringify({
-          ok: true,
-          data: []
-        }),
-        {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      return new Response(JSON.stringify([]), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
     });
   });
 
@@ -27,7 +21,6 @@ describe('GET /api/galleries', () => {
     const response = await GET();
     const payload = await response.json();
 
-    expect(payload.ok).toBe(true);
-    expect(Array.isArray(payload.data)).toBe(true);
+    expect(Array.isArray(payload)).toBe(true);
   });
 });
