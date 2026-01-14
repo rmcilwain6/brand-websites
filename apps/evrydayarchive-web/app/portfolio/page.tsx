@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { fetchPublicGalleries } from '@repo/core';
+import { fetchPublicGalleries, GalleryListResponse } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
 
 const PortfolioPage = async () => {
   const { ADMIN_API_BASE_URL } = getServerEnv();
-  let galleries = [];
+  let galleries: GalleryListResponse = [];
 
   try {
     galleries = await fetchPublicGalleries(ADMIN_API_BASE_URL, {
