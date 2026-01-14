@@ -1,4 +1,4 @@
-import { createApiError, jsonError, jsonOk } from '@repo/core';
+import { GalleryDetailSchema } from '@repo/core';
 import { prisma } from '@repo/db';
 
 export const GET = async (
@@ -20,11 +20,28 @@ export const GET = async (
     });
 
     if (!gallery) {
-      return jsonError(createApiError('NOT_FOUND', 'Gallery not found.'));
+      return Response.json({ message: 'Gallery not found.' }, { status: 404 });
     }
 
-    return jsonOk(gallery);
+    const responsePayload = {
+      id: gallery.id,
+      slug: gallery.slug,
+      title: gallery.title,
+      description: gallery.description,
+      location: gallery.location,
+      images: gallery.images.map((image) => ({
+        id: image.id,
+        order: image.order,
+        src: image.imageAsset.src,
+        alt: image.imageAsset.alt,
+        caption: image.imageAsset.caption
+      }))
+    };
+
+    const payload = GalleryDetailSchema.parse(responsePayload);
+
+    return Response.json(payload);
   } catch {
-    return jsonError(createApiError('INTERNAL', 'Unable to load gallery.'));
+    return Response.json({ message: 'Unable to load gallery.' }, { status: 500 });
   }
 };

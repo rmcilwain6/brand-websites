@@ -69,6 +69,15 @@ ADMIN_PASSWORD=your-strong-password
 AUTH_SECRET=some-random-string
 ```
 
+## Public portfolio API base URL
+
+The public site fetches published galleries from the admin app. Configure the admin
+API base URL in `apps/evrydayarchive-web/.env`:
+
+```bash
+ADMIN_API_BASE_URL=http://localhost:3001
+```
+
 ## Creating the first gallery
 
 1. Start the admin app: `pnpm --filter admin dev`.
@@ -128,6 +137,9 @@ Tests live alongside core logic in `packages/**/src/**/*.test.ts` and alongside 
 ## API Contract
 
 All APIs follow a shared request/response contract defined in `packages/core/src/api`.
+
+Public portfolio endpoints under `/api/public/*` return raw JSON payloads (not wrapped
+in the `ok/data` envelope) and are validated by schemas in `packages/core/src/schemas`.
 
 **Success response shape**
 

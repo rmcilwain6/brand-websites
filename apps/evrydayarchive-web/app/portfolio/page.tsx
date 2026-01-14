@@ -1,28 +1,23 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { apiFetch } from '@repo/core';
+import { fetchPublicGalleries } from '@repo/core';
 
-import { getPublicEnv } from '../lib/env';
-
-type GallerySummary = {
-  id: string;
-  slug: string;
-  title: string;
-  location: string | null;
-  images: Array<{
-    imageAsset: {
-      src: string;
-      alt: string;
-    };
-  }>;
-};
+import { getServerEnv } from '../lib/env';
 
 const PortfolioPage = async () => {
-  const { NEXT_PUBLIC_API_BASE_URL } = getPublicEnv();
-  const galleries = await apiFetch<GallerySummary[]>(
-    `${NEXT_PUBLIC_API_BASE_URL}/api/public/galleries`
-  );
+  const { ADMIN_API_BASE_URL } = getServerEnv();
+  let galleries = [];
+
+  try {
+    galleries = await fetchPublicGalleries(ADMIN_API_BASE_URL, {
+      next: { revalidate: 60 }
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.warn('[portfolio] Failed to load galleries.', error.message);
+    }
+  }
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-16">
@@ -36,7 +31,7 @@ const PortfolioPage = async () => {
           <p className="text-sm text-slate-500">No published galleries yet.</p>
         ) : (
           galleries.map((gallery) => {
-            const cover = gallery.images[0]?.imageAsset;
+            const cover = gallery.coverImage;
             return (
               <Link
                 key={gallery.id}

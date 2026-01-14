@@ -2,19 +2,19 @@ import { z } from 'zod';
 
 import { loadEnv } from '@repo/core';
 
-type PublicEnv = {
-  NEXT_PUBLIC_API_BASE_URL: string;
+type ServerEnv = {
+  ADMIN_API_BASE_URL: string;
 };
 
-let cachedEnv: PublicEnv | null = null;
+let cachedEnv: ServerEnv | null = null;
 
-export const getPublicEnv = () => {
+export const getServerEnv = () => {
   if (!cachedEnv) {
     const envSchema = z.object({
-      NEXT_PUBLIC_API_BASE_URL: z.string().min(1)
+      ADMIN_API_BASE_URL: z.string().min(1)
     });
 
-    cachedEnv = loadEnv(envSchema) as PublicEnv;
+    cachedEnv = loadEnv(envSchema) as ServerEnv;
   }
 
   return cachedEnv;

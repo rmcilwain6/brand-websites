@@ -1,4 +1,4 @@
-import { createApiError, jsonError, jsonOk } from '@repo/core';
+import { GalleryListResponseSchema } from '@repo/core';
 import { prisma } from '@repo/db';
 
 export const GET = async (): Promise<Response> => {
@@ -11,12 +11,35 @@ export const GET = async (): Promise<Response> => {
           where: { isCover: true },
           include: { imageAsset: true },
           take: 1
+        },
+        _count: {
+          select: { images: true }
         }
       }
     });
 
-    return jsonOk(galleries);
+    const responsePayload = galleries.map((gallery) => {
+      const coverImage = gallery.images[0]?.imageAsset;
+
+      return {
+        id: gallery.id,
+        slug: gallery.slug,
+        title: gallery.title,
+        location: gallery.location,
+        coverImage: coverImage
+          ? {
+              src: coverImage.src,
+              alt: coverImage.alt
+            }
+          : null,
+        imageCount: gallery._count.images
+      };
+    });
+
+    const payload = GalleryListResponseSchema.parse(responsePayload);
+
+    return Response.json(payload);
   } catch {
-    return jsonError(createApiError('INTERNAL', 'Unable to load galleries.'));
+    return Response.json({ message: 'Unable to load galleries.' }, { status: 500 });
   }
 };

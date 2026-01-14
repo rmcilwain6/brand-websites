@@ -1,32 +1,20 @@
-import { ApiClientError, apiFetch, createApiError, jsonError, jsonOk } from '@repo/core';
-import { getPublicEnv } from '../../lib/env';
-
-type GallerySummary = {
-  id: string;
-  slug: string;
-  title: string;
-  location: string | null;
-  images: Array<{
-    imageAsset: {
-      src: string;
-      alt: string;
-    };
-  }>;
-};
+import { PublicApiError, fetchPublicGalleries } from '@repo/core';
+import { getServerEnv } from '../../lib/env';
 
 export const GET = async (): Promise<Response> => {
   try {
-    const { NEXT_PUBLIC_API_BASE_URL } = getPublicEnv();
-    const galleries = await apiFetch<GallerySummary[]>(
-      `${NEXT_PUBLIC_API_BASE_URL}/api/public/galleries`
-    );
+    const { ADMIN_API_BASE_URL } = getServerEnv();
+    const galleries = await fetchPublicGalleries(ADMIN_API_BASE_URL);
 
-    return jsonOk(galleries);
+    return Response.json(galleries);
   } catch (error) {
-    if (error instanceof ApiClientError) {
-      return jsonError(createApiError(error.code, error.message, error.details));
+    if (error instanceof PublicApiError) {
+      return Response.json(
+        { message: error.message, details: error.details },
+        { status: error.status }
+      );
     }
 
-    return jsonError(createApiError('INTERNAL', 'Unable to load galleries.'));
+    return Response.json({ message: 'Unable to load galleries.' }, { status: 500 });
   }
 };
