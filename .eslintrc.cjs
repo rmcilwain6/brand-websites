@@ -11,6 +11,39 @@ module.exports = {
         project: path.join(__dirname, 'tsconfig.base.json'),
         tsconfigRootDir: __dirname
       }
+    },
+    {
+      files: ['apps/admin/**/*.{ts,tsx}'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            patterns: ['**/evrydayarchive-web/**', '**/reed-web/**']
+          }
+        ]
+      }
+    },
+    {
+      files: ['apps/evrydayarchive-web/**/*.{ts,tsx}'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            patterns: ['**/admin/**', '**/reed-web/**']
+          }
+        ]
+      }
+    },
+    {
+      files: ['apps/reed-web/**/*.{ts,tsx}'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            patterns: ['**/admin/**', '**/evrydayarchive-web/**']
+          }
+        ]
+      }
     }
   ]
 };
