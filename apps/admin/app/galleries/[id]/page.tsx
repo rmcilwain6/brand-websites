@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import GalleryEditor from '../components/GalleryEditor';
 import { prisma } from '@repo/db';
 
+export const dynamic = 'force-dynamic';
+
 const GalleryDetailPage = async ({ params }: { params: { id: string } }) => {
   const gallery = await prisma.gallery.findUnique({
     where: { id: params.id },

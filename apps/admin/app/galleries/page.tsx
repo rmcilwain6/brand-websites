@@ -1,6 +1,14 @@
 import { prisma } from '@repo/db';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
+type GallerySummary = {
+  id: string;
+  title: string;
+  slug: string;
+  status: string;
+};
 
 const GalleriesPage = async () => {
   const galleries = await prisma.gallery.findMany({
@@ -34,7 +42,7 @@ const GalleriesPage = async () => {
           </div>
         ) : (
           <ul className="divide-y divide-slate-100">
-            {galleries.map((gallery) => (
+            {galleries.map((gallery: GallerySummary) => (
               <li
                 key={gallery.id}
                 className="grid grid-cols-[1.5fr_1fr_140px] gap-4 px-4 py-4 text-sm"

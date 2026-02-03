@@ -1,6 +1,22 @@
 import { GalleryListResponseSchema } from '@repo/core';
 import { prisma } from '@repo/db';
 
+type GalleryWithCover = {
+  id: string;
+  slug: string;
+  title: string;
+  location: string | null;
+  images: Array<{
+    imageAsset: {
+      src: string;
+      alt: string | null;
+    };
+  }>;
+  _count: {
+    images: number;
+  };
+};
+
 export const GET = async (): Promise<Response> => {
   try {
     const galleries = await prisma.gallery.findMany({
@@ -18,7 +34,7 @@ export const GET = async (): Promise<Response> => {
       }
     });
 
-    const responsePayload = galleries.map((gallery) => {
+    const responsePayload = galleries.map((gallery: GalleryWithCover) => {
       const coverImage = gallery.images[0]?.imageAsset;
 
       return {

@@ -1,4 +1,4 @@
-import { Prisma, prisma } from '@repo/db';
+import { PrismaClientKnownRequestError, prisma } from '@repo/db';
 import { createApiError, jsonError, jsonOk } from '@repo/core';
 import { requireAdminSession } from '../../../../../lib/auth';
 
@@ -18,7 +18,7 @@ export const DELETE = async (
 
     return jsonOk(deleted);
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
       return jsonError(createApiError('NOT_FOUND', 'Gallery image not found.'));
     }
 

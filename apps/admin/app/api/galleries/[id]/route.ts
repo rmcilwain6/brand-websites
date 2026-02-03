@@ -1,4 +1,4 @@
-import { Prisma, prisma } from '@repo/db';
+import { PrismaClientKnownRequestError, prisma } from '@repo/db';
 
 import { GalleryUpdateSchema, createApiError, jsonError, jsonOk, parseJson } from '@repo/core';
 import { requireAdminSession } from '../../../lib/auth';
@@ -52,7 +52,7 @@ export const PUT = async (
 
     return jsonOk(gallery);
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2025') {
         return jsonError(createApiError('NOT_FOUND', 'Gallery not found.'));
       }

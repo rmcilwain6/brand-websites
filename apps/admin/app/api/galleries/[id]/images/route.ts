@@ -1,4 +1,4 @@
-import { Prisma, prisma } from '@repo/db';
+import { PrismaClientKnownRequestError, prisma } from '@repo/db';
 
 import { GalleryImageAttachSchema, createApiError, jsonError, jsonOk, parseJson } from '@repo/core';
 import { requireAdminSession } from '../../../../lib/auth';
@@ -31,7 +31,7 @@ export const POST = async (
 
     return jsonOk(galleryImage, { status: 201 });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         return jsonError(createApiError('CONFLICT', 'Image already attached.'));
       }
