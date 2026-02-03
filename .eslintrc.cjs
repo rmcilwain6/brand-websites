@@ -11,6 +11,17 @@ module.exports = {
         project: path.join(__dirname, 'tsconfig.base.json'),
         tsconfigRootDir: __dirname
       }
+    },
+    {
+      files: ['apps/**/*.{ts,tsx}'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            patterns: ['**/apps/*']
+          }
+        ]
+      }
     }
   ]
 };
