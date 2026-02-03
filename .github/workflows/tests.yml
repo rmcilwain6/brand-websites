@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/evrydayarchive
-      NEXT_PUBLIC_API_BASE_URL: https://api.evrydayarchive.local
+      ADMIN_API_BASE_URL: https://api.evrydayarchive.local
 
     steps:
       - name: Checkout
@@ -35,7 +35,7 @@ jobs:
       - name: Debug build env
         run: |
           node -e "console.log('HAS_DATABASE_URL', !!process.env.DATABASE_URL)"
-          node -e "console.log('HAS_NEXT_PUBLIC_API_BASE_URL', !!process.env.NEXT_PUBLIC_API_BASE_URL)"
+          node -e "console.log('HAS_ADMIN_API_BASE_URL', !!process.env.ADMIN_API_BASE_URL)"
 
       - name: Generate Prisma client
         run: pnpm --filter @repo/db generate
