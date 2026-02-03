@@ -1,39 +1,26 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
-import { ApiClientError, apiFetch } from '@repo/core';
+import { PublicApiError, fetchPublicGalleryDetail, type GalleryDetail } from '@repo/core';
 
-import { getPublicEnv } from '../../lib/env';
-
-type GalleryDetail = {
-  id: string;
-  slug: string;
-  title: string;
-  description: string | null;
-  images: Array<{
-    id: string;
-    imageAsset: {
-      src: string;
-      alt: string;
-      caption: string | null;
-    };
-  }>;
-};
+import { getServerEnv } from '../../lib/env';
 
 const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
-  const { NEXT_PUBLIC_API_BASE_URL } = getPublicEnv();
+  const { ADMIN_API_BASE_URL } = getServerEnv();
   let gallery: GalleryDetail | null = null;
 
   try {
-    gallery = await apiFetch<GalleryDetail>(
-      `${NEXT_PUBLIC_API_BASE_URL}/api/public/galleries/${params.slug}`
-    );
+    gallery = await fetchPublicGalleryDetail(ADMIN_API_BASE_URL, params.slug, {
+      next: { revalidate: 60 }
+    });
   } catch (error) {
-    if (error instanceof ApiClientError && error.code === 'NOT_FOUND') {
+    if (error instanceof PublicApiError && error.status === 404) {
       notFound();
     }
 
-    throw error;
+    if (error instanceof Error) {
+      console.warn('[portfolio] Failed to load gallery detail.', error.message);
+    }
   }
 
   if (!gallery) {
@@ -60,15 +47,15 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
             <figure key={image.id} className="space-y-2">
               <div className="relative w-full overflow-hidden rounded-lg bg-slate-100 aspect-[3/2]">
                 <Image
-                  src={image.imageAsset.src}
-                  alt={image.imageAsset.alt}
+                  src={image.src}
+                  alt={image.alt}
                   fill
                   className="object-cover"
                   sizes="(min-width: 1024px) 800px, 100vw"
                 />
               </div>
               <figcaption className="text-sm text-slate-600">
-                {image.imageAsset.caption ?? image.imageAsset.alt}
+                {image.caption ?? image.alt}
               </figcaption>
             </figure>
           ))
