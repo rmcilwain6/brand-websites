@@ -13,12 +13,34 @@ module.exports = {
       }
     },
     {
-      files: ['apps/**/*.{ts,tsx}'],
+      files: ['apps/admin/**/*.{ts,tsx}'],
       rules: {
         'no-restricted-imports': [
           'error',
           {
-            patterns: ['**/apps/*']
+            patterns: ['**/evrydayarchive-web/**', '**/reed-web/**']
+          }
+        ]
+      }
+    },
+    {
+      files: ['apps/evrydayarchive-web/**/*.{ts,tsx}'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            patterns: ['**/admin/**', '**/reed-web/**']
+          }
+        ]
+      }
+    },
+    {
+      files: ['apps/reed-web/**/*.{ts,tsx}'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            patterns: ['**/admin/**', '**/evrydayarchive-web/**']
           }
         ]
       }
