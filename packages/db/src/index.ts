@@ -8,3 +8,4 @@ export type {
   Prisma as PrismaTypes
 } from '@prisma/client';
 export { Prisma } from '@prisma/client';
+export { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';

@@ -1,4 +1,4 @@
-import { Prisma, prisma } from '@repo/db';
+import { PrismaClientKnownRequestError, prisma } from '@repo/db';
 
 import { GalleryCreateSchema, createApiError, jsonError, jsonOk, parseJson } from '@repo/core';
 import { requireAdminSession } from '../../lib/auth';
@@ -45,7 +45,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
     return jsonOk(gallery, { status: 201 });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
       return jsonError(createApiError('CONFLICT', 'Gallery slug already exists.'));
     }
 

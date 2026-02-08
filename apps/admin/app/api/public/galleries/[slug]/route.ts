@@ -1,6 +1,16 @@
 import { GalleryDetailSchema } from '@repo/core';
 import { prisma } from '@repo/db';
 
+type GalleryImageWithAsset = {
+  id: string;
+  order: number;
+  imageAsset: {
+    src: string;
+    alt: string | null;
+    caption: string | null;
+  };
+};
+
 export const GET = async (
   _req: Request,
   { params }: { params: { slug: string } }
@@ -29,7 +39,7 @@ export const GET = async (
       title: gallery.title,
       description: gallery.description,
       location: gallery.location,
-      images: gallery.images.map((image) => ({
+      images: gallery.images.map((image: GalleryImageWithAsset) => ({
         id: image.id,
         order: image.order,
         src: image.imageAsset.src,

@@ -1,10 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  PublicApiError,
-  fetchPublicGalleries,
-  fetchPublicGalleryDetail
-} from './publicGalleries';
+import { PublicApiError, fetchPublicGalleries, fetchPublicGalleryDetail } from './publicGalleries';
 
 const galleryListResponse = [
   {
@@ -70,10 +66,7 @@ describe('public gallery API helpers', () => {
       })
     );
 
-    const result = await fetchPublicGalleryDetail(
-      'https://api.example.test',
-      'fall-highlights'
-    );
+    const result = await fetchPublicGalleryDetail('https://api.example.test', 'fall-highlights');
 
     expect(result).toEqual(galleryDetailResponse);
     expect(fetchMock).toHaveBeenCalledWith(

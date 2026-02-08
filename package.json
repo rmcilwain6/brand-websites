@@ -9,9 +9,11 @@
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
+    "build:ci": "ADMIN_API_BASE_URL=https://admin.evrydayarchive.local DATABASE_URL=postgresql://postgres:postgres@localhost:5432/evrydayarchive ADMIN_PASSWORD=local-dev AUTH_SECRET=local-dev-secret pnpm --filter @repo/db generate && ADMIN_API_BASE_URL=https://admin.evrydayarchive.local DATABASE_URL=postgresql://postgres:postgres@localhost:5432/evrydayarchive ADMIN_PASSWORD=local-dev AUTH_SECRET=local-dev-secret turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ci": "vitest run --coverage"

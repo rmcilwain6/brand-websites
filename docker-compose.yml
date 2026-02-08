@@ -7,11 +7,11 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: evrydayarchive
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - evryday_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d evrydayarchive"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d evrydayarchive']
       interval: 5s
       timeout: 5s
       retries: 20
