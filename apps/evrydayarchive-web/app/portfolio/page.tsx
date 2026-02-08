@@ -5,6 +5,8 @@ import { fetchPublicGalleries, GalleryListResponse } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
 
+export const dynamic = 'force-dynamic';
+
 const PortfolioPage = async () => {
   const { ADMIN_API_BASE_URL } = getServerEnv();
   let galleries: GalleryListResponse = [];

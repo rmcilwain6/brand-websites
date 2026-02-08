@@ -5,6 +5,8 @@ import { PublicApiError, fetchPublicGalleryDetail, type GalleryDetail } from '@r
 
 import { getServerEnv } from '../../lib/env';
 
+export const dynamic = 'force-dynamic';
+
 const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
   const { ADMIN_API_BASE_URL } = getServerEnv();
   let gallery: GalleryDetail | null = null;
