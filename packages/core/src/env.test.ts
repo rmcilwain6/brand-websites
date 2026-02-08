@@ -27,8 +27,6 @@ describe('loadEnv', () => {
       AUTH_SECRET: z.string().min(1)
     });
 
-    expect(() => loadEnv(schema, { ADMIN_PASSWORD: '' })).toThrow(
-      'Invalid environment variables'
-    );
+    expect(() => loadEnv(schema, { ADMIN_PASSWORD: '' })).toThrow('Invalid environment variables');
   });
 });
