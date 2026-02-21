@@ -167,10 +167,10 @@ Exit criteria:
 
 ## 5) Prioritized backlog (ordered)
 
-1. **Foundation docs + contribution workflow hardening** (Phase 0).  
-2. **Schema/API completion for packages, modifiers, slots, bookings** (Phase 1).  
-3. **Public Package Builder + booking request flows** (Phase 2).  
-4. **Notifications + final UX polish for conversion pages** (Phase 2).  
+1. **Foundation docs + contribution workflow hardening** (Phase 0).
+2. **Schema/API completion for packages, modifiers, slots, bookings** (Phase 1).
+3. **Public Package Builder + booking request flows** (Phase 2).
+4. **Notifications + final UX polish for conversion pages** (Phase 2).
 5. **Operational guardrails and smoke automation** (Phase 3).
 
 ---
