@@ -8,49 +8,44 @@ on:
 
 jobs:
   test:
-    name: Run unit tests
+    name: Validate and test
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/evrydayarchive
       ADMIN_API_BASE_URL: https://api.evrydayarchive.local
 
     steps:
-      - name: Checkout
+      - name: 1) Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
+      - name: 2) Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9.12.3
 
-      - name: Setup Node.js
+      - name: 3) Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
 
-      - name: Install dependencies
+      - name: 4) Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Debug build env
-        run: |
-          node -e "console.log('HAS_DATABASE_URL', !!process.env.DATABASE_URL)"
-          node -e "console.log('HAS_ADMIN_API_BASE_URL', !!process.env.ADMIN_API_BASE_URL)"
-
-      - name: Generate Prisma client
+      - name: 5) Generate Prisma client
         run: pnpm --filter @repo/db generate
 
-      - name: Run typecheck
-        run: pnpm typecheck
-
-      - name: Run lint
-        run: pnpm lint
-
-      - name: Run format check
-        run: pnpm format:check
-
-      - name: Run build
+      - name: 6) Build workspace
         run: pnpm build
 
-      - name: Run tests
+      - name: 7) Run TypeScript check
+        run: pnpm typecheck
+
+      - name: 8) Run lint check
+        run: pnpm lint
+
+      - name: 9) Run format check
+        run: pnpm format:check
+
+      - name: 10) Run tests
         run: pnpm test
