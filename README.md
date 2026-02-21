@@ -2,11 +2,111 @@
 
 Multi-site Next.js workspace powered by pnpm workspaces and Turborepo.
 
-## Getting started
+## Quickstart
+
+Follow this order for a clean local setup.
+
+### 1) Prerequisites
+
+- Node.js 20+
+- pnpm 9+
+
+```bash
+node --version
+pnpm --version
+```
+
+### 2) Install dependencies
 
 ```bash
 pnpm install
 ```
+
+### 3) Environment setup (`apps/admin` and `apps/evrydayarchive-web`)
+
+Create env files for the two active apps with matching `DATABASE_URL` values:
+
+```bash
+cat > apps/admin/.env <<'EOF'
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/evrydayarchive
+ADMIN_PASSWORD=your-strong-password
+AUTH_SECRET=some-random-string
+EOF
+
+cat > apps/evrydayarchive-web/.env <<'EOF'
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/evrydayarchive
+ADMIN_API_BASE_URL=http://localhost:3001
+EOF
+```
+
+### 4) Prisma expectations (`packages/db`)
+
+Prisma reads `DATABASE_URL` from your environment. You can optionally create
+`packages/db/.env` if you run Prisma commands directly from that package.
+
+```bash
+# optional, for running Prisma CLI in packages/db
+cat > packages/db/.env <<'EOF'
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/evrydayarchive
+EOF
+```
+
+Generate Prisma client after installing dependencies or whenever schema changes:
+
+```bash
+pnpm --filter @repo/db db:generate
+```
+
+Create/apply development migrations when schema changes:
+
+```bash
+pnpm --filter @repo/db db:migrate
+```
+
+Optional reset commands (destructive):
+
+```bash
+# interactive confirmation
+pnpm --filter @repo/db db:reset
+
+# non-interactive (dangerous)
+pnpm --filter @repo/db db:reset:force
+```
+
+### 5) Run the workspace
+
+Start all apps in parallel:
+
+```bash
+pnpm dev
+```
+
+Or run apps individually:
+
+```bash
+pnpm --filter evrydayarchive-web dev
+pnpm --filter admin dev
+pnpm --filter reed-web dev
+```
+
+### 6) Quality checks
+
+```bash
+pnpm lint
+pnpm build
+pnpm test
+```
+
+### Troubleshooting (common env issues)
+
+- If Prisma fails with `Environment variable not found: DATABASE_URL`, verify the
+  `.env` files exist and that `DATABASE_URL` is set for the app/package where the
+  command is running.
+- If the public site cannot load portfolio data, ensure
+  `ADMIN_API_BASE_URL=http://localhost:3001` in
+  `apps/evrydayarchive-web/.env` and that `pnpm --filter admin dev` is running.
+- If admin login fails locally, verify `ADMIN_PASSWORD` and `AUTH_SECRET` are set
+  in `apps/admin/.env` and restart the dev server after changes.
 
 ## Development
 
