@@ -30,6 +30,7 @@ These are non-negotiable guardrails for all upcoming work:
 - For meaningful changes, run at repo root:
   - `pnpm lint`
   - `pnpm build`
+  - `pnpm format`
   - and relevant runtime sanity checks as needed.
 - PR hygiene: focused commits with intent-based messages.
 
