@@ -13,6 +13,39 @@ enum GalleryStatus {
   ARCHIVED
 }
 
+enum PackageStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum TimeSlotStatus {
+  AVAILABLE
+  HELD
+  UNAVAILABLE
+}
+
+enum InquiryType {
+  GENERAL
+  PACKAGE_BUILDER
+  BOOKING_REQUEST
+}
+
+enum InquiryStatus {
+  NEW
+  IN_REVIEW
+  RESOLVED
+  ARCHIVED
+}
+
+enum BookingRequestStatus {
+  PENDING
+  REVIEWED
+  APPROVED
+  DECLINED
+  CANCELLED
+}
+
 model Gallery {
   id          String        @id @default(cuid())
   slug        String        @unique
@@ -51,4 +84,83 @@ model GalleryImage {
 
   @@unique([galleryId, imageAssetId])
   @@index([galleryId])
+}
+
+model Package {
+  id              String            @id @default(cuid())
+  slug            String            @unique
+  name            String
+  description     String?
+  basePriceCents  Int?
+  status          PackageStatus     @default(DRAFT)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  modifiers       PackageModifier[]
+  bookingRequests BookingRequest[]
+}
+
+model PackageModifier {
+  id              String   @id @default(cuid())
+  packageId       String
+  name            String
+  description     String?
+  priceDeltaCents Int?
+  isRequired      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  package         Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@index([packageId])
+  @@unique([packageId, name])
+}
+
+model TimeSlot {
+  id              String            @id @default(cuid())
+  startsAt        DateTime
+  endsAt          DateTime
+  status          TimeSlotStatus    @default(AVAILABLE)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  bookingRequests BookingRequest[]
+
+  @@index([startsAt])
+  @@index([status])
+}
+
+model Inquiry {
+  id             String        @id @default(cuid())
+  type           InquiryType
+  status         InquiryStatus @default(NEW)
+  name           String
+  email          String
+  phone          String?
+  message        String?
+  payload        Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  bookingRequest BookingRequest?
+
+  @@index([type])
+  @@index([status])
+}
+
+model BookingRequest {
+  id              String               @id @default(cuid())
+  inquiryId       String?              @unique
+  packageId       String?
+  timeSlotId      String?
+  status          BookingRequestStatus @default(PENDING)
+  guestCount      Int?
+  requestedAt     DateTime?
+  notes           String?
+  selectedOptions Json?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  inquiry         Inquiry?             @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+  package         Package?             @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  timeSlot        TimeSlot?            @relation(fields: [timeSlotId], references: [id], onDelete: SetNull)
+
+  @@index([packageId])
+  @@index([status])
+  @@index([timeSlotId])
 }
