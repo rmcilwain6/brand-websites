@@ -223,6 +223,26 @@ pnpm test:ci
 Tests live alongside core logic in `packages/**/src/**/*.test.ts` and alongside route handlers in
 `apps/**/app/**/route.test.ts`. Start by testing shared schema and API helpers in `packages/core`.
 
+### Testing Strategy
+
+Use a layered strategy so most confidence comes from fast tests close to the code, with only a small
+number of broader end-to-end checks.
+
+- **Unit tests** (`packages/core`, `packages/ui`): focus on pure logic and local behavior, including
+  schema validation, serializers, utility functions, and presentational component behavior.
+- **Integration tests** (`apps/**/app/**/route.test.ts`): validate route handlers at the server
+  boundary, including request parsing, response shape, error paths, and auth guards.
+- **Contract tests** (shared schema compatibility): ensure app routes and shared schema/types remain
+  aligned as both evolve.
+- **End-to-end smoke tests** (critical journeys only): cover the smallest set of high-value flows:
+  login, gallery publish flow, and public portfolio rendering.
+
+Default ratio guideline (starting point):
+
+- Unit + integration tests: **~80-90%** of the suite.
+- Contract tests: **~10-15%** of the suite.
+- End-to-end smoke tests: **~5% or less**, limited to critical paths.
+
 ## Workspace layout
 
 - Apps live in `apps/`
