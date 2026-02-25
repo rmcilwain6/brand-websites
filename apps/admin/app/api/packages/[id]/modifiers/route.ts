@@ -56,7 +56,9 @@ export const POST = async (
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
-        return jsonError(createApiError('CONFLICT', 'Modifier name already exists for this package.'));
+        return jsonError(
+          createApiError('CONFLICT', 'Modifier name already exists for this package.')
+        );
       }
       if (error.code === 'P2003') {
         return jsonError(createApiError('NOT_FOUND', 'Package not found.'));

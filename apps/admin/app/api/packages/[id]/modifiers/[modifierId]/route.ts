@@ -1,6 +1,12 @@
 import { PrismaClientKnownRequestError, prisma } from '@repo/db';
 
-import { AdminPackageModifierUpdateSchema, createApiError, jsonError, jsonOk, parseJson } from '@repo/core';
+import {
+  AdminPackageModifierUpdateSchema,
+  createApiError,
+  jsonError,
+  jsonOk,
+  parseJson
+} from '@repo/core';
 import { requireAdminSession } from '../../../../../lib/auth';
 
 export const GET = async (
@@ -61,7 +67,9 @@ export const PUT = async (
     return jsonOk(modifier);
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
-      return jsonError(createApiError('CONFLICT', 'Modifier name already exists for this package.'));
+      return jsonError(
+        createApiError('CONFLICT', 'Modifier name already exists for this package.')
+      );
     }
 
     return jsonError(createApiError('INTERNAL', 'Unable to update package modifier.'));
