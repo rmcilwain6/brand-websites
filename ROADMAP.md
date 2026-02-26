@@ -81,9 +81,9 @@ Your added requirement (captured here):
 
 Goal: make daily agent-driven development low-risk and repeatable.
 
-- [ ] Confirm/standardize root scripts and workspace task names used by humans + CI:
+- [x] ~~Confirm/standardize root scripts and workspace task names used by humans + CI:~~
   - lint, typecheck, build, test, format:check
-- [ ] Add/verify **PR checklist template** (`.github/pull_request_template.md`) requiring:
+- [x] ~~Add/verify **PR checklist template** (`.github/pull_request_template.md`) requiring:~~
   - scope summary
   - local validation evidence (`pnpm lint`, `pnpm build`, app boot sanity)
   - risks/rollback notes
@@ -91,7 +91,7 @@ Goal: make daily agent-driven development low-risk and repeatable.
 - [ ] Add `CODEOWNERS` (if desired) for review routing.
 - [ ] Tighten README “Getting Started in 10 minutes” with copy-paste commands and env setup for admin + public app.
 - [ ] Add “Agent Workflow” section in README (how to reference this roadmap + request next step).
-- [ ] Define and document Q1 testing strategy + PR testing expectations:
+- [x] ~~Define and document Q1 testing strategy + PR testing expectations:~~
   - minimum required checks per PR
   - recommended depth by change type (docs, UI, API, schema)
   - what lightweight E2E smoke should include for this repo
@@ -106,9 +106,9 @@ Exit criteria:
 
 Goal: get admin foundation complete enough to power public site features.
 
-- [ ] Validate current Prisma schema coverage for Q1 entities from brief:
+- [x] ~~Validate current Prisma schema coverage for Q1 entities from brief:~~
   - Gallery, ImageAsset, Package, PackageModifier, TimeSlot, Inquiry, BookingRequest
-- [ ] Implement missing schema pieces + migrations in `packages/db`.
+- [x] ~~Implement missing schema pieces + migrations in `packages/db`.~~
 - [ ] Add/expand admin APIs and pages for CRUD where incomplete:
   - packages + modifiers
   - availability slots
@@ -229,3 +229,4 @@ Use one of these prompts verbatim:
 
 - 2026-02-18: Initial roadmap created from repo inspection + AGENTS.md + provided build brief.
 - 2026-02-19: Updated based on planning feedback (added Phase 0 testing-strategy task and captured resolved decisions from Section 8 responses).
+- 2026-02-26: Checked off completed foundation/testing tasks and Q1 schema-completion tasks based on merged README, core schema, API route, and Prisma updates.
