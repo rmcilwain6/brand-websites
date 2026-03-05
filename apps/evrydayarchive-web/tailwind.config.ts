@@ -41,6 +41,20 @@ const config: Config = {
         fast: '140ms',
         standard: '210ms',
         slow: '310ms'
+      },
+      animation: {
+        'fade-up': 'fadeUp 280ms ease-out both',
+        'fade-in': 'fadeIn 220ms ease-out both'
+      },
+      keyframes: {
+        fadeUp: {
+          '0%': { opacity: '0', transform: 'translateY(6px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' }
+        }
       }
     }
   },

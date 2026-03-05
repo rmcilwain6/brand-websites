@@ -1,35 +1,266 @@
-import { Button, Card } from '@repo/ui';
-import { evrydayarchiveConfig } from '@repo/core';
+import Image from 'next/image';
+import Link from 'next/link';
 
-const HomePage = () => {
+import { fetchPublicGalleries, type GalleryListItem } from '@repo/core';
+
+import { getServerEnv } from './lib/env';
+import { Frame } from './components/frame';
+import { Placard } from './components/placard';
+
+export default async function HomePage() {
+  const { ADMIN_API_BASE_URL } = getServerEnv();
+  let galleries: GalleryListItem[] = [];
+
+  try {
+    galleries = await fetchPublicGalleries(ADMIN_API_BASE_URL, { next: { revalidate: 60 } });
+  } catch {
+    // Featured galleries are optional; degrade gracefully
+  }
+
+  const featured = galleries.slice(0, 4);
+
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-16">
-      <section className="space-y-3">
-        <p className="text-sm font-semibold uppercase tracking-wide text-emerald-600">
-          {evrydayarchiveConfig.name}
-        </p>
-        <h1 className="text-4xl font-semibold text-slate-900">Evryday Archive</h1>
-        <p className="text-lg text-slate-600">
-          A living archive to capture daily artifacts, stories, and signals.
-        </p>
-        <div className="flex items-center gap-4">
-          <Button>Explore the archive</Button>
-          <Button className="bg-white text-slate-900 ring-1 ring-slate-200 hover:bg-slate-100">
-            Submit an artifact
-          </Button>
+    <main>
+      {/* ── Section 1: Hero exhibit ──────────────────────────────────────── */}
+      <section className="relative px-4 pb-20 pt-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          {/* Stage 1: exhibit text (appears first) */}
+          <div className="animate-fade-up mb-10 max-w-xl">
+            <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
+              Ottawa–Gatineau · Photography
+            </p>
+            <h1 className="text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">
+              Quiet days,
+              <br />
+              carefully documented.
+            </h1>
+            <p className="mt-5 text-base leading-relaxed text-ink-muted sm:text-lg">
+              A studio practice rooted in intention — capturing everyday life with honesty and care.
+            </p>
+          </div>
+
+          {/* Stage 2: framed hero image (arrives after text) */}
+          <div
+            className="animate-fade-up relative mb-10 max-w-lg"
+            style={{ animationDelay: '180ms' }}
+          >
+            <Frame rotateDeg={-0.8}>
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm bg-sun">
+                {/* Hero image — replace src with real content when available */}
+                <div className="flex h-full w-full items-center justify-center">
+                  <p className="text-xs text-ink-faint">Hero image</p>
+                </div>
+              </div>
+            </Frame>
+
+            {/* Anchored placard at bottom-right of the frame */}
+            <div className="absolute -bottom-4 right-2 sm:right-6">
+              <Placard title="The Archive" subtitle="Est. 2024" size="sm" />
+            </div>
+          </div>
+
+          {/* Stage 3: CTA row (appears last) */}
+          <div
+            className="animate-fade-in flex flex-wrap items-center gap-3"
+            style={{ animationDelay: '400ms' }}
+          >
+            <Link
+              href="/inquire"
+              className="rounded-card bg-accent px-6 py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            >
+              Inquire
+            </Link>
+            <Link
+              href="/packages"
+              className="rounded-card border border-border px-6 py-3 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            >
+              Explore packages
+            </Link>
+          </div>
         </div>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-2">
-        <Card title="Shared UI">
-          This card and button component are imported from the shared UI package.
-        </Card>
-        <Card title="Shared Core">
-          Config data and shared schemas live in the core package for reuse across sites.
-        </Card>
+      {/* ── Section 2: Brand stance (text on the wall) ──────────────────── */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl">
+          <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
+            Photography doesn&apos;t have to mean big productions and forced smiles.{' '}
+            <span className="font-medium text-ink">
+              The best images happen when life is just living.
+            </span>{' '}
+            The archive exists to document those moments — the ones worth keeping.
+          </p>
+        </div>
+      </section>
+
+      {/* ── Section 3: Featured galleries carousel ───────────────────────── */}
+      {featured.length > 0 && (
+        <section className="py-16">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-8 flex items-end justify-between px-4 sm:px-6 lg:px-8">
+              <div>
+                <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
+                  The archive
+                </p>
+                <h2 className="text-2xl font-semibold text-ink">Featured galleries</h2>
+              </div>
+              <Link
+                href="/portfolio"
+                className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
+              >
+                View all →
+              </Link>
+            </div>
+
+            {/* Horizontal scroll carousel — CSS scroll-snap, no JS needed */}
+            <div className="flex gap-5 overflow-x-auto scroll-smooth px-4 pb-6 scrollbar-none snap-x snap-mandatory sm:px-6 lg:px-8">
+              {featured.map((gallery) => (
+                <GalleryCard key={gallery.id} gallery={gallery} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Section 4: Social proof ──────────────────────────────────────── */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-12">
+            <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
+              What people say
+            </p>
+            <h2 className="text-2xl font-semibold text-ink">Reviews</h2>
+          </div>
+
+          <div className="space-y-12">
+            {TESTIMONIALS.map((t, i) => (
+              <blockquote key={i}>
+                <p className="text-base leading-relaxed text-ink-muted">&ldquo;{t.quote}&rdquo;</p>
+                <footer className="mt-3 text-sm">
+                  <span className="font-medium text-ink">{t.name}</span>
+                  <span className="text-ink-faint"> · {t.session}</span>
+                </footer>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Section 5: Pricing philosophy ───────────────────────────────── */}
+      <section className="bg-sun px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl">
+          <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
+            Investment
+          </p>
+          <h2 className="mb-6 text-2xl font-semibold text-ink">Straightforward pricing</h2>
+          <p className="mb-8 text-base leading-relaxed text-ink-muted">
+            Photography shouldn&apos;t require a negotiation. Sessions are scoped clearly — you know
+            exactly what&apos;s included before any commitment. If you&apos;re not sure which option
+            fits, reach out anyway.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/packages"
+              className="rounded-card bg-accent px-6 py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            >
+              Explore packages
+            </Link>
+            <Link
+              href="/package-builder"
+              className="rounded-card border border-border px-6 py-3 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            >
+              Build your own
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Section 6: Where we operate ─────────────────────────────────── */}
+      <section className="px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl">
+          <Placard
+            title="Ottawa–Gatineau"
+            subtitle="Available for local and travel sessions across Canada"
+            meta="Where we work"
+          />
+        </div>
+      </section>
+
+      {/* ── Section 7: Final CTA ─────────────────────────────────────────── */}
+      <section className="px-4 py-24 text-center sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-xl">
+          <h2 className="mb-4 text-3xl font-semibold leading-tight text-ink sm:text-4xl">
+            No pressure.
+            <br />
+            Tell me what you&apos;re thinking.
+          </h2>
+          <p className="mb-10 text-base leading-relaxed text-ink-muted">
+            Whether you have a session in mind or just want to see if it&apos;s a fit — reach out.
+            No pressure, no commitment.
+          </p>
+          <Link
+            href="/inquire"
+            className="inline-block rounded-card bg-accent px-8 py-4 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            Start a conversation
+          </Link>
+        </div>
       </section>
     </main>
   );
+}
+
+// ── Sub-components ─────────────────────────────────────────────────────────
+
+const GalleryCard = ({ gallery }: { gallery: GalleryListItem }) => {
+  return (
+    <Link
+      href={`/portfolio/${gallery.slug}`}
+      className="group flex-none snap-start"
+      style={{ width: 'min(288px, 80vw)' }}
+    >
+      <Frame className="mb-3">
+        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-sun">
+          {gallery.coverImage ? (
+            <Image
+              src={gallery.coverImage.src}
+              alt={gallery.coverImage.alt}
+              fill
+              className="object-cover transition-transform duration-slow group-hover:scale-[1.03]"
+              sizes="(min-width: 640px) 288px, 80vw"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <span className="text-xs text-ink-faint">No cover</span>
+            </div>
+          )}
+        </div>
+      </Frame>
+
+      <Placard title={gallery.title} subtitle={gallery.location ?? undefined} />
+    </Link>
+  );
 };
 
-export default HomePage;
+// ── Static content ──────────────────────────────────────────────────────────
+
+const TESTIMONIALS = [
+  {
+    quote:
+      "Working with Evryday Archive felt effortless. The photos captured moments I'd forgotten I wanted to remember.",
+    name: 'Sarah M.',
+    session: 'Family session'
+  },
+  {
+    quote:
+      "I've never felt comfortable in front of a camera. These photos changed that. Natural, warm, exactly what I hoped for.",
+    name: 'James T.',
+    session: 'Portrait session'
+  },
+  {
+    quote:
+      'The process was clear from the start. No surprises, and the results were exactly what we discussed.',
+    name: 'Mara & David',
+    session: 'Couple session'
+  }
+];
