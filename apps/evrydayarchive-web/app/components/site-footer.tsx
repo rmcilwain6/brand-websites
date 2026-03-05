@@ -1,0 +1,59 @@
+import Link from 'next/link';
+
+const NAV = [
+  { href: '/portfolio', label: 'Portfolio' },
+  { href: '/packages', label: 'Packages' },
+  { href: '/process', label: 'Process' },
+  { href: '/inquire', label: 'Inquire' },
+  { href: '/contact', label: 'Contact' }
+];
+
+export const SiteFooter = () => {
+  const year = new Date().getFullYear();
+
+  return (
+    <footer className="border-t border-border bg-canvas">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-10 sm:flex-row sm:justify-between">
+          {/* Brand block */}
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-ink">Evryday Archive Co</p>
+            <p className="text-xs text-ink-faint">Ottawa–Gatineau · Canada</p>
+          </div>
+
+          {/* Nav block */}
+          <nav aria-label="Footer navigation" className="flex flex-col gap-2">
+            {NAV.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Social block */}
+          <div className="flex flex-col gap-2">
+            <p className="text-xs font-medium uppercase tracking-widest text-ink-faint">Follow</p>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
+            >
+              Instagram
+            </a>
+          </div>
+        </div>
+
+        <div className="mt-10 border-t border-border pt-6">
+          <p className="text-xs text-ink-faint">
+            © {year} Evryday Archive Co. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};

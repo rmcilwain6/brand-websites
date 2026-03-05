@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 
 import { ThemeProvider } from './providers/theme-provider';
+import { SiteHeader } from './components/site-header';
+import { SiteFooter } from './components/site-footer';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -37,7 +39,11 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         />
       </head>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </ThemeProvider>
       </body>
     </html>
   );

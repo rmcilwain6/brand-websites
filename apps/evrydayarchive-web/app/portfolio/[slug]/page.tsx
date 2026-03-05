@@ -1,9 +1,12 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { PublicApiError, fetchPublicGalleryDetail, type GalleryDetail } from '@repo/core';
 
 import { getServerEnv } from '../../lib/env';
+import { Frame } from '../../components/frame';
+import { Placard } from '../../components/placard';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,39 +33,90 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-16">
-      <header className="space-y-3">
-        <p className="text-sm font-semibold uppercase tracking-wide text-emerald-600">
-          Portfolio gallery
-        </p>
-        <h1 className="text-4xl font-semibold text-slate-900">{gallery.title}</h1>
-        {gallery.description ? (
-          <p className="text-lg text-slate-600">{gallery.description}</p>
-        ) : null}
-      </header>
+    <main className="px-4 py-16 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl">
+        {/* Back link */}
+        <div className="mb-10">
+          <Link
+            href="/portfolio"
+            className="text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
+          >
+            ← Portfolio
+          </Link>
+        </div>
 
-      <section className="space-y-6">
+        {/* Opening panel */}
+        <header className="mb-16 max-w-2xl">
+          <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
+            {gallery.location ?? 'Gallery'}
+          </p>
+          <h1 className="mb-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+            {gallery.title}
+          </h1>
+          {gallery.description && (
+            <p className="text-base leading-relaxed text-ink-muted">{gallery.description}</p>
+          )}
+        </header>
+
+        {/* Image grid */}
         {gallery.images.length === 0 ? (
-          <p className="text-sm text-slate-500">No images published yet.</p>
+          <div className="py-20 text-center">
+            <p className="text-sm text-ink-faint">No images published yet.</p>
+          </div>
         ) : (
-          gallery.images.map((image) => (
-            <figure key={image.id} className="space-y-2">
-              <div className="relative w-full overflow-hidden rounded-lg bg-slate-100 aspect-[3/2]">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  className="object-cover"
-                  sizes="(min-width: 1024px) 800px, 100vw"
-                />
-              </div>
-              <figcaption className="text-sm text-slate-600">
-                {image.caption ?? image.alt}
-              </figcaption>
-            </figure>
-          ))
+          <div className="columns-1 gap-8 sm:columns-2">
+            {gallery.images.map((image, index) => (
+              <figure key={image.id} className="mb-8 break-inside-avoid">
+                <Frame rotateDeg={index % 3 === 0 ? -0.4 : index % 3 === 1 ? 0 : 0.4}>
+                  <div className="relative aspect-[3/2] w-full overflow-hidden rounded-sm bg-sun">
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      className="object-cover"
+                      sizes="(min-width: 640px) 50vw, 100vw"
+                      loading={index < 2 ? 'eager' : 'lazy'}
+                    />
+                  </div>
+                </Frame>
+
+                {image.caption && (
+                  <figcaption className="mt-3 pl-1">
+                    <Placard title={image.caption} size="sm" />
+                  </figcaption>
+                )}
+              </figure>
+            ))}
+          </div>
         )}
-      </section>
+
+        {/* Closing panel */}
+        <div className="mt-20 border-t border-border pt-16">
+          <div className="mx-auto max-w-xl text-center">
+            <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
+              Thank you
+            </p>
+            <p className="mb-8 text-base leading-relaxed text-ink-muted">
+              Every session documented here was a privilege. If something resonated — or if you want
+              to create something similar — reach out.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/inquire"
+                className="rounded-card bg-accent px-6 py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                Inquire
+              </Link>
+              <Link
+                href="/portfolio"
+                className="rounded-card border border-border px-6 py-3 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                View all galleries
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   );
 };
