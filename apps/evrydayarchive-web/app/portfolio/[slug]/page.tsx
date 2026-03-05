@@ -1,16 +1,18 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { PublicApiError, fetchPublicGalleryDetail, type GalleryDetail } from '@repo/core';
 
 import { getServerEnv } from '../../lib/env';
-import { Frame } from '../../components/frame';
-import { Placard } from '../../components/placard';
+import { GalleryViewer } from '../../components/gallery-viewer';
 
 export const dynamic = 'force-dynamic';
 
-const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
+type Props = {
+  params: { slug: string };
+  searchParams: Record<string, string | string[] | undefined>;
+};
+
+const GalleryDetailPage = async ({ params, searchParams }: Props) => {
   const { ADMIN_API_BASE_URL } = getServerEnv();
   let gallery: GalleryDetail | null = null;
 
@@ -32,93 +34,16 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
     notFound();
   }
 
-  return (
-    <main className="px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
-        {/* Back link */}
-        <div className="mb-10">
-          <Link
-            href="/portfolio"
-            className="text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
-          >
-            ← Portfolio
-          </Link>
-        </div>
+  // Derive initial panel from ?p= query param.
+  // Panel 0 is the exhibit intro; 1…N are photo panels; N+1 is the closing panel.
+  const pParam = searchParams.p;
+  const rawPanel = typeof pParam === 'string' ? parseInt(pParam, 10) : 0;
+  const totalPanels = gallery.images.length + 2;
+  const initialPanel = Number.isFinite(rawPanel)
+    ? Math.max(0, Math.min(totalPanels - 1, rawPanel))
+    : 0;
 
-        {/* Opening panel */}
-        <header className="mb-16 max-w-2xl">
-          <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
-            {gallery.location ?? 'Gallery'}
-          </p>
-          <h1 className="mb-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-            {gallery.title}
-          </h1>
-          {gallery.description && (
-            <p className="text-base leading-relaxed text-ink-muted">{gallery.description}</p>
-          )}
-        </header>
-
-        {/* Image grid */}
-        {gallery.images.length === 0 ? (
-          <div className="py-20 text-center">
-            <p className="text-sm text-ink-faint">No images published yet.</p>
-          </div>
-        ) : (
-          <div className="columns-1 gap-8 sm:columns-2">
-            {gallery.images.map((image, index) => (
-              <figure key={image.id} className="mb-8 break-inside-avoid">
-                <Frame rotateDeg={index % 3 === 0 ? -0.4 : index % 3 === 1 ? 0 : 0.4}>
-                  <div className="relative aspect-[3/2] w-full overflow-hidden rounded-sm bg-sun">
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      className="object-cover"
-                      sizes="(min-width: 640px) 50vw, 100vw"
-                      loading={index < 2 ? 'eager' : 'lazy'}
-                    />
-                  </div>
-                </Frame>
-
-                {image.caption && (
-                  <figcaption className="mt-3 pl-1">
-                    <Placard title={image.caption} size="sm" />
-                  </figcaption>
-                )}
-              </figure>
-            ))}
-          </div>
-        )}
-
-        {/* Closing panel */}
-        <div className="mt-20 border-t border-border pt-16">
-          <div className="mx-auto max-w-xl text-center">
-            <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
-              Thank you
-            </p>
-            <p className="mb-8 text-base leading-relaxed text-ink-muted">
-              Every session documented here was a privilege. If something resonated — or if you want
-              to create something similar — reach out.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href="/inquire"
-                className="rounded-card bg-accent px-6 py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-              >
-                Inquire
-              </Link>
-              <Link
-                href="/portfolio"
-                className="rounded-card border border-border px-6 py-3 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-              >
-                View all galleries
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+  return <GalleryViewer gallery={gallery} initialPanel={initialPanel} />;
 };
 
 export default GalleryDetailPage;

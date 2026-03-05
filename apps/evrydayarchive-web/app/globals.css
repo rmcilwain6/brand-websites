@@ -8,6 +8,8 @@
     --color-canvas: #f7f4ef;
     --color-surface: #ffffff;
     --color-sun: #f3ede2;
+    /* Semi-transparent canvas for gradient overlays (e.g. frameless viewer chrome) */
+    --color-canvas-overlay: rgba(247, 244, 239, 0.92);
     --color-ink: #000000;
     --color-ink-muted: #2b2b2b;
     --color-ink-faint: rgba(43, 35, 26, 0.45);
@@ -19,6 +21,7 @@
     --color-canvas: #1b1a19;
     --color-surface: #262423;
     --color-sun: #faf6ef;
+    --color-canvas-overlay: rgba(27, 26, 25, 0.92);
     --color-ink: #ffffff;
     --color-ink-muted: #faf6ef;
     --color-ink-faint: rgba(250, 246, 239, 0.45);
