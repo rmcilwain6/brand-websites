@@ -18,7 +18,8 @@ const config: Config = {
         ink: 'var(--color-ink)',
         'ink-muted': 'var(--color-ink-muted)',
         'ink-faint': 'var(--color-ink-faint)',
-        border: 'var(--color-border)'
+        border: 'var(--color-border)',
+        'canvas-overlay': 'var(--color-canvas-overlay)'
       },
       fontFamily: {
         sans: ['var(--font-plus-jakarta)', 'system-ui', 'sans-serif']
