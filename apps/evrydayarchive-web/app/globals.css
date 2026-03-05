@@ -2,6 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-slate-50 text-slate-900;
+@layer base {
+  /* ─── Light mode tokens ─────────────────────────────────────────────────── */
+  :root {
+    --color-canvas: #f7f4ef;
+    --color-surface: #ffffff;
+    --color-sun: #f3ede2;
+    --color-ink: #000000;
+    --color-ink-muted: #2b2b2b;
+    --color-ink-faint: rgba(43, 35, 26, 0.45);
+    --color-border: rgba(43, 35, 26, 0.12);
+  }
+
+  /* ─── Dark mode tokens ──────────────────────────────────────────────────── */
+  .dark {
+    --color-canvas: #1b1a19;
+    --color-surface: #262423;
+    --color-sun: #faf6ef;
+    --color-ink: #ffffff;
+    --color-ink-muted: #faf6ef;
+    --color-ink-faint: rgba(250, 246, 239, 0.45);
+    --color-border: rgba(250, 246, 239, 0.10);
+  }
+
+  html {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    /* Smooth theme transition — suppressed on initial load via .no-transition */
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    min-height: 100svh;
+    /*
+     * Paper grain texture: SVG feTurbulence noise tiled over the canvas.
+     * The rect opacity (0.04) keeps it barely perceptible — just enough
+     * tactile warmth without obscuring content.
+     */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    background-repeat: repeat;
+  }
+
+  /* Dark mode: slightly more visible grain */
+  .dark body {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+  }
+
+  /*
+   * Suppress transitions on first paint to prevent a flash when the
+   * ThemeProvider reads localStorage and applies the saved theme.
+   * The .no-transition class is removed immediately after hydration.
+   */
+  .no-transition * {
+    transition: none !important;
+  }
 }
