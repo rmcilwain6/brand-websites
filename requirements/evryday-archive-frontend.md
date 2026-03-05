@@ -1,4 +1,5 @@
 [evryday_archive_co_ui_design_requirements.md](https://github.com/user-attachments/files/25757224/evryday_archive_co_ui_design_requirements.md)
+
 # Evryday Archive Co — UI Design & Requirements (Working Doc)
 
 > Purpose: capture the **visual language, interaction model, and page-by-page requirements** for the public Evryday Archive Co website. This document is meant to be referenced by you + AI agents when building.
@@ -6,8 +7,8 @@
 ## 0) Non‑negotiables
 
 - **Tone:** calm · warm · grounded.
-- **Metaphor:** *Archive Gallery* — documentation presented with care.
-- **Site should feel custom and “built,” not template‑portfolio.
+- **Metaphor:** _Archive Gallery_ — documentation presented with care.
+- \*\*Site should feel custom and “built,” not template‑portfolio.
 - **Two distinct experiences in one UI:**
   - **Desktop:** mouse/keyboard first; scrolling + precise navigation.
   - **Mobile:** touch-first; gestures can be first-class, especially inside galleries.
@@ -20,23 +21,28 @@
 
 ### 1.1 Visual motifs
 
-1) **Paper Canvas**
+1. **Paper Canvas**
+
 - Warm off‑white background with subtle grain/speckle.
 - Creates the feeling of a physical surface (gallery wall / desk).
 
-2) **Frames & Mats**
+2. **Frames & Mats**
+
 - Photos appear as mounted pieces: mat border + soft shadow.
 - Frames feel like objects placed on paper.
 
-3) **Placards (Labels)**
+3. **Placards (Labels)**
+
 - Small informational cards with title/subtitle/date.
 - Used consistently: gallery titles, photo captions, packages, process steps, testimonials.
 
-4) **Exhibit Typography**
+4. **Exhibit Typography**
+
 - Large, quiet headlines and numerals (gallery signage feel).
 - Avoid hype/sales tone.
 
-5) **Curation, not chaos**
+5. **Curation, not chaos**
+
 - Layout can be slightly offset/“pinned,” but always with underlying system rules.
 - “Imperfect but consistent.”
 
@@ -46,7 +52,7 @@
 - **Subtle motion:** fades + small translates; no loud animations.
 - **Swipe language is contextual:**
   - Desktop: optional enhancement (trackpad drag), never required.
-  - Mobile: gestures can be primary *inside galleries*.
+  - Mobile: gestures can be primary _inside galleries_.
 
 ---
 
@@ -59,6 +65,7 @@
 **Primary goal:** intentional brand moment **without** harming perceived performance.
 
 **Rules / guardrails:**
+
 - **Optional + skippable:** tap/click to skip immediately.
 - **Respect `prefers-reduced-motion`:** no animation; show static logo briefly or skip entirely.
 - **Time-boxed:** target **350–700ms**; hard max **1200ms**.
@@ -67,36 +74,40 @@
 - **Never show on deep links** (e.g., someone lands directly on a gallery or packages).
 
 **Implementation notes (high-level):**
+
 - Full-screen overlay on paper canvas.
 - Simple shapes/gradients + logo mark; avoid heavy video/lottie unless later justified.
 - When the intro ends (or user skips), transition to Home entry sequence.
 
-
-
 ### 2.1 Desktop experience (mouse/keyboard)
 
 **Navigation model**
+
 - Standard top nav + deep links.
 - Scroll is primary within pages.
 - Galleries: click/keyboard arrows for photo navigation; optional drag/trackpad.
 
 **Visual rhythm**
+
 - More negative space.
 - Exhibit layout: two-column compositions, wider margins.
 
 ### 2.2 Mobile experience (touch-first)
 
 **Navigation model**
+
 - Simpler primary nav (likely hamburger / bottom sheet) + strong CTAs.
 - Within galleries, adopt a **gesture-first viewer**.
 
 **Gesture map for Gallery Viewer (mobile)**
+
 - **Vertical swipe (up/down):** move between galleries/exhibits (optional, see guardrails).
 - **Horizontal swipe (left/right):** move between photos within current gallery.
 - **Pinch-in:** zoom into photo (standard).
 - **Intentional pinch-out (when zoomed-out / at base scale):** return to gallery overview.
 
 **Guardrails to avoid “too social app”**
+
 - Default pace feels slow:
   - Frictionless but not addictive.
   - No autoplay, no infinite dopamine loops.
@@ -111,10 +122,10 @@
 
 ### 3.1 Core user goals
 
-1) See if the work fits them.
-2) Understand what sessions cost and what they get.
-3) Feel confident you’re professional + the process is simple.
-4) Send an inquiry / request a slot.
+1. See if the work fits them.
+2. Understand what sessions cost and what they get.
+3. Feel confident you’re professional + the process is simple.
+4. Send an inquiry / request a slot.
 
 ### 3.2 CTA vocabulary (to decide)
 
@@ -189,7 +200,7 @@
 - Responsive sizes + modern formats.
 - Blur placeholders preferred.
 - Lazy load everything below fold.
-- Viewer must prefetch *next* image quietly.
+- Viewer must prefetch _next_ image quietly.
 
 ---
 
@@ -210,6 +221,7 @@
 ## 8.1 Home (Mobile-first)
 
 ### Purpose
+
 - Set the emotional tone immediately (calm / warm / grounded).
 - Show the work fast.
 - Communicate the “archive gallery” premise + pricing philosophy.
@@ -220,62 +232,71 @@
 **Goal:** the page should feel like an intentional “exhibit reveal,” not a standard template load.
 
 **Two-stage entry model:**
-1) **Optional brand intro overlay** ("Sunrise" logo reveal)
-2) **Home staged reveal** (text → frame → CTA → header)
+
+1. **Optional brand intro overlay** ("Sunrise" logo reveal)
+2. **Home staged reveal** (text → frame → CTA → header)
 
 **Brand intro overlay (if enabled):**
+
 - Shows on first visit only (default), skippable.
 - Ends immediately if the home route is ready.
 
 **Home staged reveal (recommended):**
-1) **Primary text appears first** (Exhibit headline / brand stance line) — quick fade-in.
-2) **Framed hero image appears next** — slight delay, fade + 4–8px rise.
-3) **Secondary line + CTA row appears last** — reinforces action after mood.
-4) **Header expands in last** (or becomes fully visible at the end of the sequence).
+
+1. **Primary text appears first** (Exhibit headline / brand stance line) — quick fade-in.
+2. **Framed hero image appears next** — slight delay, fade + 4–8px rise.
+3. **Secondary line + CTA row appears last** — reinforces action after mood.
+4. **Header expands in last** (or becomes fully visible at the end of the sequence).
 
 **Constraints:**
+
 - Do not block rendering on heavy animations.
 - Must respect `prefers-reduced-motion` (in reduced mode: no staged reveal; render static).
 - Keep total staged reveal under ~600–900ms.
 
 ### Mobile layout (recommended v1)
 
-> Principle: on mobile, reduce to **one primary story**: *work → why → social proof → pricing → operate area → CTA.*
+> Principle: on mobile, reduce to **one primary story**: _work → why → social proof → pricing → operate area → CTA._
 
 #### Section 1 — Top chrome (header)
 
 **Goal:** give standard navigation affordances without stealing attention from the hero.
 
 **States (mobile):**
-1) **Expanded header (reveals after initial hero load / on scroll-up):**
+
+1. **Expanded header (reveals after initial hero load / on scroll-up):**
    - Left: hamburger
    - Center: logo mark + short wordmark/text (optional)
    - Right: compact CTA button (label flexible)
-2) **Collapsed header (on scroll-down):**
+2. **Collapsed header (on scroll-down):**
    - A **skinny bar** with **logo mark only** aligned top-left
    - No CTA, no wordmark
 
 **Reveal behavior:**
+
 - **On initial page entry:** header can start in a minimal/hidden state and **fully reveal last** in the staged load.
 - **Scroll up:** expand to full header.
 - **Tap/click on collapsed bar area:** expand to full header.
 
 **Sticky behavior:**
+
 - Header is sticky.
 - Collapsed bar persists (does not fully disappear).
 
 **Accessibility / usability requirements:**
+
 - Collapsed bar remains a clear tap target (minimum 44px height).
 - Hamburger and CTA remain keyboard focusable in expanded state.
 - Expansion/collapse must respect `prefers-reduced-motion`.
 
 #### Section 2 — Hero exhibit (above the fold)
 
-**Chosen direction:** *Option B* — text first on the paper canvas, then the framed hero as an object that arrives.
+**Chosen direction:** _Option B_ — text first on the paper canvas, then the framed hero as an object that arrives.
 
-**Text composition:** *Option B* — strong line + one quiet supporting line (copy is iterable).
+**Text composition:** _Option B_ — strong line + one quiet supporting line (copy is iterable).
 
 **Mobile placement constraint:** while we like “offset” placement, mobile must remain readable:
+
 - Default: headline block at top, frame below (can still be subtly offset within safe margins).
 
 - **Top:** primary exhibit text block (headline + supporting line). This is the first element to render in the staged load.
@@ -283,9 +304,11 @@
 - **Then:** secondary line + CTA row.
 
 **Motif options:**
+
 - A small **placard** can sit near the frame edge (anchored to the frame, not floating arbitrarily).
 
 **CTA flexibility requirement:**
+
 - CTA row must support:
   - 1 primary button + 1 secondary link
   - OR 2 buttons (e.g., “Explore packages” + “Build your own”)
@@ -308,6 +331,7 @@
   - Placard (title + 1-line descriptor)
 
 **Interaction pattern (mobile):**
+
 - Do **not** rely on hover.
 - Base interaction should be **tap/press to reveal** an explicit navigation affordance.
   - Example behaviors (final TBD):
@@ -316,6 +340,7 @@
     - Press opens a tiny preview sheet with “Enter exhibit”.
 
 **Interaction pattern (mobile):**
+
 - **Tap/press on frame:** reveals a clear “enter exhibit” affordance (not a generic link).
   - Example behaviors (pick one later):
     - A small placard/label animates in with a **“View gallery”** action.
@@ -323,22 +348,26 @@
 - **Second tap** (or tap on the revealed affordance) navigates to the gallery.
 
 **Direct navigation:**
+
 - Provide an explicit “View all galleries” link below.
 
 #### Section 5 — Social proof (reviews)
 
 **Primary acceptable formats:**
+
 - **Wall quotes (vertical):** simple quote blocks on the canvas (calm, readable).
 - **Quote + image pairing (optional):** small framed thumbnail beside/above quote if it doesn’t feel busy.
 
 **Guideline:**
+
 - Don’t require images here; reviews should work as pure text.
 
 #### Section 6 — Pricing philosophy + Packages / Builder CTA
 
-**Role on Home:** this section *is* the Home’s “packages presence.” Home should not become a full packages page.
+**Role on Home:** this section _is_ the Home’s “packages presence.” Home should not become a full packages page.
 
 **Recommended v1 composition (mobile):**
+
 - Exhibit heading + 2–4 lines of calm copy (pricing philosophy).
 - **Two primary actions** (copy flexible):
   - Button A: **Explore packages** (goes to /packages)
@@ -352,28 +381,34 @@
   - Button B: **Build your own** (goes to /package-builder)
 
 **Guardrails:**
+
 - Do not list every package.
 - Avoid comparison tables on Home.
 - Keep the visual emphasis on the work (galleries) and the philosophy (clarity), not feature lists.
 
 #### Section 7 — Where you operate
+
 - Short, concrete: “Ottawa–Gatineau” (or your real service area) + travel note.
 - Optional: simple map thumbnail (static) or just text + placard.
 
 #### Section 8 — Final CTA + Footer
+
 - Final CTA panel repeats primary action with reassurance:
   - “No pressure. Tell me what you’re thinking.”
 - Footer minimal: contact, socials, copyright.
 
 ### Desktop layout (placeholder; to be refined later)
+
 - Desktop will mirror the same narrative but with more negative space and multi-column exhibit compositions.
 
 ### Mobile interactions
+
 - Frames: gentle lift + shadow on press.
 - Carousel: snap points; no autoplay.
 - CTA: always reachable within ~1–2 screens from top.
 
 ### Content requirements (Home)
+
 - Hero image + alt text
 - Hero headline + subcopy
 - Featured galleries list (title, slug, cover image, short descriptor)
@@ -382,6 +417,7 @@
 - Operating area string + optional travel note
 
 ### Open decisions (Home)
+
 - CTA labels are intentionally **mutable** (copy will iterate). Design must support swapping labels without layout breakage.
 - Logo usage (mark-only vs wordmark)
 - Accent color usage intensity (subtle vs present)
@@ -391,6 +427,7 @@
 ## 8.2 Portfolio (Galleries Index) — Mobile-first
 
 ### Purpose
+
 - Provide a calm, browseable **index of exhibits**.
 - Distinct from the gallery viewer: this page is **free-flowing scroll**, not snap panels.
 - Encourage exploration while keeping direct intent (“view this gallery”) frictionless.
@@ -398,16 +435,18 @@
 ### Mobile layout (v1)
 
 **Primary layout:** vertical **Gallery Wall List**
+
 - One gallery per row.
 - Each row includes:
-  1) **Framed cover** (varied aspect ratios allowed)
-  2) **Placard block** with:
+  1. **Framed cover** (varied aspect ratios allowed)
+  2. **Placard block** with:
      - Title
      - Date (optional)
      - 1–2 line description (required)
-  3) **Explicit CTA** to enter the gallery (button or subtle action row)
+  3. **Explicit CTA** to enter the gallery (button or subtle action row)
 
 **Visual variance (intentional, not random):**
+
 - Allow controlled variation in cover aspect ratio:
   - Some covers portrait, some landscape (based on the cover image’s natural orientation).
 - Optional slight alignment variance (e.g., frame slightly offset) as long as:
@@ -415,22 +454,27 @@
   - Rhythm stays consistent
 
 ### Interaction model (mobile)
+
 - **Tap on cover**: opens gallery (or optionally focuses the row; v1 can be direct open).
 - **CTA button**: always present and clearly labeled (v1 simplest: `View gallery`).
 - **Metadata**: tap on title may also open gallery.
 - No hover assumptions.
 
 ### Entry to viewer
+
 - Index → Gallery viewer opens at **Intro Panel** (`?p=0`).
 - When user returns via browser back, restore:
   - index scroll position
   - last viewed panel index preserved in viewer URL when applicable.
 
 ### Desktop layout (placeholder)
+
 - Desktop can be a grid/wall composition later; mobile-first spec drives content requirements.
 
 ### Content requirements (Galleries Index)
+
 Per gallery:
+
 - `title`
 - `slug`
 - `coverImage` (url + width/height + alt)
@@ -440,6 +484,7 @@ Per gallery:
 - `tags/sessionType` (optional, for future filtering)
 
 ### Open decisions (Galleries Index)
+
 - Whether tapping the cover opens immediately or first reveals a CTA (v1: open immediately, keep explicit CTA anyway).
 - How much layout variance is acceptable before it feels messy.
 
@@ -448,23 +493,27 @@ Per gallery:
 ## 8.3 Portfolio (Gallery Detail)
 
 ### Desktop layout
+
 - Top area: gallery title placard + small meta
 - Main: photo grid OR single-photo viewer entry
 - Recommended: **grid first** with “View as exhibit” toggle
 
 ### Mobile layout (gesture-first viewer)
+
 - Default entry can be viewer-first (one image at a time)
 - UI chrome minimal:
   - top: back + gallery title
   - bottom: tiny dots / count + “details” button
 
 ### Gestures (mobile)
+
 - Left/right: next/prev photo
 - Pinch: zoom
 - Pinch-out: return to gallery overview
 - Up/down: next/prev gallery (optional; only if it doesn’t confuse)
 
 ### Viewer controls (required)
+
 - Tap to show/hide UI
 - Buttons for next/prev and exit (for accessibility)
 
@@ -473,17 +522,21 @@ Per gallery:
 ## 8.4 Packages — Mobile-first
 
 ### Purpose
+
 - Convert interest into action by making options **clear, calm, and confidence-building**.
 - Maintain the Archive Gallery tone while acknowledging this is a commercial page.
 
 ### Metaphor / vibe options
-- **Preferred framing:** *The Curator’s Notes* (not a gift shop).
+
+- **Preferred framing:** _The Curator’s Notes_ (not a gift shop).
   - Packages are presented as “ways to commission work,” written plainly.
   - Keeps it warm and grounded without feeling transactional.
 - (Optional alternate framing: “Print desk / front desk” at the gallery—helpful staff, not sales.)
 
 ### What’s common on photographer sites (reference pattern)
+
 Most photographer package pages include:
+
 - A headline + short intro
 - 2–6 packages with price, time, inclusions
 - Add-ons
@@ -493,11 +546,13 @@ Most photographer package pages include:
 ### Recommended approach for Evryday (v1)
 
 **Principles:**
+
 - Lead with **copy and philosophy**, then show packages beneath.
 - Avoid aggressive sales structure.
 - Provide a clear “none of these fit? inquire anyway” safety valve.
 
 #### Section 1 — Intro / philosophy (copy-first)
+
 - Exhibit headline (calm, direct)
 - 1–2 short paragraphs explaining:
   - Transparent pricing
@@ -507,6 +562,7 @@ Most photographer package pages include:
   - “If you don’t see your situation here, reach out anyway.”
 
 #### Section 2 — Packages list (the options)
+
 - 3–6 package cards (placard-forward):
   - Name
   - Intended use (1 line)
@@ -519,13 +575,16 @@ Most photographer package pages include:
 - Keep each card scannable; details can expand.
 
 #### Section 3 — Add-ons / upgrades (optional) / upgrades (optional)
+
 - Calm list of optional extras (no upsell tone).
 
 #### Section 4 — Gentle comparison (optional)
+
 - Prefer a **small comparison block** or “Which one is right?” guide over a giant table.
 - If a table exists, keep it minimal and mobile-friendly.
 
 #### Section 5 — Inquiry CTA + safety valve + Builder CTA (end)
+
 - A reassuring close + clear next steps.
 - Include both:
   - CTA A: **Reach out / Inquire** (primary)
@@ -533,11 +592,13 @@ Most photographer package pages include:
 - Copy explicitly states that custom situations are welcome.
 
 ### Mobile layout recommendations
+
 - Philosophy section is above fold or near top.
 - Packages below fold in a vertical stack.
 - Each package card supports expand/collapse for details.
 
 ### Content requirements (Packages)
+
 - Global philosophy copy
 - Packages array with:
   - `name`, `slug`
@@ -549,6 +610,7 @@ Most photographer package pages include:
 - Optional add-ons list
 
 ### Open decisions (Packages)
+
 - Whether prices are exact or “starting at”
 - Whether to include any comparison table in v1
 - Whether to embed an inquiry form on this page
@@ -558,14 +620,17 @@ Most photographer package pages include:
 ## 8.5 Package Builder
 
 ### Desktop layout
+
 - Two-column:
   - Left: “choices” (placards / toggles)
   - Right: sticky “summary placard” with totals + CTA
 
 ### Mobile layout
+
 - Stepper flow (3–5 steps) OR single scroll with sticky bottom summary
 
 ### Interactions
+
 - Every selection updates summary instantly
 - Always show what’s included (avoid hidden surprises)
 
@@ -574,11 +639,13 @@ Most photographer package pages include:
 ## 8.6 Process
 
 ### Desktop layout
+
 - Exhibit headline
 - 4–6 steps as large placards in a grid
 - Optional framed behind-the-scenes image
 
 ### Mobile layout
+
 - Vertical placards, with subtle separators
 
 ---
@@ -586,11 +653,13 @@ Most photographer package pages include:
 ## 8.7 FAQ
 
 ### Desktop layout
+
 - Exhibit headline
 - Accordion sections
 - Sidebar callout: CTA + “Still unsure? Inquire”
 
 ### Mobile layout
+
 - Accordion, with search optional later
 
 ---
@@ -598,15 +667,18 @@ Most photographer package pages include:
 ## 8.8 Book / Inquire
 
 ### Desktop layout
+
 - Two-column:
   - Left: form
   - Right: placard with next steps + what happens after submitting
 - Optional availability panel (if you want to show slots here)
 
 ### Mobile layout
+
 - Form first, then “what happens next” placard
 
 ### Form requirements
+
 - Keep it short.
 - Friendly language.
 - Confirmation state feels reassuring, not transactional.
@@ -616,10 +688,12 @@ Most photographer package pages include:
 ## 8.9 Contact
 
 ### Desktop layout
+
 - Minimal: contact methods + social + location
 - Optional framed portrait/work image
 
 ### Mobile layout
+
 - Stack + tap-friendly buttons
 
 ---
@@ -633,26 +707,29 @@ Most photographer package pages include:
 - On **mobile**, a gallery should feel like a **sequence of discrete views** (one “piece” at a time), not free scrolling.
 - User advances via a **sticky/threshold scroll** (snap), similar to familiar vertical video patterns, but calmer and more intentional.
 - Two viewing modes:
-  1) **Gallery Mode**: paper canvas + frame/mat + placard.
-  2) **Frameless Mode**: image only (immersive), minimal overlay on tap, with clear exit.
+  1. **Gallery Mode**: paper canvas + frame/mat + placard.
+  2. **Frameless Mode**: image only (immersive), minimal overlay on tap, with clear exit.
 
 ## 9.2 Gallery structure (beginning / middle / end)
 
 Each gallery includes:
 
-1) **Opening Panel (Exhibit Intro)**
+1. **Opening Panel (Exhibit Intro)**
+
 - Title
 - Short story / context (1–4 short paragraphs)
 - Optional metadata (date, location, session type)
 - Primary actions (optional): “Start exhibit” / “Jump to favourites”
 
-2) **Photo Panels (the exhibit)**
+2. **Photo Panels (the exhibit)**
+
 - One photo per panel.
 - Panel includes either:
   - Gallery Mode UI (frame + placard)
   - Frameless Mode UI (image only)
 
-3) **Closing Panel (Exhibit Outro)**
+3. **Closing Panel (Exhibit Outro)**
+
 - Thank you note (from you)
 - Optional testimonial/review (if appropriate)
 - Clear next step CTA: “Explore packages” / “Inquire” / “View another gallery”
@@ -662,24 +739,29 @@ Each gallery includes:
 **V1 Decision:** use **pure CSS scroll-snap panels** (lower risk, native performance).
 
 **Implementation shape:**
+
 - One scroll container sized to viewport (`100svh`).
 - Each panel is a full viewport “piece” (`min-height: 100svh`).
 - CSS: `scroll-snap-type: y mandatory` on container; `scroll-snap-align: start` on panels.
 
 **Vertical axis (primary):** next/previous panel
+
 - Scroll advances to next panel when the user crosses the browser’s snap threshold.
 - “Sticky” feel comes from snap settling; partial scroll typically returns to the current panel.
 
 **Controls & accessibility (required):**
+
 - Provide on-screen controls (next/prev) as an alternative to gestures.
 - Maintain a visible progress indicator (e.g., `5 / 24`).
 - Ensure keyboard navigation works on desktop/tablet (arrow keys / PageDown / Space as appropriate).
 
 **Deep linking / shareability (recommended):**
+
 - Support linking to a specific panel index (e.g., via query param `?p=5` or hash), scrolling to it on load.
 - Back button should behave predictably (avoid trapping users in a custom history loop).
 
 **Zoom/pinch interaction guardrails:**
+
 - If the image is zoomed beyond base scale, vertical snap navigation should not fight the user.
   - V1 simplest rule: while zoomed, disable snap by preventing vertical scroll in the container (or keep the user in frameless mode until they exit/return to base scale).
 - Never require pinch-out to exit; always provide an explicit X/back.
@@ -689,21 +771,25 @@ Each gallery includes:
 **Default:** Gallery Mode (frame + placard) to reinforce brand metaphor.
 
 **Enter Frameless Mode:**
+
 - Tap a clearly indicated control (e.g., “Immersive”) OR double-tap gesture (configurable).
 
 **Frameless Mode UI:**
+
 - Full-bleed image
 - On tap: minimal overlay appears:
   - Top-right: **X** to exit
   - Bottom: subtle progress indicator (e.g., “5 / 24”) and optional “details”
 
 **Exit Frameless Mode:**
+
 - Tap X
 - Optional: pinch-out at base zoom (only if it feels natural and doesn’t conflict with standard zoom)
 
 ## 9.5 Placards & metadata per photo
 
 In Gallery Mode, each photo panel can include a placard with:
+
 - Short caption (optional)
 - A small meta line (location/date/session)
 - Discreet “save” affordance (see favourites)
@@ -715,14 +801,17 @@ Placards should be readable and consistent, but not overly chatty.
 **Concept:** double-tap to “favourite” an image using a **branded reaction** (not a heart). The site can optionally surface a “Top Favourites” view.
 
 **Design guardrails:**
+
 - Keep it calm; avoid addictive feedback loops.
 - No streaks, no infinite prompts, no notifications.
 - The reaction animation should be subtle (small mark, gentle fade).
 
 **Product guardrails:**
+
 - This is a **bonus** feature; do not let it complicate core launch.
 
 **Implementation constraints (no public accounts):**
+
 - **Local favourites:** always supported via localStorage (private to the device).
 - **Crowd-sourced favourites (optional):**
   - Requires an anonymous API endpoint to record favourites.
@@ -731,6 +820,7 @@ Placards should be readable and consistent, but not overly chatty.
   - Consider moderation toggles (ability to disable globally).
 
 **Surfaces:**
+
 - Per-gallery: “View favourites” jump.
 - Global: optional “Top Favourites” page.
 
@@ -748,11 +838,13 @@ Placards should be readable and consistent, but not overly chatty.
 **Decision:** treat **edge swipe back** as a valid and supported exit from the gallery viewer.
 
 **Requirements:**
+
 - Leaving the viewer (via browser back or in-app back) should return to the prior context (gallery index or portfolio list) with **position preserved**.
 - Persist the current panel/frame index while viewing (e.g., via URL `?p=12` and/or history state).
 - On re-entry, restore to the saved panel/frame.
 
 **Interaction guardrails:**
+
 - Do not implement horizontal swipe navigation that conflicts with edge-swipe back.
 - If any horizontal gestures are added later, only recognize them from an inner safe region (avoid left/right edges).
 
@@ -768,15 +860,15 @@ Placards should be readable and consistent, but not overly chatty.
 
 # 10) Open decisions / TODOs
 
-1) CTA wording: Inquire vs Book vs Check availability
-2) Gallery detail default: grid-first or viewer-first on mobile
-3) Up/down swipe between galleries: include or not
-4) Degree of “tactile desk” vs “clean gallery”
-5) How often to show dates/locations on placards
-6) Whether "Sunrise" intro ships in v1
-7) Whether crowd-sourced favourites ships in Q1
+1. CTA wording: Inquire vs Book vs Check availability
+2. Gallery detail default: grid-first or viewer-first on mobile
+3. Up/down swipe between galleries: include or not
+4. Degree of “tactile desk” vs “clean gallery”
+5. How often to show dates/locations on placards
+6. Whether "Sunrise" intro ships in v1
+7. Whether crowd-sourced favourites ships in Q1
 
 ---
+
 - Mobile/desktop differences
 - Interaction details + edge cases
-
