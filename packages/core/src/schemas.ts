@@ -5,6 +5,7 @@ export * from './schemas/booking-request';
 export * from './schemas/gallery';
 export * from './schemas/inquiry';
 export * from './schemas/package-builder';
+export * from './schemas/public-packages';
 
 export const newsletterSignupSchema = z.object({
   email: z.string().email(),
