@@ -19,7 +19,10 @@ const GalleriesPage = async () => {
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-16">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">Portfolio Galleries</h1>
+          <Link href="/packages" className="text-sm text-slate-500 hover:text-slate-700">
+            Packages →
+          </Link>
+          <h1 className="mt-3 text-3xl font-semibold text-slate-900">Portfolio Galleries</h1>
           <p className="text-sm text-slate-500">Manage the published gallery lineup.</p>
         </div>
         <Link
