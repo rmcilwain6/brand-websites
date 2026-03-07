@@ -142,7 +142,7 @@ export const SiteHeader = () => {
               className={cn(
                 'absolute z-10 origin-left transition-all duration-standard',
                 scrolledDown
-                  ? 'left-0 scale-[0.85] translate-x-0'
+                  ? 'left-0 scale-[0.65] translate-x-0'
                   : 'left-1/2 scale-100 -translate-x-1/2'
               )}
             >
