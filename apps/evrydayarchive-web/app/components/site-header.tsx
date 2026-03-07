@@ -1,10 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import { cn } from '../lib/cn';
-import { Logo } from './logo';
 import { MobileMenu } from './mobile-menu';
 import { ThemeToggle } from './theme-toggle';
 
@@ -19,11 +19,12 @@ const NAV = [
  * SiteHeader — sticky navigation bar.
  *
  * On mobile:
- *  - Expanded (default / scroll-up): hamburger | logo mark | Inquire CTA
- *  - Collapsed (scroll-down past threshold): slim bar with logo mark only
+ *  - Expanded (default / scroll-up): hamburger | horizontal lockup | Inquire CTA
+ *  - Collapsed (scroll-down past threshold): slim bar — icon mark only.
+ *    Tapping the icon navigates home; tapping anywhere else expands the header.
  *
  * On desktop:
- *  - Always expanded: logo | nav links | theme toggle | Inquire CTA
+ *  - Always expanded: horizontal lockup | nav links | theme toggle | Inquire CTA
  */
 // How many px of continuous scroll in one direction before toggling state.
 // This prevents jitter from inertial scroll micro-oscillations on mobile.
@@ -102,8 +103,38 @@ export const SiteHeader = () => {
           {/* ── Mobile layout ─────────────────────────────────────── */}
           <div className="flex w-full items-center justify-between md:hidden">
             {scrolledDown ? (
-              // Slim collapsed state — logo mark only
-              <Logo variant="mark" />
+              // Slim collapsed state — icon mark only.
+              // Full-width button expands the header; logo link navigates home via z-10.
+              <div className="relative flex w-full items-center">
+                <button
+                  type="button"
+                  onClick={() => setScrolledDown(false)}
+                  className="absolute inset-0"
+                  aria-label="Expand navigation"
+                />
+                <Link
+                  href="/"
+                  aria-label="Evryday Archive Co — home"
+                  className="relative z-10 transition-opacity duration-fast hover:opacity-70"
+                >
+                  <Image
+                    src="/logo/icon.svg"
+                    alt="Evryday Archive Co"
+                    width={49}
+                    height={28}
+                    priority
+                    className="dark:hidden"
+                  />
+                  <Image
+                    src="/logo/icon-dark.svg"
+                    alt="Evryday Archive Co"
+                    width={49}
+                    height={28}
+                    priority
+                    className="hidden dark:block"
+                  />
+                </Link>
+              </div>
             ) : (
               <>
                 <button
@@ -117,7 +148,28 @@ export const SiteHeader = () => {
                   {mobileMenuOpen ? <XIcon /> : <MenuIcon />}
                 </button>
 
-                <Logo variant="mark" />
+                <Link
+                  href="/"
+                  aria-label="Evryday Archive Co — home"
+                  className="transition-opacity duration-fast hover:opacity-70"
+                >
+                  <Image
+                    src="/logo/horizontal.svg"
+                    alt="Evryday Archive Co"
+                    width={76}
+                    height={32}
+                    priority
+                    className="dark:hidden"
+                  />
+                  <Image
+                    src="/logo/horizontal-dark.svg"
+                    alt="Evryday Archive Co"
+                    width={76}
+                    height={32}
+                    priority
+                    className="hidden dark:block"
+                  />
+                </Link>
 
                 <Link
                   href="/inquire"
@@ -131,7 +183,28 @@ export const SiteHeader = () => {
 
           {/* ── Desktop layout ─────────────────────────────────────── */}
           <div className="hidden w-full items-center justify-between md:flex">
-            <Logo />
+            <Link
+              href="/"
+              aria-label="Evryday Archive Co — home"
+              className="transition-opacity duration-fast hover:opacity-70"
+            >
+              <Image
+                src="/logo/horizontal.svg"
+                alt="Evryday Archive Co"
+                width={85}
+                height={36}
+                priority
+                className="dark:hidden"
+              />
+              <Image
+                src="/logo/horizontal-dark.svg"
+                alt="Evryday Archive Co"
+                width={85}
+                height={36}
+                priority
+                className="hidden dark:block"
+              />
+            </Link>
 
             <nav aria-label="Main navigation" className="flex items-center gap-8">
               {NAV.map((link) => (
