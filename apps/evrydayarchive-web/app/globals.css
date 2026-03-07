@@ -18,7 +18,7 @@
   .dark {
     --color-canvas: #1b1a19;
     --color-surface: #262423;
-    --color-sun: #faf6ef;
+    --color-sun: #252321; /* warm-dark surface, mirrors sun's role in light mode */
     --color-ink: #ffffff;
     --color-ink-muted: #faf6ef;
     --color-ink-faint: rgba(250, 246, 239, 0.45);
