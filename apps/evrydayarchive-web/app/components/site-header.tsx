@@ -25,26 +25,61 @@ const NAV = [
  * On desktop:
  *  - Always expanded: logo | nav links | theme toggle | Inquire CTA
  */
+// How many px of continuous scroll in one direction before toggling state.
+// This prevents jitter from inertial scroll micro-oscillations on mobile.
+const COLLAPSE_THRESHOLD = 48;
+const EXPAND_THRESHOLD = 24;
+// Only engage the scroll behaviour below this breakpoint (768px = Tailwind `md`).
+const MOBILE_BREAKPOINT = 768;
+
 export const SiteHeader = () => {
   const [scrolledDown, setScrolledDown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const lastY = useRef(0);
+  const directionBuffer = useRef(0);
 
   useEffect(() => {
     const onScroll = () => {
-      const y = window.scrollY;
-      // Collapse only after scrolling past 80px and while moving downward
-      if (y < 10) {
-        setScrolledDown(false);
-      } else {
-        setScrolledDown(y > lastY.current);
+      // Disable the collapse behaviour entirely on desktop.
+      if (window.innerWidth >= MOBILE_BREAKPOINT) {
+        if (scrolledDown) setScrolledDown(false);
+        lastY.current = window.scrollY;
+        directionBuffer.current = 0;
+        return;
       }
+
+      const y = window.scrollY;
+      const delta = y - lastY.current;
       lastY.current = y;
+
+      // Near the top: always show the full header and clear the buffer.
+      if (y < 80) {
+        directionBuffer.current = 0;
+        setScrolledDown(false);
+        return;
+      }
+
+      // If direction reversed, reset the buffer so a tiny bounce can't trigger.
+      if (
+        (delta > 0 && directionBuffer.current < 0) ||
+        (delta < 0 && directionBuffer.current > 0)
+      ) {
+        directionBuffer.current = 0;
+      }
+      directionBuffer.current += delta;
+
+      if (directionBuffer.current > COLLAPSE_THRESHOLD) {
+        directionBuffer.current = 0;
+        setScrolledDown(true);
+      } else if (directionBuffer.current < -EXPAND_THRESHOLD) {
+        directionBuffer.current = 0;
+        setScrolledDown(false);
+      }
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [scrolledDown]);
 
   // Close mobile menu when header collapses
   useEffect(() => {
@@ -56,9 +91,12 @@ export const SiteHeader = () => {
       <header
         className={cn(
           'sticky top-0 z-40 border-b border-border bg-canvas overflow-hidden',
-          'transition-all duration-standard'
+          'transition-[height] duration-standard',
+          // Desktop: always full height — collapse is mobile-only.
+          'md:h-16',
+          // Mobile: shrink to slim bar when scrolling down.
+          scrolledDown ? 'h-11' : 'h-16'
         )}
-        style={{ height: scrolledDown ? '44px' : '64px' }}
       >
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* ── Mobile layout ─────────────────────────────────────── */}
