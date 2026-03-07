@@ -16,7 +16,10 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:ci": "vitest run --coverage"
+    "test:ci": "vitest run --coverage",
+    "db-schema:generate": "pnpm --filter @repo/db db:generate",
+    "db-schema:migrate": "pnpm --filter @repo/db db:migrate",
+    "db-schema:update": "pnpm db-schema:generate && pnpm db-schema:migrate"
   },
   "devDependencies": {
     "@types/node": "20.14.2",
