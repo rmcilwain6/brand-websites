@@ -120,16 +120,16 @@ export const SiteHeader = () => {
                   <Image
                     src="/logo/icon.svg"
                     alt="Evryday Archive Co"
-                    width={49}
-                    height={28}
+                    width={62}
+                    height={36}
                     priority
                     className="dark:hidden"
                   />
                   <Image
                     src="/logo/icon-dark.svg"
                     alt="Evryday Archive Co"
-                    width={49}
-                    height={28}
+                    width={62}
+                    height={36}
                     priority
                     className="hidden dark:block"
                   />
@@ -156,16 +156,16 @@ export const SiteHeader = () => {
                   <Image
                     src="/logo/horizontal.svg"
                     alt="Evryday Archive Co"
-                    width={76}
-                    height={32}
+                    width={110}
+                    height={46}
                     priority
                     className="dark:hidden"
                   />
                   <Image
                     src="/logo/horizontal-dark.svg"
                     alt="Evryday Archive Co"
-                    width={76}
-                    height={32}
+                    width={110}
+                    height={46}
                     priority
                     className="hidden dark:block"
                   />
@@ -191,16 +191,16 @@ export const SiteHeader = () => {
               <Image
                 src="/logo/horizontal.svg"
                 alt="Evryday Archive Co"
-                width={85}
-                height={36}
+                width={140}
+                height={59}
                 priority
                 className="dark:hidden"
               />
               <Image
                 src="/logo/horizontal-dark.svg"
                 alt="Evryday Archive Co"
-                width={85}
-                height={36}
+                width={140}
+                height={59}
                 priority
                 className="hidden dark:block"
               />
