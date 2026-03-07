@@ -101,84 +101,111 @@ export const SiteHeader = () => {
       >
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* ── Mobile layout ─────────────────────────────────────── */}
-          <div className="flex w-full items-center justify-between md:hidden">
-            {scrolledDown ? (
-              // Slim collapsed state — icon mark only.
-              // Full-width button expands the header; logo link navigates home via z-10.
-              <div className="relative flex w-full items-center">
-                <button
-                  type="button"
-                  onClick={() => setScrolledDown(false)}
-                  className="absolute inset-0"
-                  aria-label="Expand navigation"
-                />
-                <Link
-                  href="/"
-                  aria-label="Evryday Archive Co — home"
-                  className="relative z-10 transition-opacity duration-fast hover:opacity-70"
-                >
-                  <Image
-                    src="/logo/icon.svg"
-                    alt="Evryday Archive Co"
-                    width={62}
-                    height={36}
-                    priority
-                    className="dark:hidden"
-                  />
-                  <Image
-                    src="/logo/icon-dark.svg"
-                    alt="Evryday Archive Co"
-                    width={62}
-                    height={36}
-                    priority
-                    className="hidden dark:block"
-                  />
-                </Link>
-              </div>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen((o) => !o)}
-                  aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-                  aria-expanded={mobileMenuOpen}
-                  aria-controls="mobile-menu"
-                  className="flex h-9 w-9 items-center justify-center rounded-card text-ink-muted transition-colors duration-fast hover:bg-sun focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-                >
-                  {mobileMenuOpen ? <XIcon /> : <MenuIcon />}
-                </button>
-
-                <Link
-                  href="/"
-                  aria-label="Evryday Archive Co — home"
-                  className="transition-opacity duration-fast hover:opacity-70"
-                >
-                  <Image
-                    src="/logo/horizontal.svg"
-                    alt="Evryday Archive Co"
-                    width={110}
-                    height={46}
-                    priority
-                    className="dark:hidden"
-                  />
-                  <Image
-                    src="/logo/horizontal-dark.svg"
-                    alt="Evryday Archive Co"
-                    width={110}
-                    height={46}
-                    priority
-                    className="hidden dark:block"
-                  />
-                </Link>
-
-                <Link
-                  href="/inquire"
-                  className="rounded-card bg-accent px-3 py-1.5 text-xs font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-                >
-                  Inquire
-                </Link>
-              </>
+          {/*
+           * All three elements stay in the DOM at all times so CSS transitions
+           * can drive every part of the animation simultaneously:
+           *  - Hamburger + Inquire fade out (opacity → 0, pointer-events-none)
+           *  - Logo slides left (left-1/2 → left-0) and shrinks (scale-100 → scale-85)
+           *    with origin-left so the shrink reinforces the leftward motion
+           *  - Inside the logo, horizontal lockup and icon mark crossfade
+           */}
+          <div className="relative flex w-full items-center justify-between md:hidden">
+            {/* Full-width expand button — sits behind everything, only useful when collapsed */}
+            {scrolledDown && (
+              <button
+                type="button"
+                onClick={() => setScrolledDown(false)}
+                className="absolute inset-0 z-0"
+                aria-label="Expand navigation"
+              />
             )}
+
+            {/* Hamburger — fades out on collapse */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((o) => !o)}
+              aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
+              className={cn(
+                'flex h-9 w-9 items-center justify-center rounded-card text-ink-muted transition-all duration-standard hover:bg-sun focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
+                scrolledDown ? 'pointer-events-none opacity-0' : 'opacity-100'
+              )}
+            >
+              {mobileMenuOpen ? <XIcon /> : <MenuIcon />}
+            </button>
+
+            {/* Logo — slides left and shrinks on collapse, crossfades horizontal ↔ icon */}
+            <Link
+              href="/"
+              aria-label="Evryday Archive Co — home"
+              className={cn(
+                'absolute z-10 origin-left transition-all duration-standard',
+                scrolledDown
+                  ? 'left-0 scale-[0.85] translate-x-0'
+                  : 'left-1/2 scale-100 -translate-x-1/2'
+              )}
+            >
+              <div className="relative h-[52px] w-[124px]">
+                {/* Horizontal lockup — shown when expanded */}
+                <Image
+                  src="/logo/horizontal.svg"
+                  alt="Evryday Archive Co"
+                  width={124}
+                  height={52}
+                  priority
+                  className={cn(
+                    'absolute inset-0 dark:hidden transition-opacity duration-standard',
+                    scrolledDown ? 'opacity-0' : 'opacity-100'
+                  )}
+                />
+                <Image
+                  src="/logo/horizontal-dark.svg"
+                  alt="Evryday Archive Co"
+                  width={124}
+                  height={52}
+                  priority
+                  className={cn(
+                    'absolute inset-0 hidden dark:block transition-opacity duration-standard',
+                    scrolledDown ? 'opacity-0' : 'opacity-100'
+                  )}
+                />
+                {/* Icon mark — shown when collapsed */}
+                <Image
+                  src="/logo/icon.svg"
+                  alt="Evryday Archive Co"
+                  width={68}
+                  height={39}
+                  priority
+                  className={cn(
+                    'absolute top-1/2 left-0 -translate-y-1/2 dark:hidden transition-opacity duration-standard',
+                    scrolledDown ? 'opacity-100' : 'opacity-0'
+                  )}
+                />
+                <Image
+                  src="/logo/icon-dark.svg"
+                  alt="Evryday Archive Co"
+                  width={68}
+                  height={39}
+                  priority
+                  className={cn(
+                    'absolute top-1/2 left-0 -translate-y-1/2 hidden dark:block transition-opacity duration-standard',
+                    scrolledDown ? 'opacity-100' : 'opacity-0'
+                  )}
+                />
+              </div>
+            </Link>
+
+            {/* Inquire — fades out on collapse */}
+            <Link
+              href="/inquire"
+              className={cn(
+                'rounded-card bg-accent px-3 py-1.5 text-xs font-medium text-white transition-all duration-standard hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
+                scrolledDown ? 'pointer-events-none opacity-0' : 'opacity-100'
+              )}
+            >
+              Inquire
+            </Link>
           </div>
 
           {/* ── Desktop layout ─────────────────────────────────────── */}
