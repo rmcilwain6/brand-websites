@@ -5,13 +5,20 @@ const NotFound = () => {
   return (
     <main className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center px-4 text-center">
       <Image
-        src="/stacked - light.svg"
+        src="/logo/stacked.svg"
         alt="Evryday Archive Co"
         width={190}
         height={145}
         priority
-        // dark:invert is a stopgap — replace once dark-mode SVG variants exist
-        className="dark:invert"
+        className="dark:hidden"
+      />
+      <Image
+        src="/logo/stacked-dark.svg"
+        alt="Evryday Archive Co"
+        width={190}
+        height={145}
+        priority
+        className="hidden dark:block"
       />
 
       <p className="mt-8 text-xs font-medium uppercase tracking-widest text-ink-faint">404</p>
