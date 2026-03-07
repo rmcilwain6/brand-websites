@@ -1,11 +1,18 @@
+import Image from 'next/image';
 import Link from 'next/link';
-
-import { Logo } from './components/logo';
 
 const NotFound = () => {
   return (
     <main className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center px-4 text-center">
-      <Logo />
+      <Image
+        src="/stacked - light.svg"
+        alt="Evryday Archive Co"
+        width={190}
+        height={145}
+        priority
+        // dark:invert is a stopgap — replace once dark-mode SVG variants exist
+        className="dark:invert"
+      />
 
       <p className="mt-8 text-xs font-medium uppercase tracking-widest text-ink-faint">404</p>
 
