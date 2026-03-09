@@ -615,6 +615,13 @@ Most photographer package pages include:
 - Whether to include any comparison table in v1
 - Whether to embed an inquiry form on this page
 
+### Planned overhaul (next iteration)
+
+- The current `/packages` implementation is a v0 — basic cards with limited detail.
+- The page needs a significant expansion: more packages, more detail per package (duration, deliverables, scope, notes), and richer visual treatment.
+- The lighter card format currently on `/packages` will become the “packages at a glance” section on `/inquire`.
+- This overhaul is **deferred** until the `/inquire` and `/book` flows are built.
+
 ---
 
 ## 8.5 Package Builder
@@ -664,28 +671,216 @@ Most photographer package pages include:
 
 ---
 
-## 8.8 Book / Inquire
+## 8.8 Inquire (`/inquire`) — Guided Onboarding Flow
+
+### Purpose
+
+- Primary conversion page for users who are interested but don't yet know what they want.
+- Acts as a **guided questionnaire** that helps someone find the right package for their situation.
+- Also serves as an entry point for users arriving with a specific package already in mind (via `?package=` query param).
+- All major CTAs across the site (hero, gallery closing panel, packages, FAQ, header) point here.
+
+### Overall page structure
+
+Two sections stacked vertically:
+
+1. **Top — Guided questionnaire** (primary interaction surface)
+2. **Bottom — Packages at a glance** (secondary/escape hatch for users who prefer to self-select)
+
+The questionnaire is the featured path. The packages section below exists for users for whom the questionnaire is too high a burden, or who already know what they want.
+
+---
+
+### Section 1 — Guided questionnaire
+
+#### Philosophy
+
+- This should feel like a **thoughtful conversation**, not a form.
+- Simple questions, simple answers — one or two at a time.
+- The user fills this out in good faith because they want photos and they want you to give them the right answer. Design for that intent, not for churn reduction.
+- Questions can be numerous; do not artificially limit step count to prevent abandonment. Depth serves accuracy.
+
+#### Question categories (to be configured in admin — see Section 11)
+
+The following are the types of questions the flow should support. Exact wording, order, and branching are admin-configurable:
+
+1. **Who is this session for?** (e.g., just me, me + partner, family, group, other)
+2. **How many people?** (number or range input)
+3. **What's the occasion?** (e.g., milestone birthday, anniversary, maternity, engagement, casual portraits, other)
+4. **Where are you thinking?** (e.g., outdoor natural, urban, studio, at home, flexible/open)
+5. **Rough budget?** (range selector — communicate that all budgets get a honest answer)
+6. **Style preference?** (e.g., candid/documentary, directed/posed, mix of both — optionally with visual examples)
+7. **How many photos do you want to walk away with?** (a range or rough expectation)
+8. **Is there anything about your idea that doesn't fit the above?** (open text — captures “special requests” and non-standard situations)
+9. _(Additional questions to be defined and ordered in admin)_
+
+#### Interaction model
+
+- **Step-by-step presentation**: questions appear one or two at a time, with clear forward/back navigation.
+- Answers can be: single-select chips, multi-select chips, number input, range slider, or short text.
+- Progress is shown (e.g., step indicator or subtle progress bar) but should not feel clinical.
+- The flow should feel calm and unhurried — consistent with the overall site tone.
+
+#### Recommendation output
+
+After completing the questionnaire, the user receives a **”here's what might work for you”** result — not a hard sell, but an honest suggestion.
+
+**Result screen includes:**
+
+- 1–3 recommended options (package + optional modifiers), ranked or clearly distinguished.
+- A brief **plain-language explanation** of why each option is suggested — especially important when the recommendation involves trade-offs (e.g., “Given your budget and the number of people, here's what I'd suggest — and here's where there's some give/take”).
+- Each recommendation shows:
+  - Package name + summary
+  - Suggested modifiers (add-ons or adjustments) and their effect on scope/price
+  - Trade-off note if applicable (e.g., fewer deliverables, shorter session time)
+- Users can optionally expand/click into the reasoning for a suggestion.
+
+**Actions on result screen:**
+
+- **Primary:** “Book this” — proceeds to `/book` with the recommended package + modifiers pre-filled.
+- **Secondary:** “Adjust in builder” — opens `/package-builder` seeded with the recommendation.
+- **Tertiary:** “Start over” — resets the questionnaire.
+
+#### State & navigation
+
+- Questionnaire answers are held in local component state (no persistence required for v1).
+- Back navigation within the questionnaire is supported (user can revise previous answers).
+- If user arrives with `?package=` param, the questionnaire can optionally pre-fill or skip certain steps and surface that package prominently in the result.
+
+---
+
+### Section 2 — Packages at a glance (secondary)
+
+- A **lighter version of the `/packages` page** — cards with enough info to recognize what each option is, but not the full detail of the dedicated packages page.
+- Intended for users who self-identify with a specific option and don't need the guided flow.
+- Each card includes: package name, one-line summary, starting price.
+- **Actions per card:**
+  - **”Inquire about this”** → goes to `/book?package={slug}` (bypasses questionnaire entirely)
+  - **”Customize in builder”** → goes to `/package-builder?package={slug}`
+- A “See full details” or “View all packages” link leads to `/packages`.
+
+---
+
+### Mobile layout
+
+- Questionnaire takes most of the viewport; one question visible at a time with clear navigation.
+- Result screen is a scrollable card set (not a table).
+- Packages at a glance: vertical stack below a clear visual separator.
+
+### Desktop layout
+
+- Questionnaire centered with generous margins; step layout with left/right nav or next button.
+- Result screen: up to 3 recommendation cards side by side.
+- Packages at a glance: 2–3 column card grid.
+
+### Open decisions (Inquire)
+
+- Exact question wording and ordering (to be finalized in admin config).
+- Whether to show a visual progress bar or step count.
+- Whether any questions support branching (e.g., skip budget question if “flexible” is selected).
+- Whether the recommendation result screen is a new visual step or a page transition.
+- How to handle the edge case where no packages are a good fit (result: friendly “reach out directly” message).
+
+---
+
+## 8.9 Book (`/book`) — Formal Booking Request
+
+> **New route** — not previously in requirements. This is the final step in every conversion path.
+
+### Purpose
+
+- The formal “send your request” page. All conversion flows eventually land here:
+  - Questionnaire result → Book this
+  - `/packages` → Inquire about this
+  - `/package-builder` → Proceed to booking
+  - Direct nav from header/footer CTA
+- Collects the user's contact info, date preference, and any remaining details.
+- Optionally accepts a deposit to confirm serious intent.
+
+### Tone
+
+- Warm and reassuring. The user has committed to reaching out — don't make it feel bureaucratic.
+- Confirmation state should feel like a handshake, not a ticket number.
+
+### Pre-fill behavior
+
+- Accepts query params (`?package=`, `?modifiers=`) from upstream flows to pre-populate the selected package/modifiers.
+- If arriving from the questionnaire result, the recommended package + modifiers are shown in a summary above the form.
+- If arriving without a pre-fill (e.g., direct nav), the form still works — user can describe their idea in the notes field.
+
+### Form fields (required)
+
+- **Name** (first + last, or full name — TBD)
+- **Email**
+- **Phone number**
+- **Preferred date** — calendar date picker (not time slots; date is a preference, not a confirmed booking)
+- **Additional details / notes** — open text field for anything not captured upstream (required if no upstream package context; optional if package is pre-filled)
+
+### Date selection behavior
+
+- Present a calendar UI.
+- Clearly communicate: **”Date requests are not final. I'll reach out to confirm availability and discuss details.”**
+- The calendar does not need to show real-time availability in v1 — it is a preference capture only.
+
+### Deposit (optional / future)
+
+- The page should be designed to accommodate a deposit step in a future iteration.
+- v1: no payment processing required. The form submission is the commitment signal.
+- _(Flag for later: deposit amount, payment provider, when to require it)_
+
+### Package summary panel
+
+- If a package is pre-filled, show a summary panel (placard-style):
+  - Package name
+  - Selected modifiers
+  - Estimated price (with “subject to confirmation” note)
+- This panel is read-only — link to builder if the user wants to change it.
 
 ### Desktop layout
 
 - Two-column:
   - Left: form
-  - Right: placard with next steps + what happens after submitting
-- Optional availability panel (if you want to show slots here)
+  - Right: package summary placard + “what happens next” note
+- “What happens next” note: brief, friendly — e.g., “I'll review your request and get back to you within 48 hours to confirm the date and discuss any details.”
 
 ### Mobile layout
 
-- Form first, then “what happens next” placard
+- Package summary (if present) at top.
+- Form below.
+- “What happens next” note below the submit button.
 
-### Form requirements
+### Confirmation state
 
-- Keep it short.
-- Friendly language.
-- Confirmation state feels reassuring, not transactional.
+- Full-page or inline confirmation — not just a toast.
+- Warm copy: acknowledges the submission, sets expectation for follow-up timeline.
+- CTA: “While you wait, explore the portfolio” or similar.
+
+### Open decisions (Book)
+
+- Whether to split name into first/last or keep as one field.
+- Exact copy for “what happens next.”
+- Whether to add deposit support in v1 or defer entirely.
+- Whether to allow time-of-day preference in addition to date.
+- Whether confirmation state is a new page (`/book/confirmation`) or an in-place transition.
 
 ---
 
-## 8.9 Contact
+## 8.10 Contact (`/contact`)
+
+### Desktop layout
+
+- Minimal: contact methods + social + location
+- Optional framed portrait/work image
+
+### Mobile layout
+
+- Stack + tap-friendly buttons
+
+### Note
+
+- `/contact` nav link currently exists but the page is not yet built.
+- Decide: redirect to `/inquire` (since that is the primary contact path), or build as a lightweight standalone page with direct contact methods (email, phone, socials).
+- _(Open decision: resolve before building)_
 
 ### Desktop layout
 
@@ -865,8 +1060,71 @@ Placards should be readable and consistent, but not overly chatty.
 3. Up/down swipe between galleries: include or not
 4. Degree of “tactile desk” vs “clean gallery”
 5. How often to show dates/locations on placards
-6. Whether "Sunrise" intro ships in v1
+6. Whether “Sunrise” intro ships in v1
 7. Whether crowd-sourced favourites ships in Q1
+8. `/contact` page: redirect to `/inquire` or standalone lightweight page?
+9. `/book` deposit: defer entirely, or design for it now and implement later?
+10. Questionnaire branching logic: flat sequence vs. conditional question paths?
+11. Recommendation algorithm complexity: hardcoded rules v1, admin-configurable weights v2?
+
+---
+
+# 11) Admin — Questionnaire & Recommendation Engine
+
+> This section describes the admin-side tooling needed to power the `/inquire` guided flow.
+
+## 11.1 Purpose
+
+The questionnaire on `/inquire` must be **configurable from the admin panel** — not hardcoded in the frontend. This allows question wording, order, response options, and the recommendation logic to be adjusted without code changes.
+
+## 11.2 Data model (proposed, needs schema design)
+
+### Question
+
+- `id`
+- `order` (display sequence)
+- `text` (the question prompt)
+- `type`: `single-select` | `multi-select` | `number` | `range` | `text`
+- `options` (array, for select types): each option has a `label` and a `value`
+- `isRequired`
+- `conditionalOn` (optional — only show this question if a prior answer matches a condition; enables branching)
+
+### Option → Package/Modifier Signal
+
+Each response option can carry **signals** that influence the recommendation:
+
+- `packageBoosts`: array of `{ packageId, weight }` — answers that make a package more likely to be recommended
+- `modifierSuggestions`: array of `{ modifierId, reason }` — answers that suggest specific add-ons
+- `tradeOffNote` (optional): a plain-language string that surfaces in the result when this answer creates a constraint (e.g., “Low budget + large group means fewer deliverables — I'll note that in the recommendation”)
+
+### Recommendation Rule
+
+- The engine scores each package based on the accumulated signals from all answers.
+- Top-scoring packages (up to 3) are surfaced in the result with the relevant modifier suggestions and trade-off notes.
+- Admin can set minimum thresholds or overrides (e.g., “always include Package X as an option regardless of score”).
+
+## 11.3 Admin UI requirements (new pages needed)
+
+- **Questionnaire editor**: list, create, reorder, edit, and delete questions.
+- **Option editor**: per question, manage response options and their package/modifier signals.
+- **Recommendation preview**: a dry-run tool to simulate the flow with sample answers and see what recommendation would be generated.
+- _(Design for these pages is deferred — requirements only for now)_
+
+## 11.4 API routes needed (new)
+
+- `GET /api/questionnaire` — returns the full ordered question set (public, used by `/inquire`)
+- `POST /api/questionnaire/recommend` — accepts a completed answer payload, returns ranked package recommendations with modifiers and trade-off notes
+- `GET /api/admin/questionnaire` — admin: full question list with signals
+- `POST /api/admin/questionnaire/questions` — create a question
+- `PUT /api/admin/questionnaire/questions/:id` — update a question
+- `DELETE /api/admin/questionnaire/questions/:id` — delete
+- `PUT /api/admin/questionnaire/questions/reorder` — reorder
+
+## 11.5 Open decisions (Admin / Questionnaire)
+
+- Whether recommendation scoring is purely additive weights or supports exclusion rules (e.g., “if budget < X, never recommend Package Y”)
+- Whether the admin can write free-text “recommendation rationale” templates or if those are auto-generated from signals
+- Whether the questionnaire supports branching in v1 or starts as a flat sequence
 
 ---
 
