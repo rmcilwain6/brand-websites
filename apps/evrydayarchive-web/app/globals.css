@@ -12,6 +12,11 @@
     --color-ink-muted: #2b2b2b;
     --color-ink-faint: rgba(43, 35, 26, 0.45);
     --color-border: rgba(43, 35, 26, 0.12);
+
+    /* Scrollbar — warm-tinted, matches the paper canvas palette */
+    --scrollbar-track: rgba(43, 35, 26, 0.05);
+    --scrollbar-thumb: rgba(43, 35, 26, 0.18);
+    --scrollbar-thumb-hover: rgba(43, 35, 26, 0.32);
   }
 
   /* ─── Dark mode tokens ──────────────────────────────────────────────────── */
@@ -23,6 +28,11 @@
     --color-ink-muted: #faf6ef;
     --color-ink-faint: rgba(250, 246, 239, 0.45);
     --color-border: rgba(250, 246, 239, 0.1);
+
+    /* Scrollbar — lighter warm tint for dark canvas */
+    --scrollbar-track: rgba(250, 246, 239, 0.04);
+    --scrollbar-thumb: rgba(250, 246, 239, 0.16);
+    --scrollbar-thumb-hover: rgba(250, 246, 239, 0.3);
   }
 
   html {
@@ -82,4 +92,42 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+}
+
+/*
+ * ── Global custom scrollbar ─────────────────────────────────────────────────
+ * Thin, warm-tinted scrollbar consistent with the paper canvas aesthetic.
+ * Applies site-wide. The .scrollbar-none utility (above) still overrides
+ * these for carousels and other intentionally hidden scroll areas.
+ */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* WebKit / Blink / Edge */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  transition: background 140ms ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
