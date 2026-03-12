@@ -67,7 +67,10 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
           <div className="columns-1 gap-8 sm:columns-2">
             {gallery.images.map((image, index) => (
               <figure key={image.id} className="mb-8 break-inside-avoid">
-                <Frame rotateDeg={index % 3 === 0 ? -0.4 : index % 3 === 1 ? 0 : 0.4}>
+                <Frame
+                  variant="craft"
+                  rotateDeg={index % 3 === 0 ? -0.4 : index % 3 === 1 ? 0 : 0.4}
+                >
                   <div className="relative aspect-[3/2] w-full overflow-hidden rounded-sm bg-sun">
                     <Image
                       src={image.src}
