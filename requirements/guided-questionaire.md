@@ -352,38 +352,19 @@ When user completes questionnaire or reaches a checkpoint, the following data st
 
 ---
 
-## CMS Schema Requirements
+## CMS / Admin Configurability — Decision
 
-To make this system flexible without code changes, the following should be configurable via CMS:
+**Decision (March 2026):** Questions, options, and recommendation logic are **hardcoded** in the
+application source code and business logic. There is no CMS-configurable question or pricing-rules
+system. If the question set, option copy, or recommendation mapping needs to change, the website
+will be redeployed.
 
-### Base Packages Table
+**Rationale:** The overhead of building and maintaining a CMS schema for questions, modifiers, and
+pricing rules is not justified at this stage. The question set is stable, the business logic is
+well-understood, and redeployment is fast enough to accommodate changes.
 
-- `package_id` (string, unique)
-- `package_name` (string)
-- `base_price` (number)
-- `default_session_length` (number, minutes)
-- `default_image_count` (number)
-- `default_location_count` (number)
-- `default_edit_level` (string: "light" or "full")
-- `description` (text)
-- `active` (boolean)
-
-### Modifiers Table
-
-- `modifier_id` (string, unique)
-- `modifier_name` (string)
-- `modifier_type` (string: "additional_images", "time_extension", "location", "edit_level", "discount")
-- `unit_price` (number, can be negative for discounts)
-- `rules` (JSON, for auto-adjustment logic)
-- `active` (boolean)
-
-### Pricing Rules Table
-
-- `rule_id` (string, unique)
-- `condition` (string, e.g., "locations > 1")
-- `action` (string, e.g., "session_length = 90")
-- `price_impact` (number, if applicable)
-- `active` (boolean)
+The original CMS schema proposal (Base Packages Table, Modifiers Table, Pricing Rules Table) is
+**not being implemented**.
 
 ---
 
