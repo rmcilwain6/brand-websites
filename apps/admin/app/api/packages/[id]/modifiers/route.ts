@@ -20,7 +20,7 @@ export const GET = async (
 
   const modifiers = await prisma.packageModifier.findMany({
     where: { packageId: params.id },
-    orderBy: { createdAt: 'asc' }
+    orderBy: { sortOrder: 'asc' }
   });
 
   return jsonOk(modifiers);
