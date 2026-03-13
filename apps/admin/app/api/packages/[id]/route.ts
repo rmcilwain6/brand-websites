@@ -16,7 +16,7 @@ export const GET = async (
     where: { id: params.id },
     include: {
       modifiers: {
-        orderBy: { createdAt: 'asc' }
+        orderBy: { sortOrder: 'asc' }
       }
     }
   });
@@ -49,7 +49,7 @@ export const PUT = async (
       data: result.data,
       include: {
         modifiers: {
-          orderBy: { createdAt: 'asc' }
+          orderBy: { sortOrder: 'asc' }
         }
       }
     });

@@ -4,10 +4,10 @@ export const GET = async (): Promise<Response> => {
   try {
     const packages = await prisma.package.findMany({
       where: { status: 'ACTIVE' },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { sortOrder: 'asc' },
       include: {
         modifiers: {
-          orderBy: { createdAt: 'asc' }
+          orderBy: { sortOrder: 'asc' }
         }
       }
     });
@@ -16,14 +16,23 @@ export const GET = async (): Promise<Response> => {
       id: pkg.id,
       slug: pkg.slug,
       name: pkg.name,
+      summaryLine: pkg.summaryLine,
       description: pkg.description,
+      durationMinutes: pkg.durationMinutes,
+      deliverables: pkg.deliverables,
+      notes: pkg.notes,
       basePriceCents: pkg.basePriceCents,
+      sortOrder: pkg.sortOrder,
       modifiers: pkg.modifiers.map((m) => ({
         id: m.id,
         name: m.name,
         description: m.description,
+        type: m.type,
+        isIncluded: m.isIncluded,
+        isRequired: m.isRequired,
         priceDeltaCents: m.priceDeltaCents,
-        isRequired: m.isRequired
+        config: m.config,
+        sortOrder: m.sortOrder
       }))
     }));
 

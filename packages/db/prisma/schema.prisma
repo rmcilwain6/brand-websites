@@ -19,6 +19,13 @@ enum PackageStatus {
   ARCHIVED
 }
 
+enum ModifierType {
+  CHECKBOX
+  TOGGLE
+  SLIDER
+  INCREMENTER
+}
+
 enum TimeSlotStatus {
   AVAILABLE
   HELD
@@ -90,8 +97,13 @@ model Package {
   id              String            @id @default(cuid())
   slug            String            @unique
   name            String
+  summaryLine     String?
   description     String?
+  durationMinutes Int?
+  deliverables    String[]
+  notes           String?
   basePriceCents  Int?
+  sortOrder       Int               @default(0)
   status          PackageStatus     @default(DRAFT)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -100,15 +112,19 @@ model Package {
 }
 
 model PackageModifier {
-  id              String   @id @default(cuid())
+  id              String       @id @default(cuid())
   packageId       String
   name            String
   description     String?
+  type            ModifierType @default(CHECKBOX)
+  isIncluded      Boolean      @default(false)
+  isRequired      Boolean      @default(false)
   priceDeltaCents Int?
-  isRequired      Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  package         Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  config          Json?
+  sortOrder       Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  package         Package      @relation(fields: [packageId], references: [id], onDelete: Cascade)
 
   @@index([packageId])
   @@unique([packageId, name])

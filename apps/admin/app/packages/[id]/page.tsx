@@ -12,7 +12,7 @@ const PackageDetailPage = async ({ params }: { params: { id: string } }) => {
     where: { id: params.id },
     include: {
       modifiers: {
-        orderBy: { createdAt: 'asc' }
+        orderBy: { sortOrder: 'asc' }
       }
     }
   });
