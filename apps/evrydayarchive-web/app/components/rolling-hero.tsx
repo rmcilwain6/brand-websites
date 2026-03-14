@@ -1,8 +1,11 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
+
 import Link from 'next/link';
 
 import { cn } from '../lib/cn';
+import { useFeatureFlag } from '../lib/use-feature-flag';
 import { type MatStyle, Frame } from './frame';
 import { Placard } from './placard';
 
@@ -45,7 +48,7 @@ const PLACARD_POS: Record<PlacardPosition, string> = {
 
 type BlockPhoto = {
   aspect: string;
-  /** px — inner photo height (mat adds 16px/side on lg = +32px total to frame) */
+  /** px — inner photo height (mat adds 16px/side = +32px total to frame) */
   photoH: number;
   matStyle: MatStyle;
   /** px from block top — top-left of the FRAME */
@@ -58,8 +61,8 @@ type BlockPhoto = {
 
 type WallBlock = {
   type: 'block';
+  /** locked px value injected by buildSequence */
   width: number;
-  /** px — fixed margin-left before the block */
   ml: number;
   items: BlockPhoto[];
 };
@@ -73,37 +76,63 @@ type WallText = {
   body: string;
   ctas: Cta[];
   mt: number;
-  /** number (px) or CSS string e.g. 'calc(100vw - 870px)' */
-  ml: number | string;
+  ml: number;
 };
 
 type WallSpacer = {
   type: 'spacer';
-  /** CSS width string e.g. 'calc(100vw - 980px)' */
-  width: string;
+  width: number;
 };
 
 type WallItem = WallBlock | WallText | WallSpacer;
 
-// ── Viewport-aware spacing maths ──────────────────────────────────────────────
-// Target: on page-load, one CTA panel sits on the left and one block fills the right.
-//         The next CTA only enters from the right as the current CTA exits left.
-//
-// Let T = TEXT_A end x = 80 (ml) + 300 (width) = 380
-//         BLOCK_A end x = 380 + 160 (ml) + 620 (width) = 1160
-// → TEXT_B.ml = 100vw + T − BLOCK_A.end = calc(100vw − 780px)
-//
-// Spacer after BLOCK_B synchronises TEXT_A re-entry with TEXT_B exit:
-// → SPACER.width = calc(100vw − 920px)
+// ── Layout constants ───────────────────────────────────────────────────────────
+/** Width of each CTA text panel in px. */
+const TEXT_PANEL_W = 300;
 
-// ── Wall data ─────────────────────────────────────────────────────────────────
-// Section min-height ≈ 700px (lg viewport 1024×768 − 64px header).
-// Frame mat on lg = p-4 (16px/side), so frameH = photoH + 32, frameW = photoH × aspect + 32.
-// Items near the bottom intentionally clip at the section edge for drama.
+/**
+ * Site header height in px (4rem at 16px base).
+ * Used to compute the locked section height on mount.
+ */
+const HEADER_H = 64;
+
+/**
+ * Minimum section height in px.
+ * Derived from sm tier: portrait bottom = top(146) + frameH(412) = 558px, plus 22px breathing room.
+ * Also comfortably contains the text panel: mt(160) + height(320) = 480px.
+ */
+const MIN_SECTION_H = 580;
+
+/**
+ * Left margin applied to TEXT_B and TEXT_C panels.
+ * Prevents any right-edge frame in the preceding block from feeling flush against the text.
+ */
+const TEXT_LEAD_ML = 48;
+
+// ── Tier system ───────────────────────────────────────────────────────────────
+// Breakpoints are in terms of block width (viewport width − TEXT_PANEL_W).
+// Each tier builds on the previous — layouts gain frames as space grows.
+// Tier is determined once on mount from the locked blockW and never changes.
+//
+//   sm  blockW < 850    →  viewport ~< 1150px
+//   md  blockW < 1150   →  viewport ~< 1450px
+//   lg  blockW < 1500   →  viewport ~< 1800px
+//   xl  blockW ≥ 1500   →  viewport  ≥ 1800px
+
+type Tier = 'sm' | 'md' | 'lg' | 'xl';
+
+function getTier(blockW: number): Tier {
+  if (blockW >= 1500) return 'xl';
+  if (blockW >= 1150) return 'lg';
+  if (blockW >= 850) return 'md';
+  return 'sm';
+}
+
+// ── Wall text panels ──────────────────────────────────────────────────────────
 
 const TEXT_A: WallText = {
   type: 'text',
-  eyebrow: 'Ottawa–Gatineau · Photography',
+  eyebrow: 'Kamloops & British Columbia · Photography',
   heading: 'Quiet days,\ncarefully\ndocumented.',
   body: 'A studio practice rooted in intention — capturing everyday life with honesty and care.',
   ctas: [
@@ -112,81 +141,6 @@ const TEXT_A: WallText = {
   ],
   mt: 160,
   ml: 80
-};
-
-// Block A — portrait anchor (2/3, photoH=380)
-// frameH=412, frameW=285 → x=200–485, y=80–492
-const BLOCK_A: WallBlock = {
-  type: 'block',
-  width: 620,
-  ml: 160,
-  items: [
-    // Primary — large portrait, upper-centre of wall (frameH=412, frameW=285 → x=200–485, y=80–492)
-    {
-      aspect: '2/3',
-      photoH: 380,
-      matStyle: 'warm',
-      top: 80,
-      left: 200,
-      placardPosition: 'bottom-left',
-      placard: { title: 'Family Portrait', subtitle: 'Ottawa, 2024' }
-    },
-
-    // Upper-left small portrait (frameH=192, frameW=139 → x=0–139, y=50–242)
-    {
-      aspect: '2/3',
-      photoH: 160,
-      matStyle: 'neutral',
-      top: 50,
-      left: 0,
-      placardPosition: 'bottom-left',
-      placard: { title: 'At Home', subtitle: 'Centretown' }
-    },
-
-    // Mid-left medium portrait (frameH=232, frameW=192 → x=0–192, y=320–552)
-    {
-      aspect: '4/5',
-      photoH: 200,
-      matStyle: 'deep',
-      top: 320,
-      left: 0,
-      placardPosition: 'bottom-left',
-      placard: { title: 'Childhood', subtitle: 'Rockcliffe Park' }
-    },
-
-    // Upper-right small portrait (frameH=172, frameW=125 → x=490–615, y=50–222)
-    {
-      aspect: '2/3',
-      photoH: 140,
-      matStyle: 'neutral',
-      top: 50,
-      left: 490,
-      placardPosition: 'bottom-left',
-      placard: { title: 'Street Portraits', subtitle: 'Lower Town' }
-    },
-
-    // Lower-right portrait — near bottom (frameH=212, frameW=176 → x=430–606, y=500–712)
-    {
-      aspect: '4/5',
-      photoH: 180,
-      matStyle: 'warm',
-      top: 500,
-      left: 430,
-      placardPosition: 'top-left',
-      placard: { title: 'Couple Session', subtitle: 'ByWard Market' }
-    },
-
-    // Lower-left landscape — clips at section edge (frameH=182, frameW=257 → x=150–407, y=555–737)
-    {
-      aspect: '3/2',
-      photoH: 150,
-      matStyle: 'neutral',
-      top: 555,
-      left: 150,
-      placardPosition: 'top-center',
-      placard: { title: 'Golden Hour', subtitle: 'Gatineau Park' }
-    }
-  ]
 };
 
 const TEXT_B: WallText = {
@@ -199,136 +153,280 @@ const TEXT_B: WallText = {
     { label: 'Our process', href: '/process', variant: 'secondary' }
   ],
   mt: 130,
-  // Viewport-aware: TEXT_B enters from right exactly as TEXT_A exits left.
-  ml: 'calc(100vw - 780px)'
+  ml: TEXT_LEAD_ML
 };
 
-// Block B — landscape anchor (3/2, photoH=250) across the top, portraits scattered below
-// frameH=282, frameW=405 → x=30–435, y=60–342
-const BLOCK_B: WallBlock = {
-  type: 'block',
-  width: 680,
-  ml: 160,
-  items: [
-    // Primary — wide landscape across upper wall (frameH=282, frameW=405 → x=30–435, y=60–342)
-    {
-      aspect: '3/2',
-      photoH: 250,
-      matStyle: 'neutral',
-      top: 60,
-      left: 30,
-      placardPosition: 'bottom-left',
-      placard: { title: 'Morning Light', subtitle: 'Rideau River' }
-    },
+const TEXT_C: WallText = {
+  type: 'text',
+  eyebrow: 'Real Moments · Real Life',
+  heading: 'Made for\nyour\neveryday.',
+  body: "No big productions, no forced smiles — just honest images of the life you're actually living.",
+  ctas: [
+    { label: 'Our process', href: '/process', variant: 'primary' },
+    { label: 'Read our FAQ', href: '/faq', variant: 'secondary' }
+  ],
+  mt: 155,
+  ml: TEXT_LEAD_ML
+};
 
-    // Upper-right portrait — right of primary (frameH=187, frameW=135 → x=510–645, y=40–227)
-    {
-      aspect: '2/3',
-      photoH: 155,
-      matStyle: 'warm',
-      top: 40,
-      left: 510,
-      placardPosition: 'bottom-left',
-      placard: { title: 'An Afternoon', subtitle: 'Glebe' }
-    },
+// ── Frame item definitions ─────────────────────────────────────────────────────
+// Items are defined per-tier. Each tier should be a superset of the tier below it
+// (same frames, potentially repositioned, plus additional frames for the extra space).
+//
+// frameH = photoH + 32, frameW = round(photoH × aspectW/aspectH) + 32  (mat p-4 = 16px/side)
+// Coordinates are relative to the block's top-left corner.
+// Items near the edges intentionally clip for drama — that's fine.
 
-    // Mid-right portrait — below upper-right (frameH=222, frameW=159 → x=515–674, y=270–492)
-    {
-      aspect: '2/3',
-      photoH: 190,
-      matStyle: 'deep',
-      top: 270,
-      left: 515,
-      placardPosition: 'bottom-left',
-      placard: { title: 'The Everyday', subtitle: 'Ottawa–Gatineau' }
-    },
+// sm tier: one primary portrait centred in the block.
+// blockW midpoint ~786px, sectionH ~704px.
+// frameH = photoH + 32, frameW = round(photoH × aspectW/aspectH) + 32
+// Primary portrait (photoH=380, 2/3): frameW=285, frameH=412
+//   left = (786 − 285) / 2 ≈ 250,  top = (704 − 412) / 2 ≈ 146
 
-    // Lower-left medium portrait (frameH=222, frameW=184 → x=0–184, y=380–602)
+const BLOCK_A_ITEMS: Record<Tier, BlockPhoto[]> = {
+  sm: [
+    // Primary portrait (frameH=412, frameW=336)
     {
       aspect: '4/5',
-      photoH: 190,
-      matStyle: 'deep',
-      top: 380,
-      left: 0,
-      placardPosition: 'bottom-left',
-      placard: { title: 'Neighbourhood Walk', subtitle: 'Westboro' }
+      photoH: 380,
+      matStyle: 'warm',
+      top: 90,
+      left: 300,
+      placardPosition: 'right-top',
+      placard: { title: 'Family Portrait', subtitle: 'Kamloops, 2024' }
     },
 
-    // Lower-centre landscape (frameH=182, frameW=257 → x=190–447, y=380–562)
-    {
-      aspect: '3/2',
-      photoH: 150,
-      matStyle: 'neutral',
-      top: 380,
-      left: 190,
-      placardPosition: 'top-center',
-      placard: { title: 'Summer Portraits', subtitle: "Mooney's Bay" }
-    },
-
-    // Lower-right portrait — clips at bottom (frameH=177, frameW=129 → x=490–619, y=530–707)
+    // Upper-left small portrait (frameH=212, frameW=152)
     {
       aspect: '2/3',
-      photoH: 145,
-      matStyle: 'warm',
-      top: 530,
-      left: 490,
-      placardPosition: 'top-left',
-      placard: { title: 'Winter Session', subtitle: 'Gatineau Park' }
+      photoH: 240,
+      matStyle: 'neutral',
+      top: 55,
+      left: 70,
+      placardPosition: 'bottom-left',
+      placard: { title: 'At Home', subtitle: 'Kamloops' }
+    },
+
+    // Lower-right small landscape (frameH=172, frameW=242)
+    {
+      aspect: '3/2',
+      photoH: 160,
+      matStyle: 'deep',
+      top: 540,
+      left: 250,
+      placardPosition: 'right-middle',
+      placard: { title: 'Golden Hour', subtitle: 'Thompson Valley' }
     }
-  ]
+  ],
+  md: [],
+  lg: [],
+  xl: []
 };
 
-// Spacer — creates the gap between BLOCK_B and the repeat of TEXT_A so that
-// TEXT_A re-enters from the right as TEXT_B exits to the left.
-const SPACER: WallSpacer = {
-  type: 'spacer',
-  width: 'calc(100vw - 920px)'
+const BLOCK_B_ITEMS: Record<Tier, BlockPhoto[]> = {
+  sm: [
+    // Primary landscape (frameH=332, frameW=482)
+    {
+      aspect: '3/2',
+      photoH: 300,
+      matStyle: 'neutral',
+      top: 300,
+      left: 260,
+      placardPosition: 'bottom-right',
+      placard: { title: 'Morning Light', subtitle: 'Sun Peaks' }
+    },
+
+    // Upper-left portrait (frameH=232, frameW=165)
+    {
+      aspect: '2/3',
+      photoH: 200,
+      matStyle: 'deep',
+      top: 160,
+      left: 65,
+      placardPosition: 'bottom-right',
+      placard: { title: 'Neighbourhood Walk', subtitle: 'Westside' }
+    },
+
+    // Lower-right small portrait (frameH=182, frameW=132)
+    {
+      aspect: '3/2',
+      photoH: 130,
+      matStyle: 'warm',
+      top: 110,
+      left: 260,
+      placardPosition: 'right-bottom',
+      placard: { title: 'Winter Session', subtitle: 'Sun Peaks' }
+    }
+  ],
+  md: [],
+  lg: [],
+  xl: []
 };
 
-const WALL_SEQUENCE: WallItem[] = [TEXT_A, BLOCK_A, TEXT_B, BLOCK_B, SPACER];
+const BLOCK_C_ITEMS: Record<Tier, BlockPhoto[]> = {
+  sm: [
+    // Primary portrait (frameH=412, frameW=285)
+    {
+      aspect: '2/3',
+      photoH: 450,
+      matStyle: 'deep',
+      top: 146,
+      left: 500,
+      placardPosition: 'bottom-center',
+      placard: { title: 'An Afternoon', subtitle: 'Thompson River' }
+    },
+
+    // Upper-left medium portrait (frameH=232, frameW=192)
+    {
+      aspect: '4/5',
+      photoH: 200,
+      matStyle: 'warm',
+      top: 60,
+      left: 180,
+      placardPosition: 'right-top',
+      placard: { title: 'Childhood', subtitle: 'Kamloops' }
+    },
+
+    // Lower-centre landscape (frameH=172, frameW=242)
+    {
+      aspect: '3/2',
+      photoH: 170,
+      matStyle: 'neutral',
+      top: 400,
+      left: 180,
+      placardPosition: 'top-right',
+      placard: { title: 'Summer Evening', subtitle: 'Riverside Park' }
+    }
+  ],
+  md: [],
+  lg: [],
+  xl: []
+};
+
+// ── Wall sequence ─────────────────────────────────────────────────────────────
+// Built once on mount from the locked blockW. Never regenerated.
+
+function buildSequence(blockW: number, tier: Tier): WallItem[] {
+  return [
+    { type: 'spacer', width: 120 },
+    TEXT_A,
+    { type: 'block', width: blockW, ml: 0, items: BLOCK_A_ITEMS[tier] },
+    TEXT_B,
+    { type: 'block', width: blockW, ml: 0, items: BLOCK_B_ITEMS[tier] },
+    TEXT_C,
+    { type: 'block', width: blockW, ml: 0, items: BLOCK_C_ITEMS[tier] },
+    { type: 'spacer', width: 60 }
+  ];
+}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export const RollingHero = () => (
-  <section
-    className="relative overflow-hidden"
-    style={{
-      height: 'calc(100vh - 4rem)',
-      maskImage: 'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)',
-      WebkitMaskImage:
-        'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)'
-    }}
-  >
-    {/* Accessible content for screen readers / keyboard nav */}
-    <div className="sr-only">
-      <h1>Quiet days, carefully documented.</h1>
-      <p>A studio practice rooted in intention — capturing everyday life with honesty and care.</p>
-      <Link href="/inquire">Inquire</Link>
-      <Link href="/packages">Explore packages</Link>
-      <Link href="/portfolio">View portfolio</Link>
-    </div>
+// Marquee duration scales with sequence length (3 panels + 3 blocks).
+const MARQUEE_DURATION = '130s';
 
-    {/* Marquee track — doubled for seamless loop */}
-    <div
-      aria-hidden="true"
-      className="flex items-start animate-marquee"
-      style={
-        {
+const MASK = 'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)';
+
+export const RollingHero = () => {
+  // ROLLING_HERO_DRAG switches to drag/touch-scroll mode.
+  // Default (false) = auto-rolling marquee.
+  // Toggle in devtools: window.__flags.enable('ROLLING_HERO_DRAG')
+  const dragMode = useFeatureFlag('ROLLING_HERO_DRAG');
+
+  // Locked on mount — never changes for the lifetime of this page view.
+  // If the user resizes/zooms after load, the hero dimensions stay fixed;
+  // a shorter window just makes the hero scroll vertically like any other content.
+  const [locked, setLocked] = useState<{
+    blockW: number;
+    sectionH: number;
+    tier: Tier;
+    sequence: WallItem[];
+  } | null>(null);
+
+  useEffect(() => {
+    const blockW = window.innerWidth - TEXT_PANEL_W;
+    const sectionH = Math.max(window.innerHeight - HEADER_H, MIN_SECTION_H);
+    const tier = getTier(blockW);
+    setLocked({ blockW, sectionH, tier, sequence: buildSequence(blockW, tier) });
+  }, []); // empty deps — intentionally runs once only
+
+  // Drag-mode state (only active when dragMode = true)
+  const scrollRef = useRef<HTMLElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const startX = useRef(0);
+  const scrollLeftRef = useRef(0);
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    setDragging(true);
+    startX.current = e.pageX;
+    scrollLeftRef.current = scrollRef.current?.scrollLeft ?? 0;
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!dragging || !scrollRef.current) return;
+    e.preventDefault();
+    scrollRef.current.scrollLeft = scrollLeftRef.current - (e.pageX - startX.current);
+  };
+
+  const stopDrag = () => setDragging(false);
+
+  // Return null pre-mount — avoids SSR/hydration mismatch.
+  // Flash is imperceptible: desktop-only, behind a feature flag.
+  if (!locked) return null;
+
+  // Rolling mode doubles the sequence for the seamless translateX(-50%) loop.
+  const trackItems = dragMode ? locked.sequence : [...locked.sequence, ...locked.sequence];
+
+  return (
+    <section
+      ref={dragMode ? scrollRef : undefined}
+      className={cn(
+        'relative',
+        dragMode ? 'scrollbar-none overflow-x-scroll overflow-y-hidden' : 'overflow-hidden'
+      )}
+      style={{
+        height: locked.sectionH,
+        cursor: dragMode ? (dragging ? 'grabbing' : 'grab') : undefined,
+        maskImage: MASK,
+        WebkitMaskImage: MASK
+      }}
+      {...(dragMode && {
+        onMouseDown,
+        onMouseMove,
+        onMouseUp: stopDrag,
+        onMouseLeave: stopDrag
+      })}
+    >
+      {/* Accessible content for screen readers / keyboard nav */}
+      <div className="sr-only">
+        <h1>Quiet days, carefully documented.</h1>
+        <p>
+          A studio practice rooted in intention — capturing everyday life with honesty and care.
+        </p>
+        <Link href="/inquire">Inquire</Link>
+        <Link href="/packages">Explore packages</Link>
+        <Link href="/portfolio">View portfolio</Link>
+      </div>
+
+      {/* Wall track */}
+      <div
+        aria-hidden="true"
+        className={cn('flex items-start', !dragMode && 'animate-marquee')}
+        style={{
           width: 'max-content',
           height: '100%',
-          '--marquee-duration': '100s'
-        } as React.CSSProperties
-      }
-    >
-      {[...WALL_SEQUENCE, ...WALL_SEQUENCE].map((item, i) => {
-        if (item.type === 'block') return <WallBlockEl key={i} block={item} />;
-        if (item.type === 'text') return <WallTextEl key={i} item={item} />;
-        // spacer
-        return <div key={i} style={{ flexShrink: 0, width: item.width }} />;
-      })}
-    </div>
-  </section>
-);
+          userSelect: 'none',
+          ...(!dragMode && ({ '--marquee-duration': MARQUEE_DURATION } as React.CSSProperties))
+        }}
+      >
+        {trackItems.map((item, i) => {
+          if (item.type === 'block') return <WallBlockEl key={i} block={item} />;
+          if (item.type === 'text') return <WallTextEl key={i} item={item} />;
+          return <div key={i} style={{ flexShrink: 0, width: item.width }} />;
+        })}
+      </div>
+    </section>
+  );
+};
 
 // ── Block ─────────────────────────────────────────────────────────────────────
 
@@ -364,8 +462,8 @@ const WallPhotoEl = ({ item }: { item: BlockPhoto }) => (
 
 const WallTextEl = ({ item }: { item: WallText }) => (
   <div
-    className="flex-none flex flex-col justify-center gap-5 w-[300px]"
-    style={{ marginTop: item.mt, marginLeft: item.ml, height: 320 }}
+    className="flex-none flex flex-col justify-center gap-5"
+    style={{ width: TEXT_PANEL_W, marginTop: item.mt, marginLeft: item.ml, height: 320 }}
   >
     <div>
       <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">

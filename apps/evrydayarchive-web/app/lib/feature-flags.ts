@@ -17,6 +17,11 @@ export const FEATURE_FLAGS = {
   ROLLING_HERO: {
     enabled: false,
     description: 'Rolling gallery wall hero on the homepage (replaces single-image hero)'
+  },
+  ROLLING_HERO_DRAG: {
+    enabled: false,
+    description:
+      'Switches rolling hero from auto-scroll to drag/touch-scroll mode (dev/experimental)'
   }
 } as const satisfies Record<string, { enabled: boolean; description: string }>;
 
