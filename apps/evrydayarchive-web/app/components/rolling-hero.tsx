@@ -98,16 +98,31 @@ const HEADER_H = 64;
 
 /**
  * Minimum section height in px.
- * Derived from sm tier: portrait bottom = top(146) + frameH(412) = 558px, plus 22px breathing room.
- * Also comfortably contains the text panel: mt(160) + height(320) = 480px.
+ * Derived from the deepest frame in shortH (compact) mode:
+ * BLOCK_A lower-right landscape — scaled top(443) + scaled frameH(163) = 606px, plus 24px breathing room.
+ * Also ensures shortH always activates on screens that need it (630 < SHORT_H_THRESHOLD 680).
  */
-const MIN_SECTION_H = 580;
+const MIN_SECTION_H = 630;
 
 /**
  * Left margin applied to TEXT_B and TEXT_C panels.
  * Prevents any right-edge frame in the preceding block from feeling flush against the text.
  */
 const TEXT_LEAD_ML = 48;
+
+/**
+ * Section height threshold below which the compact (shortH) layout activates.
+ * Laptops with ~720–768px viewport height land at 656–704px section height — below this line.
+ * MacBook Air (900px viewport) and taller screens land above it.
+ */
+const SHORT_H_THRESHOLD = 680;
+
+/**
+ * Scale factor applied to both photoH and top when shortH is true.
+ * Shrinks frames ~18% and compresses vertical positions proportionally,
+ * preserving all relative alignments between frames.
+ */
+const COMPACT_H_SCALE = 0.82;
 
 // ── Tier system ───────────────────────────────────────────────────────────────
 // Breakpoints are in terms of block width (viewport width − TEXT_PANEL_W).
@@ -183,124 +198,254 @@ const TEXT_C: WallText = {
 // Primary portrait (photoH=380, 2/3): frameW=285, frameH=412
 //   left = (786 − 285) / 2 ≈ 250,  top = (704 − 412) / 2 ≈ 146
 
+const BLOCK_A_SM: BlockPhoto[] = [
+  // Primary portrait (frameH=412, frameW=336)
+  {
+    aspect: '4/5',
+    photoH: 380,
+    matStyle: 'warm',
+    top: 90,
+    left: 300,
+    placardPosition: 'right-top',
+    placard: { title: 'Family Portrait', subtitle: 'Kamloops, 2024' }
+  },
+
+  // Upper-left small portrait (frameH=272, frameW=192)
+  {
+    aspect: '2/3',
+    photoH: 240,
+    matStyle: 'neutral',
+    top: 55,
+    left: 70,
+    placardPosition: 'bottom-left',
+    placard: { title: 'At Home', subtitle: 'Kamloops' }
+  },
+
+  // Lower-right small landscape (frameH=192, frameW=272)
+  {
+    aspect: '3/2',
+    photoH: 160,
+    matStyle: 'deep',
+    top: 540,
+    left: 250,
+    placardPosition: 'right-middle',
+    placard: { title: 'Golden Hour', subtitle: 'Thompson Valley' }
+  }
+];
+
+const BLOCK_A_MD: BlockPhoto[] = [
+  // sm items re-centred — left shifted +100px for wider block
+  ...BLOCK_A_SM.map((item) => ({ ...item, left: item.left + 200 })),
+
+  // ── md extras ────────────────────────────────────────────────────
+  // Upper-right small landscape (frameH=172, frameW=242)
+  {
+    aspect: '3/2',
+    photoH: 200,
+    matStyle: 'neutral',
+    top: 180,
+    left: 860,
+    placardPosition: 'bottom-right',
+    placard: { title: 'Park Afternoon', subtitle: 'Riverside Drive' }
+  },
+
+  // Lower-left small portrait (frameH=152, frameW=112)
+  {
+    aspect: '2/3',
+    photoH: 200,
+    matStyle: 'warm',
+    top: 420,
+    left: 180,
+    placardPosition: 'bottom-left',
+    placard: { title: 'Backyard Sessions', subtitle: 'Kamloops' }
+  },
+
+  {
+    aspect: '2/3',
+    photoH: 100,
+    matStyle: 'warm',
+    top: 550,
+    left: 880,
+    placardPosition: 'right-middle',
+    placard: { title: 'Backyard Sessions', subtitle: 'Kamloops' }
+  }
+];
+
+const BLOCK_A_LG: BlockPhoto[] = [
+  // md items — adjust as needed for wider block, then add lg extras below
+  ...BLOCK_A_MD
+];
+
+const BLOCK_A_XL: BlockPhoto[] = [
+  // lg items — adjust as needed for wider block, then add xl extras below
+  ...BLOCK_A_LG
+];
+
 const BLOCK_A_ITEMS: Record<Tier, BlockPhoto[]> = {
-  sm: [
-    // Primary portrait (frameH=412, frameW=336)
-    {
-      aspect: '4/5',
-      photoH: 380,
-      matStyle: 'warm',
-      top: 90,
-      left: 300,
-      placardPosition: 'right-top',
-      placard: { title: 'Family Portrait', subtitle: 'Kamloops, 2024' }
-    },
-
-    // Upper-left small portrait (frameH=212, frameW=152)
-    {
-      aspect: '2/3',
-      photoH: 240,
-      matStyle: 'neutral',
-      top: 55,
-      left: 70,
-      placardPosition: 'bottom-left',
-      placard: { title: 'At Home', subtitle: 'Kamloops' }
-    },
-
-    // Lower-right small landscape (frameH=172, frameW=242)
-    {
-      aspect: '3/2',
-      photoH: 160,
-      matStyle: 'deep',
-      top: 540,
-      left: 250,
-      placardPosition: 'right-middle',
-      placard: { title: 'Golden Hour', subtitle: 'Thompson Valley' }
-    }
-  ],
-  md: [],
-  lg: [],
-  xl: []
+  sm: BLOCK_A_SM,
+  md: BLOCK_A_MD,
+  lg: BLOCK_A_LG,
+  xl: BLOCK_A_XL
 };
+
+const BLOCK_B_SM: BlockPhoto[] = [
+  // Primary landscape (frameH=332, frameW=482)
+  {
+    aspect: '3/2',
+    photoH: 300,
+    matStyle: 'neutral',
+    top: 300,
+    left: 260,
+    placardPosition: 'bottom-right',
+    placard: { title: 'Morning Light', subtitle: 'Sun Peaks' }
+  },
+
+  // Upper-left portrait (frameH=232, frameW=165)
+  {
+    aspect: '2/3',
+    photoH: 200,
+    matStyle: 'deep',
+    top: 160,
+    left: 65,
+    placardPosition: 'bottom-right',
+    placard: { title: 'Neighbourhood Walk', subtitle: 'Westside' }
+  },
+
+  // Lower-right small landscape (frameH=162, frameW=227)
+  {
+    aspect: '3/2',
+    photoH: 130,
+    matStyle: 'warm',
+    top: 110,
+    left: 260,
+    placardPosition: 'right-bottom',
+    placard: { title: 'Winter Session', subtitle: 'Sun Peaks' }
+  }
+];
+
+const BLOCK_B_MD: BlockPhoto[] = [
+  // sm items re-centred — left shifted +100px for wider block
+  ...BLOCK_B_SM.map((item) => ({ ...item, left: item.left + 200 })),
+
+  // ── md extras ────────────────────────────────────────────────────
+  // Upper-right medium portrait (frameH=212, frameW=176)
+  {
+    aspect: '4/5',
+    photoH: 270,
+    matStyle: 'warm',
+    top: 90,
+    left: 980,
+    placardPosition: 'bottom-center',
+    placard: { title: 'Sunday Morning', subtitle: 'Sun Peaks' }
+  },
+
+  // Lower-left small landscape (frameH=142, frameW=197)
+  {
+    aspect: '3/2',
+    photoH: 80,
+    matStyle: 'deep',
+    top: 540,
+    left: 130,
+    placardPosition: 'right-middle',
+    placard: { title: 'River Walk', subtitle: 'Thompson Valley' }
+  }
+];
+
+const BLOCK_B_LG: BlockPhoto[] = [
+  // md items — adjust as needed for wider block, then add lg extras below
+  ...BLOCK_B_MD
+];
+
+const BLOCK_B_XL: BlockPhoto[] = [
+  // lg items — adjust as needed for wider block, then add xl extras below
+  ...BLOCK_B_LG
+];
 
 const BLOCK_B_ITEMS: Record<Tier, BlockPhoto[]> = {
-  sm: [
-    // Primary landscape (frameH=332, frameW=482)
-    {
-      aspect: '3/2',
-      photoH: 300,
-      matStyle: 'neutral',
-      top: 300,
-      left: 260,
-      placardPosition: 'bottom-right',
-      placard: { title: 'Morning Light', subtitle: 'Sun Peaks' }
-    },
-
-    // Upper-left portrait (frameH=232, frameW=165)
-    {
-      aspect: '2/3',
-      photoH: 200,
-      matStyle: 'deep',
-      top: 160,
-      left: 65,
-      placardPosition: 'bottom-right',
-      placard: { title: 'Neighbourhood Walk', subtitle: 'Westside' }
-    },
-
-    // Lower-right small portrait (frameH=182, frameW=132)
-    {
-      aspect: '3/2',
-      photoH: 130,
-      matStyle: 'warm',
-      top: 110,
-      left: 260,
-      placardPosition: 'right-bottom',
-      placard: { title: 'Winter Session', subtitle: 'Sun Peaks' }
-    }
-  ],
-  md: [],
-  lg: [],
-  xl: []
+  sm: BLOCK_B_SM,
+  md: BLOCK_B_MD,
+  lg: BLOCK_B_LG,
+  xl: BLOCK_B_XL
 };
 
+const BLOCK_C_SM: BlockPhoto[] = [
+  // Primary portrait (frameH=482, frameW=332)
+  {
+    aspect: '2/3',
+    photoH: 450,
+    matStyle: 'deep',
+    top: 146,
+    left: 500,
+    placardPosition: 'bottom-center',
+    placard: { title: 'An Afternoon', subtitle: 'Thompson River' }
+  },
+
+  // Upper-left medium portrait (frameH=232, frameW=192)
+  {
+    aspect: '4/5',
+    photoH: 200,
+    matStyle: 'warm',
+    top: 60,
+    left: 180,
+    placardPosition: 'right-top',
+    placard: { title: 'Childhood', subtitle: 'Kamloops' }
+  },
+
+  // Lower-centre landscape (frameH=202, frameW=287)
+  {
+    aspect: '3/2',
+    photoH: 170,
+    matStyle: 'neutral',
+    top: 400,
+    left: 180,
+    placardPosition: 'top-right',
+    placard: { title: 'Summer Evening', subtitle: 'Riverside Park' }
+  }
+];
+
+const BLOCK_C_MD: BlockPhoto[] = [
+  // sm items re-centred — left shifted +100px for wider block
+  ...BLOCK_C_SM.map((item) => ({ ...item, left: item.left + 200 })),
+
+  // ── md extras ────────────────────────────────────────────────────
+  // Upper-left small portrait (frameH=132, frameW=99)
+  {
+    aspect: '2/3',
+    photoH: 300,
+    matStyle: 'deep',
+    top: 150,
+    left: 90,
+    placardPosition: 'bottom-right',
+    placard: { title: 'Home Archives', subtitle: 'Kamloops' }
+  },
+
+  // Lower-right landscape (frameH=182, frameW=257)
+  {
+    aspect: '3/2',
+    photoH: 100,
+    matStyle: 'warm',
+    top: 300,
+    left: 1060,
+    placardPosition: 'top-center',
+    placard: { title: 'Late Light', subtitle: 'Sun Peaks' }
+  }
+];
+
+const BLOCK_C_LG: BlockPhoto[] = [
+  // md items — adjust as needed for wider block, then add lg extras below
+  ...BLOCK_C_MD
+];
+
+const BLOCK_C_XL: BlockPhoto[] = [
+  // lg items — adjust as needed for wider block, then add xl extras below
+  ...BLOCK_C_LG
+];
+
 const BLOCK_C_ITEMS: Record<Tier, BlockPhoto[]> = {
-  sm: [
-    // Primary portrait (frameH=412, frameW=285)
-    {
-      aspect: '2/3',
-      photoH: 450,
-      matStyle: 'deep',
-      top: 146,
-      left: 500,
-      placardPosition: 'bottom-center',
-      placard: { title: 'An Afternoon', subtitle: 'Thompson River' }
-    },
-
-    // Upper-left medium portrait (frameH=232, frameW=192)
-    {
-      aspect: '4/5',
-      photoH: 200,
-      matStyle: 'warm',
-      top: 60,
-      left: 180,
-      placardPosition: 'right-top',
-      placard: { title: 'Childhood', subtitle: 'Kamloops' }
-    },
-
-    // Lower-centre landscape (frameH=172, frameW=242)
-    {
-      aspect: '3/2',
-      photoH: 170,
-      matStyle: 'neutral',
-      top: 400,
-      left: 180,
-      placardPosition: 'top-right',
-      placard: { title: 'Summer Evening', subtitle: 'Riverside Park' }
-    }
-  ],
-  md: [],
-  lg: [],
-  xl: []
+  sm: BLOCK_C_SM,
+  md: BLOCK_C_MD,
+  lg: BLOCK_C_LG,
+  xl: BLOCK_C_XL
 };
 
 // ── Wall sequence ─────────────────────────────────────────────────────────────
@@ -338,6 +483,7 @@ export const RollingHero = () => {
   const [locked, setLocked] = useState<{
     blockW: number;
     sectionH: number;
+    shortH: boolean;
     tier: Tier;
     sequence: WallItem[];
   } | null>(null);
@@ -345,8 +491,9 @@ export const RollingHero = () => {
   useEffect(() => {
     const blockW = window.innerWidth - TEXT_PANEL_W;
     const sectionH = Math.max(window.innerHeight - HEADER_H, MIN_SECTION_H);
+    const shortH = sectionH < SHORT_H_THRESHOLD;
     const tier = getTier(blockW);
-    setLocked({ blockW, sectionH, tier, sequence: buildSequence(blockW, tier) });
+    setLocked({ blockW, sectionH, shortH, tier, sequence: buildSequence(blockW, tier) });
   }, []); // empty deps — intentionally runs once only
 
   // Drag-mode state (only active when dragMode = true)
@@ -419,7 +566,8 @@ export const RollingHero = () => {
         }}
       >
         {trackItems.map((item, i) => {
-          if (item.type === 'block') return <WallBlockEl key={i} block={item} />;
+          if (item.type === 'block')
+            return <WallBlockEl key={i} block={item} shortH={locked.shortH} />;
           if (item.type === 'text') return <WallTextEl key={i} item={item} />;
           return <div key={i} style={{ flexShrink: 0, width: item.width }} />;
         })}
@@ -430,33 +578,39 @@ export const RollingHero = () => {
 
 // ── Block ─────────────────────────────────────────────────────────────────────
 
-const WallBlockEl = ({ block }: { block: WallBlock }) => (
+const WallBlockEl = ({ block, shortH }: { block: WallBlock; shortH: boolean }) => (
   <div className="flex-none relative h-full" style={{ width: block.width, marginLeft: block.ml }}>
     {block.items.map((item, i) => (
-      <WallPhotoEl key={i} item={item} />
+      <WallPhotoEl key={i} item={item} shortH={shortH} />
     ))}
   </div>
 );
 
 // ── Photo ─────────────────────────────────────────────────────────────────────
 
-const WallPhotoEl = ({ item }: { item: BlockPhoto }) => (
-  <div className="absolute" style={{ top: item.top, left: item.left }}>
-    <Frame variant="gallery" matStyle={item.matStyle} mat="md" className="block">
-      <div
-        className="flex items-center justify-center overflow-hidden bg-black/[0.06]"
-        style={{ height: item.photoH, aspectRatio: item.aspect }}
-      >
-        <span className="select-none font-mono text-[11px] text-black/20" aria-hidden>
-          +
-        </span>
+const WallPhotoEl = ({ item, shortH }: { item: BlockPhoto; shortH: boolean }) => {
+  const scale = shortH ? COMPACT_H_SCALE : 1;
+  const photoH = Math.round(item.photoH * scale);
+  const top = Math.round(item.top * scale);
+
+  return (
+    <div className="absolute" style={{ top, left: item.left }}>
+      <Frame variant="gallery" matStyle={item.matStyle} mat="md" className="block">
+        <div
+          className="flex items-center justify-center overflow-hidden bg-black/[0.06]"
+          style={{ height: photoH, aspectRatio: item.aspect }}
+        >
+          <span className="select-none font-mono text-[11px] text-black/20" aria-hidden>
+            +
+          </span>
+        </div>
+      </Frame>
+      <div className={cn(PLACARD_POS[item.placardPosition])}>
+        <Placard title={item.placard.title} subtitle={item.placard.subtitle} size="sm" />
       </div>
-    </Frame>
-    <div className={cn(PLACARD_POS[item.placardPosition])}>
-      <Placard title={item.placard.title} subtitle={item.placard.subtitle} size="sm" />
     </div>
-  </div>
-);
+  );
+};
 
 // ── Text panel ────────────────────────────────────────────────────────────────
 
