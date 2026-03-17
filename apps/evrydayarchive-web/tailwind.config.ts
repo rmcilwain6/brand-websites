@@ -48,7 +48,7 @@ const config: Config = {
       animation: {
         'fade-up': 'fadeUp 280ms ease-out both',
         'fade-in': 'fadeIn 220ms ease-out both',
-        'marquee': 'marquee var(--marquee-duration, 75s) linear infinite',
+        marquee: 'marquee var(--marquee-duration, 75s) linear infinite',
         'slide-from-right': 'slideFromRight 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
         'slide-from-left': 'slideFromLeft 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
         // Used for checkpoint / exploration entries — slow fade with no lateral motion
@@ -69,7 +69,7 @@ const config: Config = {
         },
         marquee: {
           '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(-50%)' }
         },
         slideFromRight: {
           '0%': { opacity: '0', transform: 'translateX(20px)' },
