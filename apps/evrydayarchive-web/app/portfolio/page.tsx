@@ -65,7 +65,7 @@ const GalleryRow = ({ gallery, index }: { gallery: GalleryListItem; index: numbe
       {/* Framed cover */}
       <div className="w-full sm:w-72 sm:flex-none">
         <Link href={`/portfolio/${gallery.slug}`} className="group block">
-          <Frame rotateDeg={rotateDeg}>
+          <Frame variant="craft" rotateDeg={rotateDeg}>
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm bg-sun">
               {gallery.coverImage ? (
                 <Image

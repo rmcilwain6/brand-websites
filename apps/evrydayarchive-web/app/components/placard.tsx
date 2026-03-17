@@ -11,13 +11,13 @@ type PlacardProps = {
 
 /**
  * Placard — the brand's label card for titles, captions, and metadata.
- * Used consistently across gallery titles, photo captions, packages, process steps.
+ * Styled like a real gallery label: sharp corners, clean border, no shadow.
  */
 export const Placard = ({ title, subtitle, meta, size = 'md', className }: PlacardProps) => {
   return (
     <div
       className={cn(
-        'inline-block rounded-placard border border-border bg-surface shadow-warm-sm',
+        'inline-block border border-border bg-surface',
         size === 'sm' ? 'px-2.5 py-1.5' : 'px-3 py-2.5',
         className
       )}
