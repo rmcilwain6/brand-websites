@@ -7,12 +7,22 @@ import { PublicApiError, fetchPublicGalleryDetail, type GalleryDetail } from '@r
 import { getServerEnv } from '../../lib/env';
 import { Frame } from '../../components/frame';
 import { Placard } from '../../components/placard';
+import { GalleryReviews } from '../../components/gallery-reviews';
+
+type GalleryReview = {
+  id: string;
+  clientName: string;
+  quote: string;
+  sessionType: string | null;
+  image: { src: string; alt: string; width: number | null; height: number | null } | null;
+};
 
 export const dynamic = 'force-dynamic';
 
 const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
   const { ADMIN_API_BASE_URL } = getServerEnv();
   let gallery: GalleryDetail | null = null;
+  let reviews: GalleryReview[] = [];
 
   try {
     gallery = await fetchPublicGalleryDetail(ADMIN_API_BASE_URL, params.slug, {
@@ -30,6 +40,19 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
 
   if (!gallery) {
     notFound();
+  }
+
+  try {
+    const res = await fetch(
+      new URL(
+        `/api/public/galleries/${encodeURIComponent(params.slug)}/reviews`,
+        ADMIN_API_BASE_URL
+      ),
+      { next: { revalidate: 60 } }
+    );
+    if (res.ok) reviews = await res.json();
+  } catch {
+    // Reviews are optional
   }
 
   return (
@@ -92,6 +115,9 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
             ))}
           </div>
         )}
+
+        {/* Reviews */}
+        <GalleryReviews reviews={reviews} />
 
         {/* Closing panel */}
         <div className="mt-20 border-t border-border pt-16">

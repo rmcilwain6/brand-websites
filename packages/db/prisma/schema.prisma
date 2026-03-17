@@ -64,6 +64,7 @@ model Gallery {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   images      GalleryImage[]
+  reviews     Review[]
 }
 
 model ImageAsset {
@@ -76,6 +77,27 @@ model ImageAsset {
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
   galleries GalleryImage[]
+  reviews   Review[]
+}
+
+model Review {
+  id             String      @id @default(cuid())
+  clientName     String
+  quote          String
+  sessionType    String?
+  sessionDate    DateTime?
+  galleryId      String?
+  imageAssetId   String?
+  isPublished    Boolean     @default(false)
+  featuredOnHome Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  gallery        Gallery?    @relation(fields: [galleryId], references: [id], onDelete: SetNull)
+  imageAsset     ImageAsset? @relation(fields: [imageAssetId], references: [id], onDelete: SetNull)
+
+  @@index([galleryId])
+  @@index([isPublished])
+  @@index([featuredOnHome])
 }
 
 model GalleryImage {

@@ -1,21 +1,34 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { fetchPublicGalleries, type GalleryListItem } from '@repo/core';
+import {
+  fetchPublicGalleries,
+  fetchPublicReviews,
+  type GalleryListItem,
+  type PublicReview
+} from '@repo/core';
 
 import { getServerEnv } from './lib/env';
 import { HeroSection } from './components/hero-section';
 import { Frame } from './components/frame';
 import { Placard } from './components/placard';
+import { FilingCabinet } from './components/filing-cabinet';
 
 export default async function HomePage() {
   const { ADMIN_API_BASE_URL } = getServerEnv();
   let galleries: GalleryListItem[] = [];
+  let reviews: PublicReview[] = [];
 
   try {
     galleries = await fetchPublicGalleries(ADMIN_API_BASE_URL, { next: { revalidate: 60 } });
   } catch {
     // Featured galleries are optional; degrade gracefully
+  }
+
+  try {
+    reviews = await fetchPublicReviews(ADMIN_API_BASE_URL, { next: { revalidate: 60 } });
+  } catch {
+    // Reviews are optional; degrade gracefully
   }
 
   const featured = galleries.slice(0, 4);
@@ -69,28 +82,36 @@ export default async function HomePage() {
       )}
 
       {/* ── Section 4: Social proof ──────────────────────────────────────── */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
-          <div className="mb-12">
-            <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
-              What people say
-            </p>
-            <h2 className="text-2xl font-semibold text-ink">Reviews</h2>
-          </div>
+      {(reviews.length > 0 || FALLBACK_TESTIMONIALS.length > 0) && (
+        <section className="px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-5xl">
+            <div className="mb-10">
+              <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
+                What people say
+              </p>
+              <h2 className="text-2xl font-semibold text-ink">Reviews</h2>
+            </div>
 
-          <div className="space-y-12">
-            {TESTIMONIALS.map((t, i) => (
-              <blockquote key={i}>
-                <p className="text-base leading-relaxed text-ink-muted">&ldquo;{t.quote}&rdquo;</p>
-                <footer className="mt-3 text-sm">
-                  <span className="font-medium text-ink">{t.name}</span>
-                  <span className="text-ink-faint"> · {t.session}</span>
-                </footer>
-              </blockquote>
-            ))}
+            {reviews.length > 0 ? (
+              <FilingCabinet reviews={reviews} />
+            ) : (
+              <div className="space-y-12 max-w-3xl">
+                {FALLBACK_TESTIMONIALS.map((t, i) => (
+                  <blockquote key={i}>
+                    <p className="text-base leading-relaxed text-ink-muted">
+                      &ldquo;{t.quote}&rdquo;
+                    </p>
+                    <footer className="mt-3 text-sm">
+                      <span className="font-medium text-ink">{t.name}</span>
+                      <span className="text-ink-faint"> · {t.session}</span>
+                    </footer>
+                  </blockquote>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── Section 5: Pricing philosophy ───────────────────────────────── */}
       <section className="bg-sun px-4 py-20 sm:px-6 lg:px-8">
@@ -190,7 +211,7 @@ const GalleryCard = ({ gallery }: { gallery: GalleryListItem }) => {
 
 // ── Static content ──────────────────────────────────────────────────────────
 
-const TESTIMONIALS = [
+const FALLBACK_TESTIMONIALS = [
   {
     quote:
       "Working with Evryday Archive felt effortless. The photos captured moments I'd forgotten I wanted to remember.",

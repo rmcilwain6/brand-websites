@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { cn } from '../lib/cn';
 import { MobileMenu } from './mobile-menu';
@@ -14,6 +15,55 @@ const NAV = [
   { href: '/process', label: 'Process' },
   { href: '/contact', label: 'Contact' }
 ] as const;
+
+/**
+ * Desktop nav link — orange underline animates left→right on hover/active.
+ * Text colour never changes. Underline is a pseudo-element so it doesn't
+ * affect element height or disturb vertical centering in the flex row.
+ */
+const NavLink = ({ href, label }: { href: string; label: string }) => {
+  const pathname = usePathname();
+  const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'relative text-sm text-ink-muted',
+        // Underline: 2px accent bar, 6px below the text, slides in/out left→right.
+        'after:absolute after:left-0 after:-bottom-[6px] after:h-[2px] after:w-full',
+        'after:bg-accent after:origin-left after:transition-transform after:duration-fast',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm',
+        isActive ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-100'
+      )}
+    >
+      {label}
+    </Link>
+  );
+};
+
+/**
+ * "EST. 2025" rubber-stamp detail — floats to the right of the logo,
+ * slightly tilted, like a date stamp on a folder label.
+ * On the home page it is always visible (acts as the home active-state marker).
+ * On all other pages it fades in on logo hover.
+ * Desktop only (no meaningful hover on touch).
+ */
+const EstStamp = () => {
+  const isHome = usePathname() === '/';
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        'pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 rotate-[-7deg] transition-opacity duration-fast',
+        isHome ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+      )}
+    >
+      <span className="block whitespace-nowrap border border-accent/55 px-1.5 py-[3px] font-mono text-[8px] font-bold uppercase tracking-[0.24em] text-accent/70">
+        EST. 2025
+      </span>
+    </span>
+  );
+};
 
 /**
  * SiteHeader — sticky navigation bar.
@@ -210,38 +260,36 @@ export const SiteHeader = () => {
 
           {/* ── Desktop layout ─────────────────────────────────────── */}
           <div className="hidden w-full items-center justify-between md:flex">
-            <Link
-              href="/"
-              aria-label="Evryday Archive Co — home"
-              className="transition-opacity duration-fast hover:opacity-70"
-            >
-              <Image
-                src="/logo/horizontal.svg"
-                alt="Evryday Archive Co"
-                width={140}
-                height={59}
-                priority
-                className="dark:hidden"
-              />
-              <Image
-                src="/logo/horizontal-dark.svg"
-                alt="Evryday Archive Co"
-                width={140}
-                height={59}
-                priority
-                className="hidden dark:block"
-              />
-            </Link>
+            {/* group lives on the wrapper so EstStamp can sit outside the <Link> bounds */}
+            <div className="group relative">
+              <Link
+                href="/"
+                aria-label="Evryday Archive Co — home"
+                className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
+              >
+                <Image
+                  src="/logo/horizontal.svg"
+                  alt="Evryday Archive Co"
+                  width={140}
+                  height={59}
+                  priority
+                  className="dark:hidden"
+                />
+                <Image
+                  src="/logo/horizontal-dark.svg"
+                  alt="Evryday Archive Co"
+                  width={140}
+                  height={59}
+                  priority
+                  className="hidden dark:block"
+                />
+              </Link>
+              <EstStamp />
+            </div>
 
             <nav aria-label="Main navigation" className="flex items-center gap-8">
               {NAV.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
-                >
-                  {link.label}
-                </Link>
+                <NavLink key={link.href} href={link.href} label={link.label} />
               ))}
             </nav>
 
