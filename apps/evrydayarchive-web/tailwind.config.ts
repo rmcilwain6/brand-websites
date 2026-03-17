@@ -48,7 +48,15 @@ const config: Config = {
       animation: {
         'fade-up': 'fadeUp 280ms ease-out both',
         'fade-in': 'fadeIn 220ms ease-out both',
-        marquee: 'marquee var(--marquee-duration, 75s) linear infinite'
+        marquee: 'marquee var(--marquee-duration, 75s) linear infinite',
+        'slide-from-right': 'slideFromRight 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
+        'slide-from-left': 'slideFromLeft 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
+        // Used for checkpoint / exploration entries — slow fade with no lateral motion
+        'checkpoint-enter': 'checkpointEnter 460ms cubic-bezier(0.16, 1, 0.3, 1) both',
+        // Staggered child reveals inside checkpoint cards
+        'reveal-up': 'revealUp 420ms cubic-bezier(0.16, 1, 0.3, 1) both',
+        // Counter tick — quick pop for the N/N step number when it changes
+        'counter-tick': 'counterTick 200ms cubic-bezier(0.34, 1.56, 0.64, 1) both'
       },
       keyframes: {
         fadeUp: {
@@ -62,6 +70,26 @@ const config: Config = {
         marquee: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' }
+        },
+        slideFromRight: {
+          '0%': { opacity: '0', transform: 'translateX(20px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' }
+        },
+        slideFromLeft: {
+          '0%': { opacity: '0', transform: 'translateX(-20px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' }
+        },
+        checkpointEnter: {
+          '0%': { opacity: '0', transform: 'translateY(8px) scale(0.99)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
+        },
+        revealUp: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        counterTick: {
+          '0%': { opacity: '0', transform: 'translateY(5px) scale(0.85)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
         }
       }
     }

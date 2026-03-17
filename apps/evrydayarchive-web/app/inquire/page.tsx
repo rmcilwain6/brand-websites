@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { fetchPublicPackages, type PublicPackage } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
+import { Questionnaire } from './questionnaire';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +14,7 @@ const InquirePage = async () => {
   try {
     packages = await fetchPublicPackages(ADMIN_API_BASE_URL, { next: { revalidate: 60 } });
   } catch {
-    // Graceful degradation
+    // Graceful degradation — Questionnaire falls back to hardcoded Evryday package
   }
 
   return (
@@ -34,25 +35,10 @@ const InquirePage = async () => {
         </div>
       </section>
 
-      {/* ── Section 1: Guided questionnaire (placeholder) ───────────────────── */}
+      {/* ── Section 1: Guided questionnaire ─────────────────────────────────── */}
       <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl">
-          <div className="rounded-card border border-border bg-canvas px-8 py-16 text-center">
-            <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
-              Coming soon
-            </p>
-            <h2 className="mb-4 text-xl font-semibold text-ink">Guided questionnaire</h2>
-            <p className="mx-auto mb-8 max-w-sm text-base leading-relaxed text-ink-muted">
-              A short guided flow that helps me understand your situation and recommend the right
-              package. In the meantime, browse below or reach out directly.
-            </p>
-            <Link
-              href="/contact"
-              className="rounded-card border border-border px-6 py-3 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-            >
-              Reach out directly
-            </Link>
-          </div>
+        <div className="mx-auto max-w-3xl">
+          <Questionnaire packages={packages} />
         </div>
       </section>
 
@@ -62,7 +48,7 @@ const InquirePage = async () => {
       </div>
 
       {/* ── Section 2: Packages at a glance ─────────────────────────────────── */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8">
+      <section id="packages-at-a-glance" className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
           <header className="mb-10">
             <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
