@@ -56,7 +56,12 @@ const config: Config = {
         // Staggered child reveals inside checkpoint cards
         'reveal-up': 'revealUp 420ms cubic-bezier(0.16, 1, 0.3, 1) both',
         // Counter tick — quick pop for the N/N step number when it changes
-        'counter-tick': 'counterTick 200ms cubic-bezier(0.34, 1.56, 0.64, 1) both'
+        'counter-tick': 'counterTick 200ms cubic-bezier(0.34, 1.56, 0.64, 1) both',
+        // Directional wipe for filing-cabinet tab transitions.
+        // wipe-in-left: new content reveals from left → right (moving to a higher tab index).
+        // wipe-in-right: new content reveals from right → left (moving to a lower tab index).
+        'wipe-in-left': 'wipeInLeft 160ms ease-out both',
+        'wipe-in-right': 'wipeInRight 160ms ease-out both'
       },
       keyframes: {
         fadeUp: {
@@ -90,6 +95,14 @@ const config: Config = {
         counterTick: {
           '0%': { opacity: '0', transform: 'translateY(5px) scale(0.85)' },
           '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
+        },
+        wipeInLeft: {
+          '0%': { clipPath: 'inset(0 100% 0 0)' },
+          '100%': { clipPath: 'inset(0 0% 0 0)' }
+        },
+        wipeInRight: {
+          '0%': { clipPath: 'inset(0 0 0 100%)' },
+          '100%': { clipPath: 'inset(0 0 0 0%)' }
         }
       }
     }
