@@ -6,20 +6,30 @@ import { useFeatureFlag } from '../lib/use-feature-flag';
 import { Frame } from './frame';
 import { Placard } from './placard';
 import { RollingHero } from './rolling-hero';
+import { RollingHeroFixedText } from './rolling-hero-fixed-text';
 
 export const HeroSection = () => {
   const rollingHero = useFeatureFlag('ROLLING_HERO');
+  const fixedText = useFeatureFlag('ROLLING_HERO_FIXED_TEXT');
+
+  // ROLLING_HERO_FIXED_TEXT takes precedence over ROLLING_HERO when both are on.
+  const activeVariant = fixedText ? 'fixed-text' : rollingHero ? 'rolling' : 'classic';
 
   return (
     <>
-      {/* Desktop (lg+): rolling gallery wall when flag enabled */}
-      {rollingHero && (
+      {/* Desktop (lg+): feature-flagged hero variants */}
+      {activeVariant === 'fixed-text' && (
+        <div className="hidden lg:block">
+          <RollingHeroFixedText />
+        </div>
+      )}
+      {activeVariant === 'rolling' && (
         <div className="hidden lg:block">
           <RollingHero />
         </div>
       )}
-      {/* Classic hero: always on mobile/tablet; fallback on desktop when flag is off */}
-      <div className={rollingHero ? 'lg:hidden' : undefined}>
+      {/* Classic hero: always on mobile/tablet; fallback on desktop when no flag is active */}
+      <div className={activeVariant !== 'classic' ? 'lg:hidden' : undefined}>
         <ClassicHero />
       </div>
     </>
