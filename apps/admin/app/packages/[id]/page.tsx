@@ -8,20 +8,14 @@ import PackageEditor from '../components/PackageEditor';
 export const dynamic = 'force-dynamic';
 
 const PackageDetailPage = async ({ params }: { params: { id: string } }) => {
-  const [pkg, allModifiers] = await Promise.all([
-    prisma.package.findUnique({
-      where: { id: params.id },
-      include: {
-        modifiers: {
-          include: { modifier: true },
-          orderBy: { sortOrder: 'asc' }
-        }
+  const pkg = await prisma.package.findUnique({
+    where: { id: params.id },
+    include: {
+      modifiers: {
+        orderBy: { sortOrder: 'asc' }
       }
-    }),
-    prisma.modifier.findMany({
-      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }]
-    })
-  ]);
+    }
+  });
 
   if (!pkg) {
     notFound();
@@ -36,7 +30,7 @@ const PackageDetailPage = async ({ params }: { params: { id: string } }) => {
         <h1 className="mt-3 text-3xl font-semibold text-slate-900">{pkg.name}</h1>
         <p className="text-sm text-slate-500">Edit package details and modifiers.</p>
       </header>
-      <PackageEditor pkg={pkg} allModifiers={allModifiers} />
+      <PackageEditor pkg={pkg} />
     </main>
   );
 };

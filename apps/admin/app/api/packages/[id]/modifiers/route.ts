@@ -14,15 +14,16 @@ export const GET = async (
   { params }: { params: { id: string } }
 ): Promise<Response> => {
   const authError = requireAdminSession(req);
-  if (authError) return authError;
+  if (authError) {
+    return authError;
+  }
 
-  const assignments = await prisma.packageModifier.findMany({
+  const modifiers = await prisma.packageModifier.findMany({
     where: { packageId: params.id },
-    include: { modifier: true },
     orderBy: { sortOrder: 'asc' }
   });
 
-  return jsonOk(assignments);
+  return jsonOk(modifiers);
 };
 
 export const POST = async (
@@ -30,28 +31,40 @@ export const POST = async (
   { params }: { params: { id: string } }
 ): Promise<Response> => {
   const authError = requireAdminSession(req);
-  if (authError) return authError;
+  if (authError) {
+    return authError;
+  }
 
   const result = await parseJson(req, AdminPackageModifierCreateSchema);
-  if (!result.ok) return jsonError(result.error);
+
+  if (!result.ok) {
+    return jsonError(result.error);
+  }
+
+  if (result.data.packageId !== params.id) {
+    return jsonError(
+      createApiError('VALIDATION_ERROR', 'Request packageId must match route package id.')
+    );
+  }
 
   try {
-    const assignment = await prisma.packageModifier.create({
-      data: { packageId: params.id, ...result.data },
-      include: { modifier: true }
+    const modifier = await prisma.packageModifier.create({
+      data: result.data
     });
-    return jsonOk(assignment, { status: 201 });
+
+    return jsonOk(modifier, { status: 201 });
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         return jsonError(
-          createApiError('CONFLICT', 'This modifier is already assigned to the package.')
+          createApiError('CONFLICT', 'Modifier name already exists for this package.')
         );
       }
       if (error.code === 'P2003') {
-        return jsonError(createApiError('NOT_FOUND', 'Package or modifier not found.'));
+        return jsonError(createApiError('NOT_FOUND', 'Package not found.'));
       }
     }
-    return jsonError(createApiError('INTERNAL', 'Unable to assign modifier.'));
+
+    return jsonError(createApiError('INTERNAL', 'Unable to create package modifier.'));
   }
 };
