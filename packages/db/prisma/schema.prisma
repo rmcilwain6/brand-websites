@@ -133,23 +133,34 @@ model Package {
   bookingRequests BookingRequest[]
 }
 
-model PackageModifier {
-  id              String       @id @default(cuid())
-  packageId       String
-  name            String
+model Modifier {
+  id              String            @id @default(cuid())
+  name            String            @unique
   description     String?
-  type            ModifierType @default(CHECKBOX)
-  isIncluded      Boolean      @default(false)
-  isRequired      Boolean      @default(false)
+  type            ModifierType      @default(CHECKBOX)
   priceDeltaCents Int?
   config          Json?
-  sortOrder       Int          @default(0)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  package         Package      @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  sortOrder       Int               @default(0)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  packages        PackageModifier[]
+}
 
+model PackageModifier {
+  id         String   @id @default(cuid())
+  packageId  String
+  modifierId String
+  isIncluded Boolean  @default(false)
+  isRequired Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  package    Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  modifier   Modifier @relation(fields: [modifierId], references: [id], onDelete: Cascade)
+
+  @@unique([packageId, modifierId])
   @@index([packageId])
-  @@unique([packageId, name])
+  @@index([modifierId])
 }
 
 model TimeSlot {

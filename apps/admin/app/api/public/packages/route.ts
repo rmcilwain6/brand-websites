@@ -7,6 +7,7 @@ export const GET = async (): Promise<Response> => {
       orderBy: { sortOrder: 'asc' },
       include: {
         modifiers: {
+          include: { modifier: true },
           orderBy: { sortOrder: 'asc' }
         }
       }
@@ -25,13 +26,13 @@ export const GET = async (): Promise<Response> => {
       sortOrder: pkg.sortOrder,
       modifiers: pkg.modifiers.map((m) => ({
         id: m.id,
-        name: m.name,
-        description: m.description,
-        type: m.type,
+        name: m.modifier.name,
+        description: m.modifier.description,
+        type: m.modifier.type,
         isIncluded: m.isIncluded,
         isRequired: m.isRequired,
-        priceDeltaCents: m.priceDeltaCents,
-        config: m.config,
+        priceDeltaCents: m.modifier.priceDeltaCents,
+        config: m.modifier.config,
         sortOrder: m.sortOrder
       }))
     }));

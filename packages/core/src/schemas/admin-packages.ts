@@ -48,20 +48,31 @@ export const AdminPackageUpdateSchema = AdminPackageCreateSchema.partial().refin
   { message: 'At least one field is required for an update.' }
 );
 
-export const AdminPackageModifierCreateSchema = z.object({
-  packageId: z.string().min(1, 'Package is required.'),
+// Global modifier library CRUD
+export const AdminModifierCreateSchema = z.object({
   name: z.string().min(2),
   description: z.string().max(2000).optional(),
   type: ModifierTypeSchema.optional(),
-  isIncluded: z.boolean().optional(),
-  isRequired: z.boolean().optional(),
   priceDeltaCents: z.number().int().optional(),
   config: z.union([ToggleConfigSchema, SliderConfigSchema, IncrementerConfigSchema]).optional(),
   sortOrder: z.number().int().nonnegative().optional()
 });
 
+export const AdminModifierUpdateSchema = AdminModifierCreateSchema.partial().refine(
+  (payload) => Object.keys(payload).length > 0,
+  { message: 'At least one field is required for an update.' }
+);
+
+// Package ↔ Modifier assignment
+export const AdminPackageModifierCreateSchema = z.object({
+  modifierId: z.string().min(1, 'Modifier is required.'),
+  isIncluded: z.boolean().optional(),
+  isRequired: z.boolean().optional(),
+  sortOrder: z.number().int().nonnegative().optional()
+});
+
 export const AdminPackageModifierUpdateSchema = AdminPackageModifierCreateSchema.omit({
-  packageId: true
+  modifierId: true
 })
   .partial()
   .refine((payload) => Object.keys(payload).length > 0, {
@@ -75,5 +86,7 @@ export type SliderConfig = z.infer<typeof SliderConfigSchema>;
 export type IncrementerConfig = z.infer<typeof IncrementerConfigSchema>;
 export type AdminPackageCreateInput = z.infer<typeof AdminPackageCreateSchema>;
 export type AdminPackageUpdateInput = z.infer<typeof AdminPackageUpdateSchema>;
+export type AdminModifierCreateInput = z.infer<typeof AdminModifierCreateSchema>;
+export type AdminModifierUpdateInput = z.infer<typeof AdminModifierUpdateSchema>;
 export type AdminPackageModifierCreateInput = z.infer<typeof AdminPackageModifierCreateSchema>;
 export type AdminPackageModifierUpdateInput = z.infer<typeof AdminPackageModifierUpdateSchema>;
