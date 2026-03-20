@@ -46,7 +46,7 @@ const PLACARD_POS: Record<PlacardPosition, string> = {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type BlockPhoto = {
+export type BlockPhoto = {
   aspect: string;
   /** px — inner photo height (mat adds 16px/side = +32px total to frame) */
   photoH: number;
@@ -59,7 +59,7 @@ type BlockPhoto = {
   placard: { title: string; subtitle?: string };
 };
 
-type WallBlock = {
+export type WallBlock = {
   type: 'block';
   /** locked px value injected by buildSequence */
   width: number;
@@ -94,7 +94,7 @@ const TEXT_PANEL_W = 300;
  * Site header height in px (4rem at 16px base).
  * Used to compute the locked section height on mount.
  */
-const HEADER_H = 64;
+export const HEADER_H = 64;
 
 /**
  * Minimum section height in px.
@@ -102,7 +102,7 @@ const HEADER_H = 64;
  * BLOCK_A lower-right landscape — scaled top(443) + scaled frameH(163) = 606px, plus 24px breathing room.
  * Also ensures shortH always activates on screens that need it (630 < SHORT_H_THRESHOLD 680).
  */
-const MIN_SECTION_H = 630;
+export const MIN_SECTION_H = 630;
 
 /**
  * Left margin applied to TEXT_B and TEXT_C panels.
@@ -115,14 +115,14 @@ const TEXT_LEAD_ML = 48;
  * Laptops with ~720–768px viewport height land at 656–704px section height — below this line.
  * MacBook Air (900px viewport) and taller screens land above it.
  */
-const SHORT_H_THRESHOLD = 680;
+export const SHORT_H_THRESHOLD = 680;
 
 /**
  * Scale factor applied to both photoH and top when shortH is true.
  * Shrinks frames ~18% and compresses vertical positions proportionally,
  * preserving all relative alignments between frames.
  */
-const COMPACT_H_SCALE = 0.82;
+export const COMPACT_H_SCALE = 0.82;
 
 // ── Tier system ───────────────────────────────────────────────────────────────
 // Breakpoints are in terms of block width (viewport width − TEXT_PANEL_W).
@@ -134,9 +134,9 @@ const COMPACT_H_SCALE = 0.82;
 //   lg  blockW < 1500   →  viewport ~< 1800px
 //   xl  blockW ≥ 1500   →  viewport  ≥ 1800px
 
-type Tier = 'sm' | 'md' | 'lg' | 'xl';
+export type Tier = 'sm' | 'md' | 'lg' | 'xl';
 
-function getTier(blockW: number): Tier {
+export function getTier(blockW: number): Tier {
   if (blockW >= 1500) return 'xl';
   if (blockW >= 1150) return 'lg';
   if (blockW >= 850) return 'md';
@@ -281,7 +281,7 @@ const BLOCK_A_XL: BlockPhoto[] = [
   ...BLOCK_A_LG
 ];
 
-const BLOCK_A_ITEMS: Record<Tier, BlockPhoto[]> = {
+export const BLOCK_A_ITEMS: Record<Tier, BlockPhoto[]> = {
   sm: BLOCK_A_SM,
   md: BLOCK_A_MD,
   lg: BLOCK_A_LG,
@@ -361,7 +361,7 @@ const BLOCK_B_XL: BlockPhoto[] = [
   ...BLOCK_B_LG
 ];
 
-const BLOCK_B_ITEMS: Record<Tier, BlockPhoto[]> = {
+export const BLOCK_B_ITEMS: Record<Tier, BlockPhoto[]> = {
   sm: BLOCK_B_SM,
   md: BLOCK_B_MD,
   lg: BLOCK_B_LG,
@@ -441,7 +441,7 @@ const BLOCK_C_XL: BlockPhoto[] = [
   ...BLOCK_C_LG
 ];
 
-const BLOCK_C_ITEMS: Record<Tier, BlockPhoto[]> = {
+export const BLOCK_C_ITEMS: Record<Tier, BlockPhoto[]> = {
   sm: BLOCK_C_SM,
   md: BLOCK_C_MD,
   lg: BLOCK_C_LG,
@@ -578,7 +578,7 @@ export const RollingHero = () => {
 
 // ── Block ─────────────────────────────────────────────────────────────────────
 
-const WallBlockEl = ({ block, shortH }: { block: WallBlock; shortH: boolean }) => (
+export const WallBlockEl = ({ block, shortH }: { block: WallBlock; shortH: boolean }) => (
   <div className="flex-none relative h-full" style={{ width: block.width, marginLeft: block.ml }}>
     {block.items.map((item, i) => (
       <WallPhotoEl key={i} item={item} shortH={shortH} />

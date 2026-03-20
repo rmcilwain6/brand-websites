@@ -22,6 +22,11 @@ export const FEATURE_FLAGS = {
     enabled: false,
     description:
       'Switches rolling hero from auto-scroll to drag/touch-scroll mode (dev/experimental)'
+  },
+  ROLLING_HERO_FIXED_TEXT: {
+    enabled: false,
+    description:
+      'Rolling hero variant: fixed left text panel with cross-fading copy + photo-only marquee strip'
   }
 } as const satisfies Record<string, { enabled: boolean; description: string }>;
 
