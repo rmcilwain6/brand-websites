@@ -19,10 +19,10 @@ export const FrameInterior = ({
   </div>
 );
 
-export const FrameLabel = ({ number, title }: { number: string; title: string }) => (
+export const FrameLabel = ({ frameLabel, title }: { frameLabel: string; title: string }) => (
   <div className="border-l-2 border-accent pl-3">
     <span className="mb-[3px] block text-[9px] uppercase tracking-[0.1em] text-ink-faint">
-      No. {number} — Coming Soon
+      {frameLabel}
     </span>
     <span className="block text-[10px] lowercase tracking-[0.06em] text-ink-muted">{title}</span>
   </div>

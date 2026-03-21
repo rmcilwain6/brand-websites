@@ -8,6 +8,7 @@ import { FrameInterior, FrameLabel } from './frame-pieces';
 const FRAME_POOL = [
   {
     number: '01',
+    label: 'Events',
     widthPx: 200,
     mat: 'md',
     title: 'your favourite memory',
@@ -16,6 +17,7 @@ const FRAME_POOL = [
   },
   {
     number: '02',
+    label: 'Portraits',
     widthPx: 150,
     mat: 'md',
     title: 'doing what you love',
@@ -24,38 +26,43 @@ const FRAME_POOL = [
   },
   {
     number: '03',
+    label: 'Together',
     widthPx: 270,
     mat: 'md',
-    title: 'your partner and you',
+    title: 'the people you keep',
     offsetY: 0,
     catalogRef: 'EAC-2026-503'
   },
   {
     number: '04',
+    label: 'In Practice',
     widthPx: 205,
     mat: 'md',
-    title: 'a sunday with nowhere to be',
+    title: 'the work you believe in',
     offsetY: 0,
     catalogRef: 'EAC-2026-517'
   },
   {
     number: '05',
+    label: 'Action',
     widthPx: 290,
     mat: 'md',
-    title: 'the quiet between moments',
+    title: 'the moments that become stories',
     offsetY: 0,
     catalogRef: 'EAC-2026-534'
   },
   {
     number: '06',
+    label: 'Your Idea',
     widthPx: 180,
     mat: 'md',
-    title: 'just the two of you',
+    title: 'whatever you can dream up',
     offsetY: 0,
     catalogRef: 'EAC-2026-562'
   }
 ] satisfies Array<{
-  number: string;
+  number: string,
+  label: string,
   widthPx: number;
   mat: 'none' | 'sm' | 'md' | 'lg';
   title: string;
@@ -105,7 +112,7 @@ export function GalleryRow() {
       {/* Row is absolutely positioned so its bottom edge sits at 1/3 down the panel. */}
       <div
         className="absolute flex flex-row items-end gap-6"
-        style={{ left: '6%', top: '70%', transform: 'translateY(-100%)' }}
+        style={{ left: '6%', top: '80%', transform: 'translateY(-100%)' }}
       >
         {/* All frames stay in the DOM. Frames beyond `count` fade to invisible so
             there are no layout pops — the overflow-hidden panel hides the empty space. */}
@@ -124,13 +131,13 @@ export function GalleryRow() {
                   variant="gallery"
                   mat={f.mat}
                   matStyle="linen"
-                  className="aspect-[4/5] w-full rounded-none"
+                  className="aspect-[2/3] w-full rounded-none"
                   borderColor="#4A4540"
                 >
                   <FrameInterior number={f.number} catalogRef={f.catalogRef} />
                 </Frame>
               </div>
-              <FrameLabel number={f.number} title={f.title} />
+              <FrameLabel frameLabel={f.label} title={f.title} />
             </div>
           </div>
         ))}

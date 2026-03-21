@@ -38,7 +38,7 @@ export default function ComingSoonPage() {
               variant="gallery"
               mat="lg"
               matStyle="linen"
-              className="aspect-[4/5] w-[250px] rounded-none"
+              className="aspect-[2/3] w-[250px] rounded-none"
               borderColor="#4A4540"
             >
               <FrameInterior number="01" catalogRef="EAC-2026-471" />
