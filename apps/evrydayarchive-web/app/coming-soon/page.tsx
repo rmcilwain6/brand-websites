@@ -43,7 +43,7 @@ export default function ComingSoonPage() {
             >
               <FrameInterior number="01" catalogRef="EAC-2026-471" />
             </Frame>
-            <FrameLabel number="01" title="your favourite memory" />
+            <FrameLabel frameLabel='Events' title="your favourite memory" />
           </div>
         </div>
 

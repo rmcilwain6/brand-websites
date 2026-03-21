@@ -61,8 +61,8 @@ const FRAME_POOL = [
     catalogRef: 'EAC-2026-562'
   }
 ] satisfies Array<{
-  number: string,
-  label: string,
+  number: string;
+  label: string;
   widthPx: number;
   mat: 'none' | 'sm' | 'md' | 'lg';
   title: string;
