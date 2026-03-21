@@ -1,6 +1,8 @@
 import { BookingFormSchema, jsonError, jsonOk, parseJson } from '@repo/core';
 import { prisma } from '@repo/db';
 
+import { sendBookingNotification } from '../../lib/email';
+
 // TODO: Rate limiting — add per-IP limits when infrastructure supports it.
 
 export const POST = async (req: Request): Promise<Response> => {
@@ -61,18 +63,7 @@ export const POST = async (req: Request): Promise<Response> => {
   }
 
   // ── Notification ──────────────────────────────────────────────────────────
-  // TODO: Wire up an email provider (e.g. Resend, Postmark) when selected.
-  //
-  // Send to: your notification email address
-  // Subject: `New booking request — ${packageName ?? 'no package'} — ${name}`
-  // Body should include:
-  //   - name, email, phone
-  //   - packageName, modifierIds, estimatedTotalCents
-  //   - preferredDate, preferredTime
-  //   - notes
-  //   - admin link: /inquiries/${inquiry.id} (once that page exists)
-  //
-  console.info('[bookings] New booking request — follow up required', {
+  await sendBookingNotification({
     inquiryId: inquiry.id,
     name,
     email,
@@ -80,9 +71,9 @@ export const POST = async (req: Request): Promise<Response> => {
     packageName: packageName ?? null,
     preferredDate,
     preferredTime: preferredTime ?? null,
+    notes: notes ?? null,
     modifierIds,
-    estimatedTotalCents: estimatedTotalCents ?? null,
-    notes: notes ?? null
+    estimatedTotalCents: estimatedTotalCents ?? null
   });
 
   return jsonOk({ inquiryId: inquiry.id });
