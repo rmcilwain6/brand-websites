@@ -25,7 +25,9 @@ const galleryDetailResponse = {
       order: 0,
       src: 'https://example.com/photo.jpg',
       alt: 'Photo',
-      caption: null
+      caption: null,
+      width: 1200,
+      height: 800
     }
   ]
 };
