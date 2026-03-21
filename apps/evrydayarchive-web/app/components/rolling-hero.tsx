@@ -6,43 +6,7 @@ import Link from 'next/link';
 
 import { cn } from '../lib/cn';
 import { useFeatureFlag } from '../lib/use-feature-flag';
-import { type MatStyle, Frame } from './frame';
-import { Placard } from './placard';
-
-// ── Placard position system ───────────────────────────────────────────────────
-// The `top`/`left` on each BlockPhoto always refers to the top-left of the FRAME.
-// The placard hangs off from there in the chosen direction.
-// bottom-* positions sit in normal document flow below the frame.
-// top-* / left-* / right-* positions are absolute, relative to the frame wrapper.
-
-export type PlacardPosition =
-  | 'bottom-left'
-  | 'bottom-center'
-  | 'bottom-right'
-  | 'top-left'
-  | 'top-center'
-  | 'top-right'
-  | 'left-top'
-  | 'left-middle'
-  | 'left-bottom'
-  | 'right-top'
-  | 'right-middle'
-  | 'right-bottom';
-
-const PLACARD_POS: Record<PlacardPosition, string> = {
-  'bottom-left': 'mt-2 flex justify-start',
-  'bottom-center': 'mt-2 flex justify-center',
-  'bottom-right': 'mt-2 flex justify-end',
-  'top-left': 'absolute bottom-full mb-2 left-0',
-  'top-center': 'absolute bottom-full mb-2 left-1/2 -translate-x-1/2',
-  'top-right': 'absolute bottom-full mb-2 right-0',
-  'right-top': 'absolute left-full ml-3 top-0',
-  'right-middle': 'absolute left-full ml-3 top-1/2 -translate-y-1/2',
-  'right-bottom': 'absolute left-full ml-3 bottom-0',
-  'left-top': 'absolute right-full mr-3 top-0',
-  'left-middle': 'absolute right-full mr-3 top-1/2 -translate-y-1/2',
-  'left-bottom': 'absolute right-full mr-3 bottom-0'
-};
+import { type MatStyle, type PlacardPosition, Frame } from './frame';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -595,7 +559,14 @@ const WallPhotoEl = ({ item, shortH }: { item: BlockPhoto; shortH: boolean }) =>
 
   return (
     <div className="absolute" style={{ top, left: item.left }}>
-      <Frame variant="gallery" matStyle={item.matStyle} mat="md" className="block">
+      <Frame
+        variant="gallery"
+        matStyle={item.matStyle}
+        mat="md"
+        className="block"
+        placard={{ title: item.placard.title, subtitle: item.placard.subtitle, size: 'sm' }}
+        placardPosition={item.placardPosition}
+      >
         <div
           className="flex items-center justify-center overflow-hidden bg-black/[0.06]"
           style={{ height: photoH, aspectRatio: item.aspect }}
@@ -605,9 +576,6 @@ const WallPhotoEl = ({ item, shortH }: { item: BlockPhoto; shortH: boolean }) =>
           </span>
         </div>
       </Frame>
-      <div className={cn(PLACARD_POS[item.placardPosition])}>
-        <Placard title={item.placard.title} subtitle={item.placard.subtitle} size="sm" />
-      </div>
     </div>
   );
 };

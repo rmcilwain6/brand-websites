@@ -1,113 +1,112 @@
 import { Frame } from '../components/frame';
-import { Placard } from '../components/placard';
 import { WaitlistForm } from './waitlist-form';
+import { RotatingText } from './rotating-text';
+import { FrameInterior, FrameLabel } from './frame-pieces';
+import { GalleryRow } from './gallery-row';
 
-const FrameInterior = ({ number }: { number: string }) => (
-  <div className="flex h-full w-full items-end justify-end pb-1.5 pr-1.5">
-    <span className="font-medium text-[9px] uppercase tracking-widest text-ink-faint opacity-40">
-      No. {number}
-    </span>
-  </div>
-);
-
-const LogoAsset = ({ width, className }: { width: number; className?: string }) => (
-  <>
-    {/* eslint-disable-next-line @next/next/no-img-element */}
-    <img
-      src="/logo/stacked.svg"
-      alt="Evryday Archive Co."
-      width={width}
-      className={`block dark:hidden ${className ?? ''}`}
-    />
-    {/* eslint-disable-next-line @next/next/no-img-element */}
-    <img
-      src="/logo/stacked-dark.svg"
-      alt="Evryday Archive Co."
-      width={width}
-      className={`hidden dark:block ${className ?? ''}`}
-    />
-  </>
+// Plain <img> — Next.js <Image> does not serve SVGs without unoptimized={true}.
+const LogoAsset = ({
+  width,
+  style,
+  className,
+  variant = 'stacked'
+}: {
+  width?: number;
+  style?: React.CSSProperties;
+  className?: string;
+  variant?: 'stacked' | 'horizontal';
+}) => (
+  // eslint-disable-next-line @next/next/no-img-element
+  <img
+    src={`/logo/${variant}.svg`}
+    alt="Evryday Archive Co."
+    width={width}
+    style={style}
+    className={className}
+  />
 );
 
 export default function ComingSoonPage() {
   return (
-    <main className="min-h-screen">
+    <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
-      <div className="flex min-h-screen flex-col lg:hidden">
-        <div className="flex flex-1 items-center justify-center px-8 pb-8 pt-16">
-          <div className="flex flex-col items-start gap-3">
-            <Frame variant="gallery" mat="lg" matStyle="warm" className="h-72 w-56">
-              <FrameInterior number="01" />
+      <div className="flex h-full flex-col lg:hidden">
+        {/* Top: single frame on the gallery wall */}
+        <div className="flex flex-1 items-center justify-center bg-sun px-8">
+          <div className="animate-fade-up flex flex-col gap-2">
+            <Frame
+              variant="gallery"
+              mat="lg"
+              matStyle="linen"
+              className="aspect-[4/5] w-[250px] rounded-none"
+              borderColor="#4A4540"
+            >
+              <FrameInterior number="01" catalogRef="EAC-2026-471" />
             </Frame>
-            <Placard
-              meta="Exhibition"
-              title="Coming Soon"
-              subtitle="Evryday Archive Co."
-              size="sm"
-            />
+            <FrameLabel number="01" title="your favourite memory" />
           </div>
         </div>
 
-        <div className="px-8 pb-14 pt-4">
-          <LogoAsset width={120} className="mb-8" />
-          <p className="mb-8 text-xl font-semibold tracking-tight text-ink">
-            Launching March 31st.
-          </p>
-          <WaitlistForm />
+        {/* Bottom: content panel */}
+        <div className="flex flex-col justify-between px-8 pb-10 pt-8">
+          <LogoAsset variant="stacked" width={100} className="mb-8" />
+          <div className="animate-fade-up" style={{ animationDelay: '60ms' }}>
+            <div className="mb-3 h-0.5 w-8 bg-accent" />
+            <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+              Opening Soon
+            </p>
+            <p className="mb-3 text-3xl font-semibold leading-tight tracking-tight text-ink">
+              March
+              <br />
+              31st.
+            </p>
+            <div className="mb-6">
+              <RotatingText />
+            </div>
+            <WaitlistForm />
+          </div>
         </div>
       </div>
 
       {/* ── Desktop layout ─────────────────────────────────────────────────── */}
-      <div className="hidden min-h-screen lg:grid" style={{ gridTemplateColumns: '44% 56%' }}>
-        {/* Left panel: logo anchored top, date + form anchored bottom */}
+      <div className="hidden h-full lg:grid" style={{ gridTemplateColumns: '33.33% 66.67%' }}>
+        {/* Left panel: logo top, date + form vertically centred */}
         <div
-          className="flex flex-col py-16"
+          className="flex h-full flex-col py-16"
           style={{
             paddingLeft: 'clamp(3rem, 7vw, 7rem)',
             paddingRight: 'clamp(1.5rem, 3vw, 3rem)'
           }}
         >
-          <div className="mb-auto">
-            <LogoAsset width={200} />
+          <div className="animate-fade-in">
+            <LogoAsset variant="horizontal" style={{ width: 'clamp(160px, 14vw, 260px)' }} />
           </div>
 
-          <div>
-            <p className="mb-8 text-3xl font-semibold tracking-tight text-ink">
-              Launching March 31st.
+          <div className="my-auto animate-fade-up" style={{ animationDelay: '80ms' }}>
+            <div className="mb-3 h-0.5 w-8 bg-accent" />
+            <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+              Opening Soon
             </p>
+            <p
+              className="mb-3 font-semibold leading-none tracking-tight text-ink"
+              style={{ fontSize: 'clamp(2.2rem, 4.5vw, 5rem)' }}
+            >
+              March
+              <br />
+              31st.
+            </p>
+            <div className="mb-6">
+              <RotatingText />
+            </div>
             <WaitlistForm />
           </div>
         </div>
 
-        {/* Right panel: two staggered gallery frames */}
-        <div className="relative flex items-center justify-center py-20">
-          <div className="relative h-[600px] w-[400px]">
-            {/* Frame 1 — larger, upper right */}
-            <div className="absolute right-0 top-0 flex flex-col items-start gap-3">
-              <Frame variant="gallery" mat="lg" matStyle="warm" className="h-[340px] w-[264px]">
-                <FrameInterior number="01" />
-              </Frame>
-              <Placard
-                meta="Exhibition"
-                title="Coming Soon"
-                subtitle="Evryday Archive Co."
-                size="sm"
-              />
-            </div>
-
-            {/* Frame 2 — smaller, lower left */}
-            <div className="absolute bottom-0 left-0 flex flex-col items-start gap-3">
-              <Frame variant="gallery" mat="lg" matStyle="neutral" className="h-[260px] w-[210px]">
-                <FrameInterior number="02" />
-              </Frame>
-              <Placard
-                meta="Exhibition"
-                title="Coming Soon"
-                subtitle="Evryday Archive Co."
-                size="sm"
-              />
-            </div>
-          </div>
+        {/* Right panel: responsive gallery row — GalleryRow measures this panel
+            via ResizeObserver and shows as many frames as fit, with the last
+            one bleeding off the right edge. */}
+        <div className="relative h-full overflow-hidden bg-sun">
+          <GalleryRow />
         </div>
       </div>
     </main>

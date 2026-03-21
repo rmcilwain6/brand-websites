@@ -15,6 +15,7 @@ const config: Config = {
         surface: 'var(--color-surface)',
         sun: 'var(--color-sun)',
         'mat-deep': 'var(--color-mat-deep)',
+        'mat-linen': 'var(--color-mat-linen)',
         accent: '#F06F42',
         ink: 'var(--color-ink)',
         'ink-muted': 'var(--color-ink-muted)',

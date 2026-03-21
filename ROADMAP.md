@@ -1,7 +1,7 @@
 # Project Roadmap & Execution Tracker
 
-Last updated: 2026-02-19  
-Scope: `brand-websites` monorepo (`apps/*`, `packages/*`)  
+Last updated: 2026-03-21
+Scope: `brand-websites` monorepo (`apps/*`, `packages/*`)
 Primary source constraints: `AGENTS.md` + Q1 build brief
 
 ---
@@ -14,219 +14,189 @@ Use this file as the **single source of truth for current project status and nex
 - hand tasks to Codex/agents with clear context,
 - keep scaffolding quality high before feature acceleration.
 
-This roadmap is intentionally execution-oriented (clear checklists, dependencies, and “next step” prompts).
-
 ---
 
-## 2) Working rules (from AGENTS.md + your operating preferences)
-
-These are non-negotiable guardrails for all upcoming work:
+## 2) Working rules (from AGENTS.md)
 
 - Keep the repo shippable; prefer small, verifiable PRs.
 - Apps must only share code through packages (`@repo/ui`, `@repo/core`, `@repo/db`); **no app-to-app imports**.
-- Q1 focus: `apps/evrydayarchive-web` + `apps/admin`; `apps/reed-web` remains structural/skeleton.
+- Q1 focus: `apps/evrydayarchive-web` + `apps/admin`; `apps/reed-web` remains skeleton (out of scope).
 - No public user accounts in Q1; booking is request-based; no in-app payments.
 - TypeScript strict + Tailwind conventions + Zod validation for request payloads.
-- For meaningful changes, run at repo root:
-  - `pnpm lint`
-  - `pnpm build`
-  - `pnpm format`
-  - and relevant runtime sanity checks as needed.
-- PR hygiene: focused commits with intent-based messages.
-
-Your added requirement (captured here):
-
-- Every PR must be validated locally before merge (build/run confidence is mandatory).
+- Every PR must be validated locally before merge: `pnpm format` → `pnpm lint` → `pnpm typecheck` → build sanity.
 
 ---
 
-## 3) Current state snapshot (based on static repo inspection)
+## 3) Hosting decisions (captured)
 
-### Monorepo/platform scaffolding
-
-- ✅ Turborepo + pnpm workspace structure is in place (`apps/*`, `packages/*`, `turbo.json`, `pnpm-workspace.yaml`).
-- ✅ Three apps exist:
-  - `apps/evrydayarchive-web` (public site)
-  - `apps/admin` (admin CMS)
-  - `apps/reed-web` (placeholder)
-- ✅ Shared packages exist and are wired:
-  - `packages/core` (schemas/API helpers/tests)
-  - `packages/ui` (base UI components)
-  - `packages/db` (Prisma schema/client setup)
-
-### Quality/tooling scaffolding
-
-- ✅ Root scripts/docs include lint, build, format, test commands (`README.md`, root `package.json` workflows implied).
-- ✅ CI workflow exists (`.github/workflows/tests.yml`) and runs:
-  - install
-  - prisma generate
-  - typecheck
-  - lint
-  - format check
-  - build
-  - tests
-
-### Product implementation progress (Q1)
-
-- ✅ Public + admin gallery flows are scaffolded (routes/pages for gallery creation, publish, and public fetch).
-- ✅ Inquiry and health API routes exist.
-- ⚠️ Many Q1 feature surfaces from brief are still to be built or expanded (packages page UX, package builder UX + pricing logic, booking calendar request flow, richer CMS entities and workflows, notifications).
-- ⚠️ `reed-web` appears intentionally minimal (aligned with Q1 scope).
+- `evrydayarchive-web` → Vercel, domain: `evrydayarchive.co`
+- `admin` → Vercel (not yet deployed), planned domain: `admin.evrydayarchive.co`
+- Database → Neon PostgreSQL (live, shared across local dev and production)
+- Public site reads gallery/package data from the admin API (`ADMIN_API_BASE_URL`)
+- Public site also writes directly to the DB for waitlist entries (`DATABASE_URL`)
+- Coming-soon mode: `NEXT_PUBLIC_COMING_SOON=true` in public app env → middleware redirects everything to `/coming-soon`
 
 ---
 
-## 4) Roadmap phases
+## 4) Current state snapshot (as of 2026-03-21)
 
-## Phase 0 — Foundation hardening (do this first)
+### Infrastructure & tooling
 
-Goal: make daily agent-driven development low-risk and repeatable.
+- ✅ Turborepo + pnpm workspace (apps + packages wired)
+- ✅ CI pipeline (GitHub Actions): install, Prisma generate, typecheck, lint, format check, build, tests
+- ✅ PR checklist template
+- ✅ Testing strategy documented in README
+- ✅ Vercel deployment config for `evrydayarchive-web` (`vercel.json` at repo root)
+- ⬜ Admin not yet deployed to `admin.evrydayarchive.co`
+- ⬜ Issue templates (`.github/ISSUE_TEMPLATE/*`) — not added
+- ⬜ `CODEOWNERS` — not added
 
-- [x] ~~Confirm/standardize root scripts and workspace task names used by humans + CI:~~
-  - lint, typecheck, build, test, format:check
-- [x] ~~Add/verify **PR checklist template** (`.github/pull_request_template.md`) requiring:~~
-  - scope summary
-  - local validation evidence (`pnpm lint`, `pnpm build`, app boot sanity)
-  - risks/rollback notes
-- [ ] Add/verify issue templates for bug/feature requests (`.github/ISSUE_TEMPLATE/*`).
-- [ ] Add `CODEOWNERS` (if desired) for review routing.
-- [ ] Tighten README “Getting Started in 10 minutes” with copy-paste commands and env setup for admin + public app.
-- [ ] Add “Agent Workflow” section in README (how to reference this roadmap + request next step).
-- [x] ~~Define and document Q1 testing strategy + PR testing expectations:~~
-  - minimum required checks per PR
-  - recommended depth by change type (docs, UI, API, schema)
-  - what lightweight E2E smoke should include for this repo
+### Database & schema
 
-Exit criteria:
+- ✅ All Q1 entities defined in Prisma schema: Gallery, ImageAsset, GalleryImage, Package, PackageModifier, TimeSlot, Inquiry, BookingRequest, Review, WaitlistEntry
+- ✅ Migrations in place
 
-- A new contributor can clone, configure env, run lint/build/test, and launch target apps with no ambiguity.
+### Admin CMS (`apps/admin`)
 
----
+- ✅ Single-password auth (login/logout)
+- ✅ Sidebar navigation
+- ✅ Galleries: full CRUD, image management (Cloudinary upload), cover image selection, publish/unpublish
+- ✅ Packages: CRUD with per-package modifiers
+- ✅ Reviews/testimonials: CRUD (linked to galleries)
+- ⬜ Availability slots management UI
+- ⬜ Booking requests management UI (view/respond to incoming booking requests)
+- ⬜ Inquiries management UI (view/respond to inquiry submissions)
+- ⬜ Admin app deployed to `admin.evrydayarchive.co`
 
-## Phase 1 — Q1 domain model and CMS completion
+### Public site (`apps/evrydayarchive-web`)
 
-Goal: get admin foundation complete enough to power public site features.
+**Navigation & layout**
 
-- [x] ~~Validate current Prisma schema coverage for Q1 entities from brief:~~
-  - Gallery, ImageAsset, Package, PackageModifier, TimeSlot, Inquiry, BookingRequest
-- [x] ~~Implement missing schema pieces + migrations in `packages/db`.~~
-- [ ] Add/expand admin APIs and pages for CRUD where incomplete:
-  - packages + modifiers
-  - availability slots
-  - booking requests
-  - inquiries management
-- [ ] Ensure validation boundaries use shared Zod schemas in `@repo/core`.
-- [ ] Add test coverage for critical admin route handlers and schema validation.
+- ✅ Site header (archival stamp + animated nav)
+- ✅ Site footer
+- ✅ Mobile menu
+- ✅ Theme toggle (dark mode)
+- ✅ Coming-soon page with waitlist email capture
+- ✅ Middleware coming-soon gate (`NEXT_PUBLIC_COMING_SOON`)
 
-Exit criteria:
+**Home page (`/`)**
 
-- Admin can manage all Q1 content/data needed by public site without direct DB edits.
+- ✅ Rolling hero (fixed-text variant with cross-fading copy) — feature-flagged off by default
+- ✅ Brand stance / intro section
+- ⬜ Featured galleries section (needs real gallery data wired)
+- ✅ Reviews/testimonials (filing cabinet UI)
+- ⬜ Pricing philosophy section — needs review
+- ✅ Location section
+- ⬜ Final CTA wired to `/book`
 
----
+**Portfolio (`/portfolio`, `/portfolio/[slug]`)**
 
-## Phase 2 — Evryday public conversion flows
+- ✅ Gallery index (wall list, fetches from admin API)
+- ✅ Gallery detail (image grid with native aspect ratios)
+- ⬜ Mobile scroll-snap viewer (spec §9)
 
-Goal: production-ready customer-facing experience for Q1.
+**Packages & builder**
 
-- [ ] Complete/expand core page set:
-  - Home, Portfolio, Packages, Package Builder, Process, FAQ, Book/Inquire, Contact
-- [ ] Implement Package Builder V1:
-  - base package selection
-  - allowed modifiers
-  - dynamic price update
-  - summary + inquiry record creation
-- [ ] Implement booking request UX:
-  - available slots display
-  - “choose slot” or “request custom time”
-  - request submission only (no auto-confirm)
-- [ ] Ensure accessibility and clear CTA-focused UX.
-- [ ] Add integration tests for key route logic (pricing request payload validation, inquiry/booking request acceptance).
+- ✅ Packages list page (`/packages`) — fetches from admin API
+- ✅ Package Builder UI (`/package-builder`) — base package selection + modifier toggles
+- ⬜ Package Builder dynamic price calculation (currently no live pricing logic)
+- ⬜ Package Builder → inquiry/booking submission flow
 
-Exit criteria:
+**Booking & inquiries**
 
-- A visitor can understand offerings, estimate package, and submit an inquiry/booking request cleanly.
+- ✅ `/inquire` — guided questionnaire UI with package recommendation stub
+- ⬜ `/inquire` — recommendation logic (currently a stub, not wired to real data)
+- ✅ `/book` — page exists, date/time picker UI styled
+- ⬜ `/book` — backend hookup (submit `BookingRequest` to DB)
+- ⬜ `/book` — available slots display (needs admin slots data)
+- ⬜ Email confirmation on booking/inquiry submission
 
----
+**Other pages**
 
-## Phase 3 — Operational readiness & deploy confidence
+- ✅ `/contact` — contact form
+- ✅ `/faq` — FAQ accordion
+- ✅ `/process` — process steps
 
-Goal: reduce regressions and deployment friction.
+**Notifications**
 
-- [ ] Add branch protections/check requirements to match CI gates.
-- [ ] Add preview/deployment strategy docs per app (even if deploy infra remains external).
-- [ ] Add error handling/logging guidelines with sensitive-data redaction constraints.
-- [ ] Add smoke-check procedure per PR:
-  - build passes
-  - app boots
-  - critical route(s) respond
-- [ ] Optional: add lightweight E2E smoke tests for top public + admin flows.
-
-Exit criteria:
-
-- Each PR follows a repeatable local+CI quality bar and release path is documented.
+- ⬜ Email provider not chosen yet (Resend, Postmark, or SES)
+- ⬜ No transactional emails implemented (booking confirmation, inquiry acknowledgement)
 
 ---
 
-## 5) Prioritized backlog (ordered)
+## 5) Phase roadmap
 
-1. **Foundation docs + contribution workflow hardening** (Phase 0).
-2. **Schema/API completion for packages, modifiers, slots, bookings** (Phase 1).
-3. **Public Package Builder + booking request flows** (Phase 2).
-4. **Notifications + final UX polish for conversion pages** (Phase 2).
-5. **Operational guardrails and smoke automation** (Phase 3).
+### Phase 0 — Foundation hardening
 
----
+- [x] Standardize root scripts and workspace task names
+- [x] PR checklist template
+- [x] Q1 testing strategy documented
+- [x] README setup instructions
+- [ ] Issue templates (`.github/ISSUE_TEMPLATE/*`)
+- [ ] `CODEOWNERS`
 
-## 6) PR execution template (copy for every task)
+### Phase 1 — Q1 domain model and CMS completion
 
-Use this lightweight loop:
+- [x] Full Prisma schema coverage for Q1 entities
+- [x] Admin galleries CRUD + image management
+- [x] Admin packages + modifiers CRUD
+- [x] Admin reviews/testimonials CRUD
+- [ ] Admin availability slots management UI
+- [ ] Admin booking requests management UI
+- [ ] Admin inquiries management UI
+- [ ] Test coverage for critical admin route handlers
 
-1. Choose the top unchecked item from this roadmap.
-2. Define smallest viable scope (1 PR).
-3. Implement with shared package boundaries respected.
-4. Validate locally:
-   - `pnpm lint`
-   - `pnpm build`
-   - targeted runtime sanity checks (affected apps)
-5. Open PR with:
-   - what changed
-   - why
-   - validation evidence
-   - tradeoffs / follow-ups
-6. Mark roadmap item progress.
+### Phase 2 — Public conversion flows (MVP)
 
----
+- [x] All core pages scaffolded and styled
+- [x] Portfolio fetches live data from admin API
+- [x] Package list fetches live data from admin API
+- [x] Guided questionnaire on `/inquire`
+- [ ] `/inquire` recommendation logic wired to real package data
+- [ ] Package Builder dynamic price calculation
+- [ ] Package Builder → inquiry submission
+- [ ] `/book` backend hookup (BookingRequest creation)
+- [ ] `/book` available slots display
+- [ ] Email notifications (choose provider, send on inquiry + booking)
+- [ ] Mobile scroll-snap gallery viewer (spec §9)
+- [ ] Home page featured galleries wired to real data
 
-## 7) “Ask Codex for next step” prompt recipes
+### Phase 3 — Operational readiness
 
-Use one of these prompts verbatim:
-
-- **Execution prompt:**  
-  “Read `ROADMAP.md`. Take the highest-priority unchecked item in Phase 0 and implement it in a minimal PR. Follow AGENTS.md rules. Run lint and build, then summarize.”
-
-- **Planning prompt:**  
-  “Read `ROADMAP.md` and AGENTS.md. Propose the next 3 PRs (smallest-first) with acceptance criteria and risks.”
-
-- **Recovery prompt after time away:**  
-  “Read `ROADMAP.md`, inspect current repo status, and tell me what is complete vs pending. Recommend the single best next PR to unblock momentum.”
-
----
-
-## 8) Decisions captured from latest planning pass
-
-- ✅ CI/CD approach: keep GitHub Actions-focused CI for now; this is sufficient for current phase.
-- ✅ Testing depth decision moved into **Phase 0** as a concrete planning/delivery task.
-- ✅ CMS content ownership assumption: single primary contributor for now (admin UX can prioritize clarity over multi-editor workflows).
-- ✅ Roadmap format decision: keep a single `ROADMAP.md` file for now (no split).
-- ⚠️ Notifications provider remains open; prefer a low-cost email-first API/service when selected.
-
-### Remaining open question
-
-1. Notifications: which provider should Q1 target for booking/inquiry emails (e.g., Resend, Postmark, SES), balancing lowest operational cost with reliable delivery?
+- [x] Vercel deployment config for `evrydayarchive-web`
+- [ ] Admin deployed to `admin.evrydayarchive.co`
+- [ ] Branch protections configured to match CI gates
+- [ ] Error handling and logging guidelines
+- [ ] E2E smoke tests (login, gallery publish, public portfolio render)
 
 ---
 
-## 9) Change log
+## 6) Prioritized backlog (ordered by impact)
 
-- 2026-02-18: Initial roadmap created from repo inspection + AGENTS.md + provided build brief.
-- 2026-02-19: Updated based on planning feedback (added Phase 0 testing-strategy task and captured resolved decisions from Section 8 responses).
-- 2026-02-26: Checked off completed foundation/testing tasks and Q1 schema-completion tasks based on merged README, core schema, API route, and Prisma updates.
+1. **Deploy admin to `admin.evrydayarchive.co`** — unblocks real content management in production.
+2. **`/book` backend + email flow** — highest broken-link impact; many CTAs point here.
+3. **Admin booking requests + inquiries management UI** — needed to act on submissions.
+4. **Package Builder pricing logic + inquiry submission** — completes the conversion flow.
+5. **`/inquire` recommendation logic** — currently a stub; needs to surface real packages.
+6. **Email notifications provider** (Resend/Postmark/SES) — required for booking/inquiry emails.
+7. **Admin availability slots UI** — needed for `/book` to show available dates.
+8. **Mobile scroll-snap gallery viewer** (spec §9).
+9. **Home page featured galleries** wired to real data.
+10. **E2E smoke tests** for critical paths.
+
+---
+
+## 7) Open questions
+
+1. **Email provider**: Which service for transactional emails? Resend is simplest to set up; Postmark has strong deliverability; SES cheapest at scale.
+2. **`/book` slot UX**: Should visitors pick from available admin-managed slots, request a custom time, or both?
+3. **Package Builder pricing**: Is pricing calculated client-side from package/modifier data, or should there be a server-side pricing endpoint?
+
+---
+
+## 8) Change log
+
+- 2026-02-18: Initial roadmap created.
+- 2026-02-19: Updated — added Phase 0 testing-strategy task, captured resolved decisions.
+- 2026-02-26: Checked off foundation, testing, and schema-completion tasks.
+- 2026-03-21: Major update — reflected all work done since Feb; added hosting decisions; restructured backlog by impact; added open questions.

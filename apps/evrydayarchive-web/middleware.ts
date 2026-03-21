@@ -7,7 +7,8 @@ export function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  if (pathname === '/coming-soon' || pathname.startsWith('/api/')) {
+  // Pass through the coming-soon page, API routes, and any static file (has a file extension)
+  if (pathname === '/coming-soon' || pathname.startsWith('/api/') || /\.\w+$/.test(pathname)) {
     return NextResponse.next();
   }
 

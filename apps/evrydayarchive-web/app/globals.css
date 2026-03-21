@@ -9,6 +9,7 @@
     --color-surface: #ffffff;
     --color-sun: #f3ede2;
     --color-mat-deep: #e4d8c8;
+    --color-mat-linen: #e3d9c8;
     --color-ink: #000000;
     --color-ink-muted: #2b2b2b;
     --color-ink-faint: rgba(43, 35, 26, 0.45);
@@ -26,6 +27,7 @@
     --color-surface: #262423;
     --color-sun: #252321; /* warm-dark surface, mirrors sun's role in light mode */
     --color-mat-deep: #1d1b18;
+    --color-mat-linen: #252220;
     --color-ink: #ffffff;
     --color-ink-muted: #faf6ef;
     --color-ink-faint: rgba(250, 246, 239, 0.45);

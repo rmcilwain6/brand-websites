@@ -186,7 +186,10 @@ const GalleryCard = ({ gallery }: { gallery: GalleryListItem }) => {
       className="group flex-none snap-start"
       style={{ width: 'min(288px, 80vw)' }}
     >
-      <Frame className="mb-3">
+      <Frame
+        placard={{ title: gallery.title, subtitle: gallery.location ?? undefined }}
+        placardPosition="bottom-left"
+      >
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-sun">
           {gallery.coverImage ? (
             <Image
@@ -203,8 +206,6 @@ const GalleryCard = ({ gallery }: { gallery: GalleryListItem }) => {
           )}
         </div>
       </Frame>
-
-      <Placard title={gallery.title} subtitle={gallery.location ?? undefined} />
     </Link>
   );
 };
