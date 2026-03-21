@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 import { Frame } from '../components/frame';
 import { Placard } from '../components/placard';
 import { WaitlistForm } from './waitlist-form';
@@ -12,28 +10,20 @@ const FrameInterior = ({ number }: { number: string }) => (
   </div>
 );
 
-const LogoAsset = ({
-  width,
-  height,
-  className
-}: {
-  width: number;
-  height: number;
-  className?: string;
-}) => (
+const LogoAsset = ({ width, className }: { width: number; className?: string }) => (
   <>
-    <Image
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img
       src="/logo/stacked.svg"
       alt="Evryday Archive Co."
       width={width}
-      height={height}
       className={`block dark:hidden ${className ?? ''}`}
     />
-    <Image
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img
       src="/logo/stacked-dark.svg"
       alt="Evryday Archive Co."
       width={width}
-      height={height}
       className={`hidden dark:block ${className ?? ''}`}
     />
   </>
@@ -59,7 +49,7 @@ export default function ComingSoonPage() {
         </div>
 
         <div className="px-8 pb-14 pt-4">
-          <LogoAsset width={120} height={92} className="mb-8" />
+          <LogoAsset width={120} className="mb-8" />
           <p className="mb-8 text-xl font-semibold tracking-tight text-ink">
             Launching March 31st.
           </p>
@@ -78,7 +68,7 @@ export default function ComingSoonPage() {
           }}
         >
           <div className="mb-auto">
-            <LogoAsset width={200} height={153} />
+            <LogoAsset width={200} />
           </div>
 
           <div>
