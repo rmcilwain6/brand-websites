@@ -45,9 +45,12 @@ describe('GET /api/public/galleries/[slug]', () => {
 
     const { GET } = await import('./[slug]/route');
 
-    const response = await GET(new Request('http://localhost/api/public/galleries/fall-highlights'), {
-      params: { slug: 'fall-highlights' }
-    });
+    const response = await GET(
+      new Request('http://localhost/api/public/galleries/fall-highlights'),
+      {
+        params: { slug: 'fall-highlights' }
+      }
+    );
     const payload = await response.json();
 
     expect(response.status).toBe(200);

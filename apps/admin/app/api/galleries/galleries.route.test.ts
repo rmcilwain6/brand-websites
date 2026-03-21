@@ -51,7 +51,10 @@ describe('PATCH /api/galleries/[id]/images/[galleryImageId]', () => {
     expect(payload).toEqual({ ok: true, data: { id: 'img_2', isCover: true } });
     expect(mocks.transaction).toHaveBeenCalledTimes(1);
     expect(mocks.galleryImageUpdateMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { galleryId: 'gal_1', isCover: true }, data: { isCover: false } })
+      expect.objectContaining({
+        where: { galleryId: 'gal_1', isCover: true },
+        data: { isCover: false }
+      })
     );
     expect(mocks.galleryImageUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 'img_2' }, data: { isCover: true } })
