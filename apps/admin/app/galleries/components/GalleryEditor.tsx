@@ -175,6 +175,29 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
     setMessage('Upload complete.');
   };
 
+  // ── Cover image ───────────────────────────────────────────────────────────────
+
+  const setCoverImage = async (galleryImageId: string) => {
+    setError(null);
+    setMessage(null);
+
+    const response = await fetch(`/api/galleries/${gallery.id}/images/${galleryImageId}`, {
+      method: 'PATCH'
+    });
+
+    const payload = await response.json();
+    if (!payload.ok) {
+      setError(payload.error?.message ?? 'Unable to set cover image.');
+      return;
+    }
+
+    setGalleryState((prev) => ({
+      ...prev,
+      images: prev.images.map((img) => ({ ...img, isCover: img.id === galleryImageId }))
+    }));
+    setMessage('Cover image updated.');
+  };
+
   // ── Remove image ─────────────────────────────────────────────────────────────
 
   const removeGalleryImage = async (galleryImageId: string) => {
@@ -405,13 +428,24 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
                     </p>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeGalleryImage(image.id)}
-                  className="text-xs font-semibold text-rose-600 hover:text-rose-500"
-                >
-                  Remove
-                </button>
+                <div className="flex items-center gap-3">
+                  {!image.isCover && (
+                    <button
+                      type="button"
+                      onClick={() => setCoverImage(image.id)}
+                      className="text-xs font-semibold text-slate-500 hover:text-amber-600"
+                    >
+                      Set cover
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeGalleryImage(image.id)}
+                    className="text-xs font-semibold text-rose-600 hover:text-rose-500"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ))
           )}
