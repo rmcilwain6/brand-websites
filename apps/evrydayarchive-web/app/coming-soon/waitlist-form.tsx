@@ -49,7 +49,7 @@ export const WaitlistForm = () => {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="border border-border bg-surface px-4 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-canvas hover:text-ink disabled:opacity-50"
+          className="rounded-card bg-accent px-5 py-2 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 disabled:opacity-50"
         >
           {status === 'loading' ? '...' : 'Notify me'}
         </button>
