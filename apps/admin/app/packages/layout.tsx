@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
+import { AdminShell } from '../components/AdminShell';
 import { getSessionCookieName, verifyAdminSessionToken } from '../lib/auth';
 
 const PackagesLayout = ({ children }: { children: ReactNode }) => {
@@ -11,7 +12,7 @@ const PackagesLayout = ({ children }: { children: ReactNode }) => {
     redirect('/login');
   }
 
-  return <>{children}</>;
+  return <AdminShell>{children}</AdminShell>;
 };
 
 export default PackagesLayout;

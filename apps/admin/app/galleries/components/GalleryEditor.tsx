@@ -1,10 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 const statusOptions = ['DRAFT', 'PUBLISHED', 'ARCHIVED'] as const;
-
 type GalleryStatus = (typeof statusOptions)[number];
 
 type ImageAsset = {
@@ -33,30 +32,26 @@ type Gallery = {
   images: GalleryImage[];
 };
 
-type GalleryEditorProps = {
-  gallery: Gallery;
-  imageAssets: ImageAsset[];
+type UploadItem = {
+  localId: string;
+  file: File;
+  previewUrl: string;
+  alt: string;
+  status: 'queued' | 'uploading' | 'done' | 'error';
+  errorMsg?: string;
 };
 
-const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
+const stripExtension = (filename: string) => filename.replace(/\.[^/.]+$/, '');
+
+const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
   const [galleryState, setGalleryState] = useState(gallery);
-  const [assetList, setAssetList] = useState(imageAssets);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [queue, setQueue] = useState<UploadItem[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [assetForm, setAssetForm] = useState({
-    src: '',
-    alt: '',
-    caption: '',
-    width: '',
-    height: ''
-  });
-  const [attachForm, setAttachForm] = useState({
-    imageAssetId: assetList[0]?.id ?? '',
-    order: '0',
-    isCover: false
-  });
-  const hasAssets = assetList.length > 0;
+  // ── Gallery details ──────────────────────────────────────────────────────────
 
   const updateGallery = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -75,7 +70,6 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
     });
 
     const payload = await response.json();
-
     if (!payload.ok) {
       setError(payload.error?.message ?? 'Unable to update gallery.');
       return;
@@ -84,6 +78,8 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
     setGalleryState((prev) => ({ ...prev, ...payload.data }));
     setMessage('Gallery details updated.');
   };
+
+  // ── Status ───────────────────────────────────────────────────────────────────
 
   const updateStatus = async () => {
     setError(null);
@@ -96,7 +92,6 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
     });
 
     const payload = await response.json();
-
     if (!payload.ok) {
       setError(payload.error?.message ?? 'Unable to update status.');
       return;
@@ -106,69 +101,104 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
     setMessage('Status updated.');
   };
 
-  const createImageAsset = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError(null);
-    setMessage(null);
+  // ── Upload queue ─────────────────────────────────────────────────────────────
 
-    const response = await fetch('/api/images', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        src: assetForm.src,
-        alt: assetForm.alt,
-        caption: assetForm.caption || undefined,
-        width: assetForm.width ? Number(assetForm.width) : undefined,
-        height: assetForm.height ? Number(assetForm.height) : undefined
-      })
-    });
+  const onFilesSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
 
-    const payload = await response.json();
+    const items: UploadItem[] = files.map((file) => ({
+      localId: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
+      file,
+      previewUrl: URL.createObjectURL(file),
+      alt: stripExtension(file.name),
+      status: 'queued'
+    }));
 
-    if (!payload.ok) {
-      setError(payload.error?.message ?? 'Unable to create image asset.');
-      return;
-    }
-
-    setAssetList((prev) => [payload.data, ...prev]);
-    setAttachForm((prev) => ({ ...prev, imageAssetId: payload.data.id }));
-    setAssetForm({ src: '', alt: '', caption: '', width: '', height: '' });
-    setMessage('Image asset created.');
+    setQueue((prev) => [...prev, ...items]);
+    // Reset input so same files can be re-selected if needed
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const attachImage = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const updateAlt = (localId: string, alt: string) => {
+    setQueue((prev) => prev.map((item) => (item.localId === localId ? { ...item, alt } : item)));
+  };
+
+  const removeQueued = (localId: string) => {
+    setQueue((prev) => prev.filter((item) => item.localId !== localId));
+  };
+
+  const uploadAll = async () => {
+    const pending = queue.filter((item) => item.status === 'queued');
+    if (pending.length === 0) return;
+
+    setUploading(true);
     setError(null);
     setMessage(null);
 
-    if (!attachForm.imageAssetId) {
-      setError('Select an image asset to attach.');
-      return;
+    for (const item of pending) {
+      setQueue((prev) =>
+        prev.map((q) => (q.localId === item.localId ? { ...q, status: 'uploading' } : q))
+      );
+
+      const formData = new FormData();
+      formData.append('file', item.file);
+      formData.append('alt', item.alt);
+
+      const response = await fetch(`/api/galleries/${gallery.id}/images/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const payload = await response.json();
+
+      if (!payload.ok) {
+        setQueue((prev) =>
+          prev.map((q) =>
+            q.localId === item.localId
+              ? { ...q, status: 'error', errorMsg: payload.error?.message ?? 'Upload failed.' }
+              : q
+          )
+        );
+      } else {
+        setQueue((prev) =>
+          prev.map((q) => (q.localId === item.localId ? { ...q, status: 'done' } : q))
+        );
+        setGalleryState((prev) => ({
+          ...prev,
+          images: [...prev.images, payload.data].sort((a, b) => a.order - b.order)
+        }));
+      }
     }
 
-    const response = await fetch(`/api/galleries/${gallery.id}/images`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        imageAssetId: attachForm.imageAssetId,
-        order: Number(attachForm.order),
-        isCover: attachForm.isCover
-      })
+    setUploading(false);
+    setMessage('Upload complete.');
+  };
+
+  // ── Cover image ───────────────────────────────────────────────────────────────
+
+  const setCoverImage = async (galleryImageId: string) => {
+    setError(null);
+    setMessage(null);
+
+    const response = await fetch(`/api/galleries/${gallery.id}/images/${galleryImageId}`, {
+      method: 'PATCH'
     });
 
     const payload = await response.json();
-
     if (!payload.ok) {
-      setError(payload.error?.message ?? 'Unable to attach image.');
+      setError(payload.error?.message ?? 'Unable to set cover image.');
       return;
     }
 
     setGalleryState((prev) => ({
       ...prev,
-      images: [...prev.images, payload.data].sort((a, b) => a.order - b.order)
+      images: prev.images.map((img) => ({ ...img, isCover: img.id === galleryImageId }))
     }));
-    setMessage('Image attached.');
+    setMessage('Cover image updated.');
   };
+
+  // ── Remove image ─────────────────────────────────────────────────────────────
 
   const removeGalleryImage = async (galleryImageId: string) => {
     setError(null);
@@ -179,7 +209,6 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
     });
 
     const payload = await response.json();
-
     if (!payload.ok) {
       setError(payload.error?.message ?? 'Unable to remove image.');
       return;
@@ -192,8 +221,13 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
     setMessage('Image removed.');
   };
 
+  // ── Render ───────────────────────────────────────────────────────────────────
+
+  const queuedCount = queue.filter((i) => i.status === 'queued').length;
+
   return (
     <div className="space-y-8">
+      {/* Gallery details */}
       <section className="rounded-lg border border-slate-200 bg-white p-6">
         <h2 className="text-lg font-semibold text-slate-900">Gallery details</h2>
         <form onSubmit={updateGallery} className="mt-4 space-y-4">
@@ -201,9 +235,7 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
             Title
             <input
               value={galleryState.title}
-              onChange={(event) =>
-                setGalleryState((prev) => ({ ...prev, title: event.target.value }))
-              }
+              onChange={(e) => setGalleryState((prev) => ({ ...prev, title: e.target.value }))}
               className="rounded-md border border-slate-200 px-3 py-2 text-sm"
               required
             />
@@ -212,9 +244,7 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
             Slug
             <input
               value={galleryState.slug}
-              onChange={(event) =>
-                setGalleryState((prev) => ({ ...prev, slug: event.target.value }))
-              }
+              onChange={(e) => setGalleryState((prev) => ({ ...prev, slug: e.target.value }))}
               className="rounded-md border border-slate-200 px-3 py-2 text-sm"
               required
             />
@@ -223,8 +253,8 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
             Description
             <textarea
               value={galleryState.description ?? ''}
-              onChange={(event) =>
-                setGalleryState((prev) => ({ ...prev, description: event.target.value }))
+              onChange={(e) =>
+                setGalleryState((prev) => ({ ...prev, description: e.target.value }))
               }
               className="rounded-md border border-slate-200 px-3 py-2 text-sm"
               rows={3}
@@ -234,9 +264,7 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
             Location
             <input
               value={galleryState.location ?? ''}
-              onChange={(event) =>
-                setGalleryState((prev) => ({ ...prev, location: event.target.value }))
-              }
+              onChange={(e) => setGalleryState((prev) => ({ ...prev, location: e.target.value }))}
               className="rounded-md border border-slate-200 px-3 py-2 text-sm"
             />
           </label>
@@ -249,22 +277,20 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
         </form>
       </section>
 
+      {/* Status */}
       <section className="rounded-lg border border-slate-200 bg-white p-6">
         <h2 className="text-lg font-semibold text-slate-900">Status</h2>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <select
             value={galleryState.status}
-            onChange={(event) =>
-              setGalleryState((prev) => ({
-                ...prev,
-                status: event.target.value as GalleryStatus
-              }))
+            onChange={(e) =>
+              setGalleryState((prev) => ({ ...prev, status: e.target.value as GalleryStatus }))
             }
             className="rounded-md border border-slate-200 px-3 py-2 text-sm"
           >
-            {statusOptions.map((status) => (
-              <option key={status} value={status}>
-                {status}
+            {statusOptions.map((s) => (
+              <option key={s} value={s}>
+                {s}
               </option>
             ))}
           </select>
@@ -279,129 +305,112 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
         </div>
       </section>
 
+      {/* Images */}
       <section className="rounded-lg border border-slate-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-slate-900">Add image asset</h2>
-        <form onSubmit={createImageAsset} className="mt-4 space-y-4">
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            Image URL
-            <input
-              value={assetForm.src}
-              onChange={(event) => setAssetForm((prev) => ({ ...prev, src: event.target.value }))}
-              className="rounded-md border border-slate-200 px-3 py-2 text-sm"
-              required
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            Alt text
-            <input
-              value={assetForm.alt}
-              onChange={(event) => setAssetForm((prev) => ({ ...prev, alt: event.target.value }))}
-              className="rounded-md border border-slate-200 px-3 py-2 text-sm"
-              required
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            Caption
-            <input
-              value={assetForm.caption}
-              onChange={(event) =>
-                setAssetForm((prev) => ({ ...prev, caption: event.target.value }))
-              }
-              className="rounded-md border border-slate-200 px-3 py-2 text-sm"
-            />
-          </label>
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-              Width
-              <input
-                value={assetForm.width}
-                onChange={(event) =>
-                  setAssetForm((prev) => ({ ...prev, width: event.target.value }))
-                }
-                className="rounded-md border border-slate-200 px-3 py-2 text-sm"
-                inputMode="numeric"
-              />
-            </label>
-            <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-              Height
-              <input
-                value={assetForm.height}
-                onChange={(event) =>
-                  setAssetForm((prev) => ({ ...prev, height: event.target.value }))
-                }
-                className="rounded-md border border-slate-200 px-3 py-2 text-sm"
-                inputMode="numeric"
-              />
-            </label>
-          </div>
-          <button
-            type="submit"
-            className="rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            Save image asset
-          </button>
-        </form>
-      </section>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-slate-900">Images</h2>
+          <span className="text-sm text-slate-500">{galleryState.images.length} attached</span>
+        </div>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-slate-900">Attach images</h2>
-        <form onSubmit={attachImage} className="mt-4 space-y-4">
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            Image asset
-            <select
-              value={attachForm.imageAssetId}
-              onChange={(event) =>
-                setAttachForm((prev) => ({ ...prev, imageAssetId: event.target.value }))
-              }
-              className="rounded-md border border-slate-200 px-3 py-2 text-sm"
-              disabled={!hasAssets}
-            >
-              {assetList.map((asset) => (
-                <option key={asset.id} value={asset.id}>
-                  {asset.alt}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="flex flex-wrap gap-4">
-            <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-              Order
-              <input
-                value={attachForm.order}
-                onChange={(event) =>
-                  setAttachForm((prev) => ({ ...prev, order: event.target.value }))
-                }
-                className="rounded-md border border-slate-200 px-3 py-2 text-sm"
-                inputMode="numeric"
-              />
-            </label>
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-              <input
-                type="checkbox"
-                checked={attachForm.isCover}
-                onChange={(event) =>
-                  setAttachForm((prev) => ({ ...prev, isCover: event.target.checked }))
-                }
-              />
-              Cover image
-            </label>
-          </div>
+        {/* Upload area */}
+        <div className="mt-5">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={onFilesSelected}
+          />
           <button
-            type="submit"
-            disabled={!hasAssets}
-            className="rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="rounded-md border border-dashed border-slate-300 px-6 py-4 text-sm font-medium text-slate-600 transition-colors hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Attach to gallery
+            + Select photos
           </button>
-        </form>
-        <div className="mt-6 space-y-3">
+        </div>
+
+        {/* Upload queue */}
+        {queue.length > 0 && (
+          <div className="mt-5 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-slate-700">
+                {queuedCount > 0 ? `${queuedCount} ready to upload` : 'All done'}
+              </p>
+              {queuedCount > 0 && (
+                <button
+                  type="button"
+                  onClick={uploadAll}
+                  disabled={uploading}
+                  className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-300"
+                >
+                  {uploading
+                    ? 'Uploading…'
+                    : `Upload ${queuedCount} photo${queuedCount === 1 ? '' : 's'}`}
+                </button>
+              )}
+            </div>
+
+            {queue.map((item) => (
+              <div
+                key={item.localId}
+                className="flex items-center gap-3 rounded-md border border-slate-100 px-3 py-2"
+              >
+                {/* Thumbnail */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={item.previewUrl}
+                  alt=""
+                  className="h-12 w-12 shrink-0 rounded-md object-cover"
+                />
+
+                {/* Alt text + status */}
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                  {item.status === 'queued' ? (
+                    <input
+                      value={item.alt}
+                      onChange={(e) => updateAlt(item.localId, e.target.value)}
+                      placeholder="Alt text"
+                      className="rounded border border-slate-200 px-2 py-1 text-xs"
+                    />
+                  ) : (
+                    <p className="truncate text-sm font-medium text-slate-700">{item.alt}</p>
+                  )}
+                  {item.status === 'uploading' && (
+                    <p className="text-xs text-indigo-600">Uploading…</p>
+                  )}
+                  {item.status === 'done' && <p className="text-xs text-emerald-600">Uploaded</p>}
+                  {item.status === 'error' && (
+                    <p className="text-xs text-rose-600">{item.errorMsg}</p>
+                  )}
+                </div>
+
+                {/* Remove (queued only) */}
+                {item.status === 'queued' && (
+                  <button
+                    type="button"
+                    onClick={() => removeQueued(item.localId)}
+                    className="shrink-0 text-xs text-slate-400 hover:text-rose-500"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Attached images */}
+        <div className="mt-6 space-y-2">
           {galleryState.images.length === 0 ? (
             <p className="text-sm text-slate-500">No images attached yet.</p>
           ) : (
             galleryState.images.map((image) => (
               <div
                 key={image.id}
-                className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-slate-100 px-3 py-2"
+                className="flex items-center justify-between gap-4 rounded-md border border-slate-100 px-3 py-2"
               >
                 <div className="flex items-center gap-3">
                   <Image
@@ -414,17 +423,29 @@ const GalleryEditor = ({ gallery, imageAssets }: GalleryEditorProps) => {
                   <div>
                     <p className="text-sm font-semibold text-slate-800">{image.imageAsset.alt}</p>
                     <p className="text-xs text-slate-500">
-                      Order {image.order} {image.isCover ? '• Cover' : ''}
+                      #{image.order}
+                      {image.isCover && <span className="ml-1.5 text-amber-600">Cover</span>}
                     </p>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeGalleryImage(image.id)}
-                  className="text-xs font-semibold text-rose-600 hover:text-rose-500"
-                >
-                  Remove
-                </button>
+                <div className="flex items-center gap-3">
+                  {!image.isCover && (
+                    <button
+                      type="button"
+                      onClick={() => setCoverImage(image.id)}
+                      className="text-xs font-semibold text-slate-500 hover:text-amber-600"
+                    >
+                      Set cover
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeGalleryImage(image.id)}
+                    className="text-xs font-semibold text-rose-600 hover:text-rose-500"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ))
           )}

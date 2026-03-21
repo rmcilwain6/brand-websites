@@ -8,6 +8,8 @@ type GalleryImageWithAsset = {
     src: string;
     alt: string | null;
     caption: string | null;
+    width: number | null;
+    height: number | null;
   };
 };
 
@@ -44,7 +46,9 @@ export const GET = async (
         order: image.order,
         src: image.imageAsset.src,
         alt: image.imageAsset.alt,
-        caption: image.imageAsset.caption
+        caption: image.imageAsset.caption,
+        width: image.imageAsset.width,
+        height: image.imageAsset.height
       }))
     };
 

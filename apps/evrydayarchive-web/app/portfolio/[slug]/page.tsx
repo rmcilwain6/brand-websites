@@ -94,7 +94,13 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
                   variant="craft"
                   rotateDeg={index % 3 === 0 ? -0.4 : index % 3 === 1 ? 0 : 0.4}
                 >
-                  <div className="relative aspect-[3/2] w-full overflow-hidden rounded-sm bg-sun">
+                  <div
+                    className="relative w-full overflow-hidden rounded-sm bg-sun"
+                    style={{
+                      aspectRatio:
+                        image.width && image.height ? `${image.width} / ${image.height}` : '3 / 2'
+                    }}
+                  >
                     <Image
                       src={image.src}
                       alt={image.alt}

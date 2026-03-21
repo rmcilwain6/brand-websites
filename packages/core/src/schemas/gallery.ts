@@ -54,7 +54,9 @@ export const GalleryImageSchema = z.object({
   order: z.number().int().nonnegative(),
   src: z.string().url(),
   alt: z.string().min(1),
-  caption: z.string().nullable()
+  caption: z.string().nullable(),
+  width: z.number().int().positive().nullable(),
+  height: z.number().int().positive().nullable()
 });
 
 export const GalleryDetailSchema = z.object({
