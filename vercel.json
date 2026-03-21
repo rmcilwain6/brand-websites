@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd apps/evrydayarchive-web && next build",
+  "buildCommand": "pnpm --filter @repo/db generate && cd apps/evrydayarchive-web && next build",
   "outputDirectory": "apps/evrydayarchive-web/.next",
   "installCommand": "pnpm install --frozen-lockfile"
 }

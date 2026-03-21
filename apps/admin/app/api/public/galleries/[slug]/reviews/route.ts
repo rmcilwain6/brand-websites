@@ -22,18 +22,18 @@ export const GET = async (
       }
     });
 
-    const payload = reviews.map((r) => ({
-      id: r.id,
-      clientName: r.clientName,
-      quote: r.quote,
-      sessionType: r.sessionType,
-      sessionDate: r.sessionDate ? r.sessionDate.toISOString() : null,
-      image: r.imageAsset
+    const payload = reviews.map((review) => ({
+      id: review.id,
+      clientName: review.clientName,
+      quote: review.quote,
+      sessionType: review.sessionType,
+      sessionDate: review.sessionDate ? review.sessionDate.toISOString() : null,
+      image: review.imageAsset
         ? {
-            src: r.imageAsset.src,
-            alt: r.imageAsset.alt,
-            width: r.imageAsset.width,
-            height: r.imageAsset.height
+            src: review.imageAsset.src,
+            alt: review.imageAsset.alt,
+            width: review.imageAsset.width,
+            height: review.imageAsset.height
           }
         : null
     }));

@@ -15,7 +15,8 @@ export type {
   PackageStatus,
   Prisma as PrismaTypes,
   TimeSlot,
-  TimeSlotStatus
+  TimeSlotStatus,
+  WaitlistEntry
 } from '@prisma/client';
 export { Prisma } from '@prisma/client';
 export { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';

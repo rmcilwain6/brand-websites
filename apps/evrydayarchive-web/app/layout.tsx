@@ -17,6 +17,8 @@ export const metadata = {
   description: 'A photography studio committed to documenting the moments that matter.'
 };
 
+const isComingSoon = process.env.NEXT_PUBLIC_COMING_SOON === 'true';
+
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     /*
@@ -40,9 +42,9 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       </head>
       <body>
         <ThemeProvider>
-          <SiteHeader />
+          {!isComingSoon && <SiteHeader />}
           {children}
-          <SiteFooter />
+          {!isComingSoon && <SiteFooter />}
         </ThemeProvider>
       </body>
     </html>

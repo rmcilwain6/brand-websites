@@ -182,6 +182,12 @@ model Inquiry {
   @@index([status])
 }
 
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
 model BookingRequest {
   id              String               @id @default(cuid())
   inquiryId       String?              @unique
