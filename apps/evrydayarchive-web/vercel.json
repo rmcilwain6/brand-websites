@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=evrydayarchive-web",
+  "buildCommand": "next build",
   "outputDirectory": ".next",
-  "installCommand": "pnpm install --frozen-lockfile"
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile"
 }
