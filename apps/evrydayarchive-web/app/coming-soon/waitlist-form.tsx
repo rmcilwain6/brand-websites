@@ -89,39 +89,29 @@ export const WaitlistForm = () => {
                     className="shrink-0 text-accent transition-colors duration-fast hover:text-accent/70"
                   >
                     <svg
-                      width="28"
-                      height="14"
-                      viewBox="0 0 28 14"
+                      width="26"
+                      height="12"
+                      viewBox="0 0 26 12"
                       fill="none"
                       aria-hidden
                       style={{ display: 'block' }}
                     >
-                      {/* Serif foot — small perpendicular tick at the tail */}
-                      <line
-                        x1="2.5"
-                        y1="3.5"
-                        x2="2.5"
-                        y2="10.5"
-                        stroke="currentColor"
-                        strokeWidth="1.25"
-                        strokeLinecap="round"
-                      />
                       {/* Shaft */}
                       <line
-                        x1="2.5"
-                        y1="7"
-                        x2="21"
-                        y2="7"
+                        x1="0"
+                        y1="6"
+                        x2="19"
+                        y2="6"
                         stroke="currentColor"
-                        strokeWidth="1.25"
-                        strokeLinecap="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="butt"
                       />
-                      {/* Arrowhead — narrow spread, miter tip */}
+                      {/* Arrowhead — sharp miter tip, flat ends */}
                       <path
-                        d="M15 2.5L23 7L15 11.5"
+                        d="M13 1L21 6L13 11"
                         stroke="currentColor"
-                        strokeWidth="1.25"
-                        strokeLinecap="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="butt"
                         strokeLinejoin="miter"
                         fill="none"
                       />
