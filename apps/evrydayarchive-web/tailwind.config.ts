@@ -65,7 +65,9 @@ const config: Config = {
         // wipe-in-left: new content reveals from left → right (moving to a higher tab index).
         // wipe-in-right: new content reveals from right → left (moving to a lower tab index).
         'wipe-in-left': 'wipeInLeft 160ms ease-out both',
-        'wipe-in-right': 'wipeInRight 160ms ease-out both'
+        'wipe-in-right': 'wipeInRight 160ms ease-out both',
+        // Waitlist loading indicator — three dots staggered via animationDelay
+        'bounce-dot': 'bounceDot 1.2s ease-in-out infinite'
       },
       keyframes: {
         fadeUp: {
@@ -119,6 +121,10 @@ const config: Config = {
         galleryWarm: {
           '0%': { backgroundColor: 'var(--color-canvas)' },
           '100%': { backgroundColor: 'var(--color-sun)' }
+        },
+        bounceDot: {
+          '0%, 60%, 100%': { transform: 'translateY(0)' },
+          '30%': { transform: 'translateY(-5px)' }
         }
       }
     }
