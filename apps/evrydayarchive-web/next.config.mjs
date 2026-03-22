@@ -9,8 +9,7 @@ const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@repo/ui', '@repo/core'],
   experimental: {
-    outputFileTracingRoot: path.join(__dirname, '../../'),
-    serverComponentsExternalPackages: ['@prisma/client', '@repo/db']
+    outputFileTracingRoot: path.join(__dirname, '../../')
   },
   webpack: (config, { isServer }) => {
     if (isServer) {
