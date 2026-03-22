@@ -30,27 +30,13 @@ export default function ComingSoonPage() {
   return (
     <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
-      <div className="flex h-full flex-col lg:hidden">
-        {/* Top: single frame on the gallery wall */}
-        <div className="flex flex-1 items-center justify-center bg-sun px-8">
-          <div className="animate-fade-up flex flex-col gap-2">
-            <Frame
-              variant="gallery"
-              mat="lg"
-              matStyle="linen"
-              className="aspect-[2/3] w-[250px] rounded-none"
-              borderColor="#4A4540"
-            >
-              <FrameInterior number="01" catalogRef="EAC-2026-471" />
-            </Frame>
-            <FrameLabel frameLabel="Events" title="your favourite memory" />
+      <div className="flex h-full bg-sun lg:hidden">
+        {/* Left: logo top, content pinned to bottom */}
+        <div className="flex flex-1 flex-col px-6 py-10">
+          <div className="animate-fade-in">
+            <LogoAsset variant="stacked" width={80} />
           </div>
-        </div>
-
-        {/* Bottom: content panel */}
-        <div className="flex flex-col justify-between px-8 pb-10 pt-8">
-          <LogoAsset variant="stacked" width={100} className="mb-8" />
-          <div className="animate-fade-up" style={{ animationDelay: '60ms' }}>
+          <div className="mt-auto animate-fade-up" style={{ animationDelay: '60ms' }}>
             <div className="mb-3 h-0.5 w-8 bg-accent" />
             <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
               Opening Soon
@@ -64,6 +50,34 @@ export default function ComingSoonPage() {
               <RotatingText />
             </div>
             <WaitlistForm />
+          </div>
+        </div>
+
+        {/* Right: two tall frames flush to screen edge */}
+        <div className="flex w-[42%] flex-col items-stretch justify-center gap-5 overflow-hidden py-10 pl-4 pr-0">
+          <div className="animate-fade-up flex flex-col gap-2" style={{ animationDelay: '80ms' }}>
+            <Frame
+              variant="gallery"
+              mat="lg"
+              matStyle="linen"
+              className="aspect-[2/3] w-full rounded-none"
+              borderColor="#4A4540"
+            >
+              <FrameInterior number="01" catalogRef="EAC-2026-471" />
+            </Frame>
+            <FrameLabel frameLabel="Events" title="your favourite memory" />
+          </div>
+          <div className="animate-fade-up flex flex-col gap-2" style={{ animationDelay: '140ms' }}>
+            <Frame
+              variant="gallery"
+              mat="lg"
+              matStyle="linen"
+              className="aspect-[2/3] w-full rounded-none"
+              borderColor="#4A4540"
+            >
+              <FrameInterior number="02" catalogRef="EAC-2026-389" />
+            </Frame>
+            <FrameLabel frameLabel="Portraits" title="a quiet afternoon" />
           </div>
         </div>
       </div>
