@@ -83,7 +83,6 @@ export default function ComingSoonPage() {
               paddingBottom: 'clamp(1.75rem, 5.5vh, 3rem)'
             }}
           >
-            <div className="mb-3 h-0.5 bg-accent" style={{ width: 'clamp(1.25rem, 5vw, 2rem)' }} />
             <WaitlistForm />
           </div>
         </section>
