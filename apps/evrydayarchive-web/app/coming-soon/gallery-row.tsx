@@ -89,7 +89,7 @@ function countFrames(panelWidth: number): number {
   return Math.max(MIN_FRAMES, count);
 }
 
-export function GalleryRow() {
+export function GalleryRow({ onCountChange }: { onCountChange?: (count: number) => void }) {
   const panelRef = useRef<HTMLDivElement>(null);
   // Default to 3 (laptop assumption) to minimise layout shift on hydration.
   const [count, setCount] = useState(3);
@@ -97,14 +97,16 @@ export function GalleryRow() {
   useEffect(() => {
     const recalculate = () => {
       if (!panelRef.current) return;
-      setCount(countFrames(panelRef.current.offsetWidth));
+      const newCount = countFrames(panelRef.current.offsetWidth);
+      setCount(newCount);
+      onCountChange?.(newCount);
     };
 
     recalculate();
     const ro = new ResizeObserver(recalculate);
     if (panelRef.current) ro.observe(panelRef.current);
     return () => ro.disconnect();
-  }, []);
+  }, [onCountChange]);
 
   return (
     // Outer div fills the panel — used only to measure available width via ref.
