@@ -90,7 +90,7 @@ export default function ComingSoonPage() {
         {/* Swipeable frame strip — bg-sun matches the hero so the wall is one
             continuous surface. Only the frames move; the background stays still.
             Each frame has its own width + aspect ratio for organic variety. */}
-        <section className="bg-sun pb-20 pt-8">
+        <section className="animate-fade-in bg-sun pb-20 pt-8" style={{ animationDelay: '450ms' }}>
           <div
             className="flex gap-4 overflow-x-auto [scroll-snap-type:x_mandatory] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             style={{ paddingLeft: '14vw', paddingRight: '14vw' }}
