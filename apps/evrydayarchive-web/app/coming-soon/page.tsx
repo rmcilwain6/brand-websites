@@ -160,23 +160,34 @@ export default function ComingSoonPage() {
             <LogoAsset variant="horizontal" style={{ width: 'clamp(160px, 14vw, 260px)' }} />
           </div>
 
-          <div className="my-auto animate-fade-up" style={{ animationDelay: '80ms' }}>
-            <div className="mb-3 h-0.5 w-8 bg-accent" />
-            <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
-              Opening Soon
-            </p>
+          <div className="my-auto">
+            {/* Accent bar + label — slides in from left like a placard being placed */}
+            <div className="animate-slide-from-left" style={{ animationDelay: '200ms' }}>
+              <div className="mb-3 h-0.5 w-8 bg-accent" />
+              <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+                Opening Soon
+              </p>
+            </div>
+
+            {/* Date — stamps in, settles into place */}
             <p
-              className="mb-3 font-semibold leading-none tracking-tight text-ink"
-              style={{ fontSize: 'clamp(2.2rem, 4.5vw, 5rem)' }}
+              className="mb-3 animate-stamp-in font-semibold leading-none tracking-tight text-ink"
+              style={{ fontSize: 'clamp(2.2rem, 4.5vw, 5rem)', animationDelay: '420ms' }}
             >
               March
               <br />
               31st.
             </p>
-            <div className="mb-6">
+
+            {/* Rotating text — fades up after the date lands */}
+            <div className="mb-6 animate-fade-up" style={{ animationDelay: '640ms' }}>
               <RotatingText />
             </div>
-            <WaitlistForm />
+
+            {/* Waitlist form — last thing to appear, draws the eye */}
+            <div className="animate-fade-up" style={{ animationDelay: '820ms' }}>
+              <WaitlistForm />
+            </div>
           </div>
         </div>
 

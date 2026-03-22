@@ -6,6 +6,7 @@ export const WaitlistForm = () => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [leaving, setLeaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +21,9 @@ export const WaitlistForm = () => {
       });
 
       if (!res.ok) throw new Error('Something went wrong');
-      setStatus('success');
+      // Fade the form out, then swap to the success state
+      setLeaving(true);
+      setTimeout(() => setStatus('success'), 220);
     } catch {
       setStatus('error');
       setErrorMsg('Something went wrong — please try again.');
@@ -29,19 +32,19 @@ export const WaitlistForm = () => {
 
   if (status === 'success') {
     return (
-      <div>
+      <div className="animate-fade-up">
         <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
-          Join the waitlist
+          You&apos;re in.
         </p>
         <p className="text-sm text-ink-muted">
-          You&apos;re on the list — we&apos;ll be in touch when we open.
+          First through the door. We&apos;ll be in touch soon.
         </p>
       </div>
     );
   }
 
   return (
-    <div>
+    <div style={{ opacity: leaving ? 0 : 1, transition: 'opacity 200ms ease' }}>
       <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-faint">
         Join the waitlist
       </p>

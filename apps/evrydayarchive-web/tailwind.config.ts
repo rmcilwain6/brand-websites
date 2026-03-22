@@ -49,6 +49,8 @@ const config: Config = {
       animation: {
         'fade-up': 'fadeUp 280ms ease-out both',
         'fade-in': 'fadeIn 220ms ease-out both',
+        'hang-drop': 'hangDrop 420ms cubic-bezier(0.22, 1, 0.36, 1) both',
+        'stamp-in': 'stampIn 350ms cubic-bezier(0.16, 1, 0.3, 1) both',
         marquee: 'marquee var(--marquee-duration, 75s) linear infinite',
         'slide-from-right': 'slideFromRight 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
         'slide-from-left': 'slideFromLeft 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
@@ -104,6 +106,14 @@ const config: Config = {
         wipeInRight: {
           '0%': { clipPath: 'inset(0 0 0 100%)' },
           '100%': { clipPath: 'inset(0 0 0 0%)' }
+        },
+        hangDrop: {
+          '0%': { opacity: '0', transform: 'translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        stampIn: {
+          '0%': { opacity: '0', transform: 'scale(0.97)' },
+          '100%': { opacity: '1', transform: 'scale(1)' }
         }
       }
     }
