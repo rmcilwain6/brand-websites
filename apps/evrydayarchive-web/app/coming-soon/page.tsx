@@ -70,7 +70,7 @@ export default function ComingSoonPage() {
         </div>
 
         {/* Right: two frame sections, each with placard below, filling available height */}
-        <div className="flex w-[58%] flex-col py-8 pr-0">
+        <div className="flex w-[52%] flex-col py-8 pr-0">
           <div
             className="animate-fade-up flex flex-1 min-h-0 flex-col"
             style={{ animationDelay: '80ms' }}
