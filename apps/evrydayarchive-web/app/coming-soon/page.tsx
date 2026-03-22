@@ -35,8 +35,9 @@ export default function ComingSoonPage() {
         {/* Hero: clamp-based sizing so every phone uses its full canvas.
             min-h leaves 72px visible so the frame strip peeks below the fold. */}
         <section
-          className="flex min-h-[calc(100svh-72px)] flex-col bg-sun"
+          className="flex flex-col bg-sun"
           style={{
+            minHeight: 'min(calc(100svh - 72px), 680px)',
             paddingLeft: 'clamp(1.25rem, 6vw, 2.25rem)',
             paddingRight: 'clamp(1.25rem, 6vw, 2.25rem)'
           }}
@@ -46,7 +47,7 @@ export default function ComingSoonPage() {
             className="animate-fade-in flex justify-center"
             style={{ paddingTop: 'clamp(1.75rem, 5.5vh, 3.5rem)' }}
           >
-            <LogoAsset variant="stacked" style={{ width: 'clamp(110px, 30vw, 158px)' }} />
+            <LogoAsset variant="stacked" style={{ width: 'clamp(150px, 44vw, 220px)' }} />
           </div>
 
           {/* Date + rotating text — vertically centred */}
