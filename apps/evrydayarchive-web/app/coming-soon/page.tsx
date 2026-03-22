@@ -33,8 +33,12 @@ export default function ComingSoonPage() {
       <div className="flex h-full bg-sun lg:hidden">
         {/* Left: top 62% holds logo + date content, form sits at ~60% mark */}
         <div className="flex flex-1 flex-col">
-          <div className="flex h-[62%] flex-col px-4 pt-10">
-            <div className="animate-fade-in mb-6 flex justify-center">
+          <div className="flex h-[65%] flex-col px-4">
+            {/* paddingTop controls logo vertical position — easy to tweak */}
+            <div
+              className="animate-fade-in mb-8 flex justify-center"
+              style={{ paddingTop: '3rem' }}
+            >
               <LogoAsset variant="stacked" width={135} />
             </div>
             <div className="animate-fade-up" style={{ animationDelay: '60ms' }}>
@@ -42,7 +46,7 @@ export default function ComingSoonPage() {
               <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
                 Opening Soon
               </p>
-              <p className="mb-3 text-3xl font-semibold leading-tight tracking-tight text-ink">
+              <p className="mb-3 text-3xl font-semibold leading-snug tracking-tight text-ink">
                 March
                 <br />
                 31st.
@@ -52,6 +56,7 @@ export default function ComingSoonPage() {
           </div>
 
           <div className="animate-fade-up px-4 pb-10" style={{ animationDelay: '120ms' }}>
+            <div className="mb-1 h-0.5 w-6 bg-accent" />
             <WaitlistForm />
           </div>
         </div>
