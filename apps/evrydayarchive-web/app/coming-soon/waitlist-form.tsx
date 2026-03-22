@@ -30,7 +30,7 @@ export const WaitlistForm = () => {
   if (status === 'success') {
     return (
       <div>
-        <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+        <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
           Join the waitlist
         </p>
         <p className="text-sm text-ink-muted">
@@ -42,11 +42,11 @@ export const WaitlistForm = () => {
 
   return (
     <div>
-      <p className="mb-3 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+      <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-faint">
         Join the waitlist
       </p>
       <form onSubmit={handleSubmit} className="max-w-xs">
-        <div className="flex items-center gap-3 border-b border-ink/20 pb-2">
+        <div className="flex items-center gap-3 border-b border-ink/35 pb-2">
           <input
             type="email"
             value={email}
@@ -66,7 +66,7 @@ export const WaitlistForm = () => {
         </div>
         {status === 'error' && <p className="mt-2 text-[11px] text-red-500">{errorMsg}</p>}
       </form>
-      <p className="mt-3 max-w-xs text-[11px] leading-relaxed text-ink-faint">
+      <p className="mt-3 max-w-xs text-xs leading-relaxed text-ink-faint">
         Waitlist members are entered to win a complimentary session and receive an exclusive
         discount on May bookings.
       </p>

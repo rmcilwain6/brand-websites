@@ -20,3 +20,7 @@ pnpm --filter evrydayarchive-web typecheck
 ```
 
 `pnpm format` must always be run at the workspace root (not per-package) since Prettier is configured there.
+
+## Committing changes
+
+Commit after every key code change — keep history granular and clear. Run the format/lint/typecheck checks first, then commit. Don't batch up multiple unrelated changes into one commit.
