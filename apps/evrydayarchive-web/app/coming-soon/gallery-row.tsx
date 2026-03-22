@@ -132,7 +132,7 @@ export function GalleryRow() {
                   style={{
                     width: f.widthPx,
                     animationDelay: `${frameDelay}ms`,
-                    animationDuration: '750ms'
+                    animationDuration: '1000ms'
                   }}
                 >
                   <Frame
