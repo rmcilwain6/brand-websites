@@ -14,56 +14,137 @@ export const WaitlistForm = () => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [leaving, setLeaving] = useState(false);
+
   const arrowRef = useRef<SVGSVGElement>(null);
-  const spinRef = useRef<Animation | null>(null);
+  // Phase 1: spin-up (ease-in, slow→fast)
+  const spinUpRef = useRef<Animation | null>(null);
+  // Phase 2: cruise (continuous linear at cruise speed)
+  const spinCruiseRef = useRef<Animation | null>(null);
+  // Guard against overlapping easter egg taps
+  const easterEggActiveRef = useRef(false);
+
+  // ── Spin management ────────────────────────────────────────────────────────
 
   const startSpin = () => {
     const el = arrowRef.current;
     if (!el) return;
-    spinRef.current = el.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
+
+    // Spin-up: 0→360° ease-in over 700ms. Ends at exactly 360° (≡ 0°) so the
+    // cruise loop starts without any visual snap.
+    const spinUp = el.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
       duration: 700,
-      iterations: Infinity,
-      easing: 'linear'
+      easing: 'ease-in'
     });
+    spinUpRef.current = spinUp;
+
+    spinUp.onfinish = () => {
+      // If settleSpin already cancelled spin-up, don't start cruise.
+      if (spinUpRef.current !== spinUp) return;
+      spinUpRef.current = null;
+
+      spinCruiseRef.current = el.animate(
+        [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
+        // 350ms/revolution matches the exit velocity of the ease-in spin-up.
+        { duration: 350, iterations: Infinity, easing: 'linear' }
+      );
+    };
   };
 
-  // After the API responds, find the current visual angle and animate to the
-  // nearest pointing-left position (180°, 540°, …), decelerating to a stop.
+  // Called once the API responds. Reads the live angle, cancels whichever
+  // spin phase is active, then decelerates the arrow to point ←.
   const settleSpin = (): Promise<void> =>
     new Promise((resolve) => {
-      const spin = spinRef.current;
       const el = arrowRef.current;
-      if (!spin || !el) {
+
+      // Cancel whichever phase is currently running.
+      if (spinCruiseRef.current) {
+        spinCruiseRef.current.cancel();
+        spinCruiseRef.current = null;
+      }
+      if (spinUpRef.current) {
+        spinUpRef.current.cancel();
+        spinUpRef.current = null; // signals onfinish callback to skip cruise start
+      }
+
+      if (!el) {
         resolve();
         return;
       }
 
-      // Read the current visual rotation from the computed matrix.
+      // Read the current visual rotation from the live computed matrix.
       const matrix = new DOMMatrix(getComputedStyle(el).transform);
-      const raw = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
-      const currentAngle = ((raw % 360) + 360) % 360;
+      const rawDeg = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
+      const currentAngle = ((rawDeg % 360) + 360) % 360;
 
-      spin.cancel();
-
-      // Find the next pointing-left angle (≡ 180 mod 360) at least 45° ahead
-      // so the arrow never snaps or reverses.
+      // Find the nearest pointing-← angle (180°, 540°, …) at least 45° ahead
+      // so the arrow never reverses or snaps backwards.
       let target = 180;
       while (target < currentAngle + 45) target += 360;
 
       const settle = el.animate(
         [{ transform: `rotate(${currentAngle}deg)` }, { transform: `rotate(${target}deg)` }],
-        { duration: 950, easing: 'cubic-bezier(0, 0.8, 0.1, 1)', fill: 'forwards' }
+        // Starts fast (matching cruise speed), decelerates like a wheel losing friction.
+        { duration: 950, easing: 'cubic-bezier(0.05, 1, 0.1, 1)', fill: 'forwards' }
       );
 
-      settle.onfinish = () => resolve();
+      settle.onfinish = () => {
+        // Commit the final position as an inline style so it persists after
+        // the animation is cancelled, enabling the easter egg to read it cleanly.
+        settle.commitStyles();
+        settle.cancel();
+        resolve();
+      };
     });
+
+  // ── Easter egg ─────────────────────────────────────────────────────────────
+
+  // Clicking the arrow after a successful submit triggers one bonus spin —
+  // no API call, no state change, just the wheel doing its thing.
+  const triggerEasterEgg = () => {
+    if (easterEggActiveRef.current) return;
+    const el = arrowRef.current;
+    if (!el) return;
+
+    easterEggActiveRef.current = true;
+
+    // Read the committed inline angle (will be ≈ 180° pointing ←).
+    const matrix = new DOMMatrix(el.style.transform || 'none');
+    const rawDeg = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
+    const currentAngle = ((rawDeg % 360) + 360) % 360;
+
+    const spin = el.animate(
+      [
+        { transform: `rotate(${currentAngle}deg)` },
+        { transform: `rotate(${currentAngle + 360}deg)` }
+      ],
+      { duration: 700, easing: 'ease-in-out', fill: 'forwards' }
+    );
+
+    spin.onfinish = () => {
+      spin.commitStyles();
+      spin.cancel();
+      easterEggActiveRef.current = false;
+    };
+  };
+
+  // ── Form submission ─────────────────────────────────────────────────────────
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // After success the arrow becomes a pure easter egg trigger.
+    if (status === 'success') {
+      triggerEasterEgg();
+      return;
+    }
+
     if (status === 'loading') return;
 
     setStatus('loading');
     setErrorMsg('');
+
+    // Collapse the input immediately — the trigger that kicks the wheel.
+    setLeaving(true);
     startSpin();
 
     try {
@@ -75,45 +156,37 @@ export const WaitlistForm = () => {
 
       if (!res.ok) throw new Error('Something went wrong');
 
-      // Fetch done — let the arrow decelerate and settle pointing left.
+      // API responded — bring the wheel to a stop.
       await settleSpin();
-
-      // Collapse the form from left to right, then swap in the success text.
-      setLeaving(true);
-      setTimeout(() => setStatus('success'), 380);
+      setStatus('success');
     } catch {
-      spinRef.current?.cancel();
+      // Clean up spin state and restore the form.
+      spinCruiseRef.current?.cancel();
+      spinCruiseRef.current = null;
+      spinUpRef.current?.cancel();
+      spinUpRef.current = null;
+      setLeaving(false);
       setStatus('error');
       setErrorMsg('Something went wrong — please try again.');
     }
   };
 
-  const isLoading = status === 'loading';
-
   return (
     <div className="max-w-xs">
       <form onSubmit={handleSubmit}>
-        {/* Label — collapses left→right on submit */}
-        {status !== 'success' && (
-          <p
-            className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-faint"
-            style={{
-              clipPath: leaving ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0%)',
-              transition: 'clip-path 340ms ease-in'
-            }}
-          >
-            Join the waitlist
-          </p>
-        )}
+        {/* Section header — always visible, never changes */}
+        <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-faint">
+          Join the waitlist
+        </p>
 
         <div className="flex items-center gap-3 border-b border-ink/35 pb-2">
-          {/* Input / success text — swaps in the same space */}
+          {/* Input / success text — occupies the same space */}
           <div className="min-w-0 flex-1 overflow-hidden">
             {status !== 'success' ? (
               <div
                 style={{
                   clipPath: leaving ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0%)',
-                  transition: 'clip-path 360ms ease-in'
+                  transition: 'clip-path 250ms ease-in'
                 }}
               >
                 <input
@@ -122,7 +195,7 @@ export const WaitlistForm = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  disabled={isLoading}
+                  disabled={status === 'loading'}
                   className="w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none disabled:opacity-50"
                 />
               </div>
@@ -132,9 +205,6 @@ export const WaitlistForm = () => {
                 className="animate-wipe-in-right overflow-hidden"
                 style={{ animationDuration: '420ms' }}
               >
-                <p className="mb-0.5 text-xs font-medium uppercase tracking-widest text-ink-faint">
-                  You&apos;re in.
-                </p>
                 <p className="text-sm leading-snug text-ink-muted">
                   First through the door. We&apos;ll be in touch soon.
                 </p>
@@ -142,7 +212,7 @@ export const WaitlistForm = () => {
             )}
           </div>
 
-          {/* Arrow — always present, never removed from the DOM */}
+          {/* Arrow — always present, becomes an easter egg after success */}
           <button
             type="submit"
             aria-label="Submit"
