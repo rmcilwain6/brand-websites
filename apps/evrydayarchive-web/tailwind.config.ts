@@ -52,7 +52,6 @@ const config: Config = {
         'hang-drop': 'hangDrop 420ms cubic-bezier(0.22, 1, 0.36, 1) both',
         'stamp-in': 'stampIn 350ms cubic-bezier(0.16, 1, 0.3, 1) both',
         'gallery-warm': 'galleryWarm 3000ms ease-in-out both',
-        'arrow-spin': 'arrowSpin 1400ms cubic-bezier(0.15, 0.8, 0.2, 1) forwards',
         marquee: 'marquee var(--marquee-duration, 75s) linear infinite',
         'slide-from-right': 'slideFromRight 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
         'slide-from-left': 'slideFromLeft 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
@@ -120,10 +119,6 @@ const config: Config = {
         galleryWarm: {
           '0%': { backgroundColor: 'var(--color-canvas)' },
           '100%': { backgroundColor: 'var(--color-sun)' }
-        },
-        arrowSpin: {
-          '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(540deg)' }
         }
       }
     }
