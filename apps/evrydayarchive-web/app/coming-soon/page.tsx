@@ -55,10 +55,10 @@ export default function ComingSoonPage() {
             </div>
           </div>
 
-          {/* Rotating text fills the gap between date and waitlist */}
+          {/* Rotating text — height here sets where "Join the waitlist" starts */}
           <div
-            className="animate-fade-up flex flex-1 items-center px-4 py-4"
-            style={{ animationDelay: '90ms' }}
+            className="animate-fade-up flex items-center overflow-hidden px-4 py-4"
+            style={{ animationDelay: '90ms', height: '22vh' }}
           >
             <RotatingText className="flex items-start" />
           </div>
