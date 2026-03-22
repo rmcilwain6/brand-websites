@@ -16,115 +16,112 @@ export const WaitlistForm = () => {
   const [leaving, setLeaving] = useState(false);
 
   const arrowRef = useRef<SVGSVGElement>(null);
-  // Phase 1: spin-up (ease-in, slow→fast)
   const spinUpRef = useRef<Animation | null>(null);
-  // Phase 2: cruise (continuous linear at cruise speed)
   const spinCruiseRef = useRef<Animation | null>(null);
-  // Guard against overlapping easter egg taps
   const easterEggActiveRef = useRef(false);
 
-  // ── Spin management ────────────────────────────────────────────────────────
+  // ── Spin helpers ────────────────────────────────────────────────────────────
 
-  const startSpin = () => {
-    const el = arrowRef.current;
-    if (!el) return;
-
-    // Spin-up: 0→360° ease-in over 700ms. Ends at exactly 360° (≡ 0°) so the
-    // cruise loop starts without any visual snap.
-    const spinUp = el.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
-      duration: 700,
-      easing: 'ease-in'
-    });
-    spinUpRef.current = spinUp;
-
-    spinUp.onfinish = () => {
-      // If settleSpin already cancelled spin-up, don't start cruise.
-      if (spinUpRef.current !== spinUp) return;
-      spinUpRef.current = null;
-
-      spinCruiseRef.current = el.animate(
-        [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
-        // 350ms/revolution matches the exit velocity of the ease-in spin-up.
-        { duration: 350, iterations: Infinity, easing: 'linear' }
-      );
-    };
+  // Reads the current visual angle from the element's computed transform matrix.
+  const readAngle = (el: SVGSVGElement): number => {
+    const matrix = new DOMMatrix(getComputedStyle(el).transform);
+    const raw = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
+    return ((raw % 360) + 360) % 360;
   };
 
-  // Called once the API responds. Reads the live angle, cancels whichever
-  // spin phase is active, then decelerates the arrow to point ←.
-  const settleSpin = (): Promise<void> =>
+  // Decelerates to the nearest pointing-← angle with at least `minExtraRotations`
+  // full turns before stopping — so a fast API response still feels satisfying.
+  const doSettle = (el: SVGSVGElement, minExtraRotations: number): Promise<void> =>
     new Promise((resolve) => {
-      const el = arrowRef.current;
+      const currentAngle = readAngle(el);
 
-      // Cancel whichever phase is currently running.
-      if (spinCruiseRef.current) {
-        spinCruiseRef.current.cancel();
-        spinCruiseRef.current = null;
-      }
-      if (spinUpRef.current) {
-        spinUpRef.current.cancel();
-        spinUpRef.current = null; // signals onfinish callback to skip cruise start
-      }
-
-      if (!el) {
-        resolve();
-        return;
-      }
-
-      // Read the current visual rotation from the live computed matrix.
-      const matrix = new DOMMatrix(getComputedStyle(el).transform);
-      const rawDeg = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
-      const currentAngle = ((rawDeg % 360) + 360) % 360;
-
-      // Find the nearest pointing-← angle (180°, 540°, …) at least 45° ahead
-      // so the arrow never reverses or snaps backwards.
       let target = 180;
-      while (target < currentAngle + 45) target += 360;
+      while (target < currentAngle + minExtraRotations * 360 + 45) target += 360;
 
       const settle = el.animate(
         [{ transform: `rotate(${currentAngle}deg)` }, { transform: `rotate(${target}deg)` }],
         // Starts fast (matching cruise speed), decelerates like a wheel losing friction.
-        { duration: 950, easing: 'cubic-bezier(0.05, 1, 0.1, 1)', fill: 'forwards' }
+        { duration: 1800, easing: 'cubic-bezier(0.05, 1, 0.1, 1)', fill: 'forwards' }
       );
 
       settle.onfinish = () => {
-        // Commit the final position as an inline style so it persists after
-        // the animation is cancelled, enabling the easter egg to read it cleanly.
+        // Commit so the final angle persists as an inline style for future reads.
         settle.commitStyles();
         settle.cancel();
         resolve();
       };
     });
 
-  // ── Easter egg ─────────────────────────────────────────────────────────────
+  // Two-phase spin: ease-in ramp-up → seamless cruise at matching speed.
+  // Spin-up: 0→720° in 600ms ease-in. Exit velocity ≈ 2 × (720/600) = 2.4°/ms = 150ms/rev,
+  // which matches the cruise duration exactly — no perceptible speed bump at the handoff.
+  const startSpin = () => {
+    const el = arrowRef.current;
+    if (!el) return;
 
-  // Clicking the arrow after a successful submit triggers one bonus spin —
-  // no API call, no state change, just the wheel doing its thing.
-  const triggerEasterEgg = () => {
+    const spinUp = el.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(720deg)' }], {
+      duration: 600,
+      easing: 'ease-in'
+    });
+    spinUpRef.current = spinUp;
+
+    spinUp.onfinish = () => {
+      // Guard: if settleSpin already cancelled spin-up, skip starting cruise.
+      if (spinUpRef.current !== spinUp) return;
+      spinUpRef.current = null;
+
+      spinCruiseRef.current = el.animate(
+        [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
+        { duration: 150, iterations: Infinity, easing: 'linear' }
+      );
+    };
+  };
+
+  // Cancel whatever spin phase is running, then decelerate to ← with at least
+  // 3 extra rotations so it always feels like a proper spin-down.
+  const settleSpin = async (): Promise<void> => {
+    const el = arrowRef.current;
+
+    spinCruiseRef.current?.cancel();
+    spinCruiseRef.current = null;
+    spinUpRef.current?.cancel();
+    spinUpRef.current = null;
+
+    if (!el) return;
+    await doSettle(el, 3);
+  };
+
+  // ── Easter egg ──────────────────────────────────────────────────────────────
+
+  const triggerEasterEgg = async () => {
     if (easterEggActiveRef.current) return;
     const el = arrowRef.current;
     if (!el) return;
 
     easterEggActiveRef.current = true;
 
-    // Read the committed inline angle (will be ≈ 180° pointing ←).
+    // Read the committed angle from the inline style left by the previous settle.
     const matrix = new DOMMatrix(el.style.transform || 'none');
-    const rawDeg = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
-    const currentAngle = ((rawDeg % 360) + 360) % 360;
+    const raw = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
+    const currentAngle = ((raw % 360) + 360) % 360;
 
-    const spin = el.animate(
+    // Quick ramp-up from resting angle, then let it spin down naturally.
+    const spinUp = el.animate(
       [
         { transform: `rotate(${currentAngle}deg)` },
-        { transform: `rotate(${currentAngle + 360}deg)` }
+        { transform: `rotate(${currentAngle + 720}deg)` }
       ],
-      { duration: 700, easing: 'ease-in-out', fill: 'forwards' }
+      { duration: 600, easing: 'ease-in', fill: 'forwards' }
     );
 
-    spin.onfinish = () => {
-      spin.commitStyles();
-      spin.cancel();
-      easterEggActiveRef.current = false;
-    };
+    await new Promise<void>((resolve) => {
+      spinUp.onfinish = () => resolve();
+    });
+    spinUp.commitStyles();
+    spinUp.cancel();
+
+    await doSettle(el, 3);
+    easterEggActiveRef.current = false;
   };
 
   // ── Form submission ─────────────────────────────────────────────────────────
@@ -132,7 +129,6 @@ export const WaitlistForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // After success the arrow becomes a pure easter egg trigger.
     if (status === 'success') {
       triggerEasterEgg();
       return;
@@ -142,8 +138,6 @@ export const WaitlistForm = () => {
 
     setStatus('loading');
     setErrorMsg('');
-
-    // Collapse the input immediately — the trigger that kicks the wheel.
     setLeaving(true);
     startSpin();
 
@@ -156,11 +150,9 @@ export const WaitlistForm = () => {
 
       if (!res.ok) throw new Error('Something went wrong');
 
-      // API responded — bring the wheel to a stop.
       await settleSpin();
       setStatus('success');
     } catch {
-      // Clean up spin state and restore the form.
       spinCruiseRef.current?.cancel();
       spinCruiseRef.current = null;
       spinUpRef.current?.cancel();
@@ -180,7 +172,7 @@ export const WaitlistForm = () => {
         </p>
 
         <div className="flex items-center gap-3 border-b border-ink/35 pb-2">
-          {/* Input / success text — occupies the same space */}
+          {/* Input / success text — same slot */}
           <div className="min-w-0 flex-1 overflow-hidden">
             {status !== 'success' ? (
               <div
@@ -200,7 +192,6 @@ export const WaitlistForm = () => {
                 />
               </div>
             ) : (
-              // Grows out from the right — from where the arrow is pointing.
               <div
                 className="animate-wipe-in-right overflow-hidden"
                 style={{ animationDuration: '420ms' }}
@@ -212,7 +203,7 @@ export const WaitlistForm = () => {
             )}
           </div>
 
-          {/* Arrow — always present, becomes an easter egg after success */}
+          {/* Arrow — always present, easter egg after success */}
           <button
             type="submit"
             aria-label="Submit"
