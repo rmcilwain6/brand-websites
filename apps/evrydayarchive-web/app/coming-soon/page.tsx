@@ -3,6 +3,7 @@ import { WaitlistForm } from './waitlist-form';
 import { RotatingText } from './rotating-text';
 import { FrameInterior, FrameLabel } from './frame-pieces';
 import { ComingSoonDesktop } from './coming-soon-desktop';
+import { FRAME_POOL } from './frames-data';
 
 // Plain <img> — Next.js <Image> does not serve SVGs without unoptimized={true}.
 const LogoAsset = ({
@@ -31,14 +32,18 @@ export default function ComingSoonPage() {
     <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
       <div className="h-full overflow-y-auto lg:hidden">
-        {/* Hero: fills most of the viewport — frame edge peeks below */}
-        <div className="flex min-h-[90vh] flex-col bg-sun px-6">
-          {/* paddingTop controls logo vertical position — easy to tweak */}
-          <div className="animate-fade-in mb-8 flex justify-center" style={{ paddingTop: '2rem' }}>
-            <LogoAsset variant="stacked" width={135} />
+        {/* Hero: precise height so the frame strip peeks 72px below the fold */}
+        <section className="flex min-h-[calc(100svh-72px)] flex-col bg-sun px-6">
+          {/* Logo — top */}
+          <div className="animate-fade-in flex justify-center pt-8">
+            <LogoAsset variant="stacked" width={120} />
           </div>
 
-          <div className="animate-fade-up" style={{ animationDelay: '60ms' }}>
+          {/* Date + rotating text — vertically centred in the remaining space */}
+          <div
+            className="animate-fade-up flex flex-1 flex-col justify-center"
+            style={{ animationDelay: '60ms' }}
+          >
             <div className="mb-3 h-0.5 w-6 bg-accent" />
             <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
               Opening Soon
@@ -48,102 +53,44 @@ export default function ComingSoonPage() {
               <br />
               31st.
             </p>
+            <div className="mt-4">
+              <RotatingText />
+            </div>
           </div>
 
-          {/* Rotating text — height sets where "Join the waitlist" starts */}
-          <div
-            className="animate-fade-up flex items-center overflow-hidden py-2"
-            style={{ animationDelay: '90ms', height: '14vh' }}
-          >
-            <RotatingText className="flex items-start" />
-          </div>
-
-          <div className="animate-fade-up pb-12" style={{ animationDelay: '120ms' }}>
+          {/* Waitlist form — pinned to bottom, within thumb reach */}
+          <div className="animate-fade-up pb-8" style={{ animationDelay: '120ms' }}>
             <div className="mb-3 h-0.5 w-6 bg-accent" />
             <WaitlistForm />
           </div>
-        </div>
+        </section>
 
-        {/* Frames below the fold — tight gallery grid */}
-        <div className="bg-sun px-4 pb-16 pt-0">
-          <div className="grid grid-cols-2 gap-2">
-            {/* Row 1: two portraits */}
-            <div>
-              <Frame
-                variant="gallery"
-                mat="md"
-                matStyle="linen"
-                className="aspect-[2/3] w-full rounded-none"
-                borderColor="#4A4540"
+        {/* Swipeable frame strip — bg-sun matches the hero so the wall is seamless.
+            Only the frames move; the background stays still. */}
+        <section className="bg-sun pb-20 pt-8">
+          <div
+            className="flex gap-4 overflow-x-auto [scroll-snap-type:x_mandatory] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            style={{ paddingLeft: '14vw', paddingRight: '14vw' }}
+          >
+            {FRAME_POOL.map((f) => (
+              <div
+                key={f.number}
+                className="flex w-[72vw] flex-shrink-0 flex-col gap-2 [scroll-snap-align:center]"
               >
-                <FrameInterior number="01" catalogRef="EAC-2026-471" />
-              </Frame>
-              <div className="pt-2">
-                <FrameLabel frameLabel="Events" title="your favourite memory" />
+                <Frame
+                  variant="gallery"
+                  mat="md"
+                  matStyle="linen"
+                  className="aspect-[2/3] w-full rounded-none"
+                  borderColor="#4A4540"
+                >
+                  <FrameInterior number={f.number} catalogRef={f.catalogRef} />
+                </Frame>
+                <FrameLabel frameLabel={f.label} title={f.title} />
               </div>
-            </div>
-            <div>
-              <Frame
-                variant="gallery"
-                mat="md"
-                matStyle="linen"
-                className="aspect-[2/3] w-full rounded-none"
-                borderColor="#4A4540"
-              >
-                <FrameInterior number="02" catalogRef="EAC-2026-389" />
-              </Frame>
-              <div className="pt-2">
-                <FrameLabel frameLabel="Portraits" title="a quiet afternoon" />
-              </div>
-            </div>
-
-            {/* Row 2: landscape spanning full width */}
-            <div className="col-span-2">
-              <Frame
-                variant="gallery"
-                mat="md"
-                matStyle="linen"
-                className="aspect-[16/9] w-full rounded-none"
-                borderColor="#4A4540"
-              >
-                <FrameInterior number="03" catalogRef="EAC-2026-512" />
-              </Frame>
-              <div className="pt-2">
-                <FrameLabel frameLabel="Family" title="sunday morning" />
-              </div>
-            </div>
-
-            {/* Row 3: square + portrait */}
-            <div>
-              <Frame
-                variant="gallery"
-                mat="md"
-                matStyle="linen"
-                className="aspect-square w-full rounded-none"
-                borderColor="#4A4540"
-              >
-                <FrameInterior number="04" catalogRef="EAC-2026-203" />
-              </Frame>
-              <div className="pt-2">
-                <FrameLabel frameLabel="Lifestyle" title="the small hours" />
-              </div>
-            </div>
-            <div>
-              <Frame
-                variant="gallery"
-                mat="md"
-                matStyle="linen"
-                className="aspect-[2/3] w-full rounded-none"
-                borderColor="#4A4540"
-              >
-                <FrameInterior number="05" catalogRef="EAC-2026-318" />
-              </Frame>
-              <div className="pt-2">
-                <FrameLabel frameLabel="Weddings" title="forever begins here" />
-              </div>
-            </div>
+            ))}
           </div>
-        </div>
+        </section>
       </div>
 
       {/* ── Desktop layout ─────────────────────────────────────────────────── */}
