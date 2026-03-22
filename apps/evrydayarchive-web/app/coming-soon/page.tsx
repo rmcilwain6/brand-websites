@@ -42,18 +42,21 @@ export default function ComingSoonPage() {
             paddingRight: 'clamp(1.25rem, 6vw, 2.25rem)'
           }}
         >
-          {/* Logo — top third */}
+          {/* Logo — top third: fades in slowly, anchors the page */}
           <div
             className="animate-fade-in flex justify-center"
-            style={{ paddingTop: 'clamp(1.75rem, 5.5vh, 3.5rem)' }}
+            style={{
+              paddingTop: 'clamp(1.75rem, 5.5vh, 3.5rem)',
+              animationDuration: '700ms'
+            }}
           >
             <LogoAsset variant="stacked" style={{ width: 'clamp(150px, 44vw, 220px)' }} />
           </div>
 
-          {/* Date + rotating text — vertically centred */}
+          {/* Date + rotating text — follows logo with a deliberate pause */}
           <div
             className="animate-fade-up flex flex-1 flex-col justify-center"
-            style={{ animationDelay: '60ms' }}
+            style={{ animationDelay: '350ms', animationDuration: '550ms' }}
           >
             <div className="mb-3 h-0.5 bg-accent" style={{ width: 'clamp(1.25rem, 5vw, 2rem)' }} />
             <p
@@ -75,11 +78,12 @@ export default function ComingSoonPage() {
             </div>
           </div>
 
-          {/* Waitlist form — pinned to bottom, within thumb reach */}
+          {/* Waitlist form — arrives after content settles */}
           <div
             className="animate-fade-up"
             style={{
-              animationDelay: '120ms',
+              animationDelay: '580ms',
+              animationDuration: '550ms',
               paddingBottom: 'clamp(1.75rem, 5.5vh, 3rem)'
             }}
           >
@@ -90,7 +94,10 @@ export default function ComingSoonPage() {
         {/* Swipeable frame strip — bg-sun matches the hero so the wall is one
             continuous surface. Only the frames move; the background stays still.
             Each frame has its own width + aspect ratio for organic variety. */}
-        <section className="animate-fade-in bg-sun pb-20 pt-8" style={{ animationDelay: '450ms' }}>
+        <section
+          className="animate-fade-in bg-sun pb-20 pt-8"
+          style={{ animationDelay: '900ms', animationDuration: '800ms' }}
+        >
           <div
             className="flex gap-4 overflow-x-auto [scroll-snap-type:x_mandatory] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             style={{ paddingLeft: '14vw', paddingRight: '14vw' }}
