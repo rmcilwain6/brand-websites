@@ -117,7 +117,7 @@ export function GalleryRow() {
         {/* All frames stay in the DOM. Frames beyond `count` fade to invisible so
             there are no layout pops — the overflow-hidden panel hides the empty space. */}
         {FRAME_POOL.map((f, i) => {
-          const frameDelay = 2000 + i * 650;
+          const frameDelay = 2000 + i * 400;
           const labelDelay = frameDelay + 300;
           return (
             <div
