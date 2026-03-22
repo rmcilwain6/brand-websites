@@ -2,7 +2,7 @@ import { Frame } from '../components/frame';
 import { WaitlistForm } from './waitlist-form';
 import { RotatingText } from './rotating-text';
 import { FrameInterior, FrameLabel } from './frame-pieces';
-import { GalleryRow } from './gallery-row';
+import { ComingSoonDesktop } from './coming-soon-desktop';
 
 // Plain <img> — Next.js <Image> does not serve SVGs without unoptimized={true}.
 const LogoAsset = ({
@@ -147,46 +147,7 @@ export default function ComingSoonPage() {
       </div>
 
       {/* ── Desktop layout ─────────────────────────────────────────────────── */}
-      <div className="hidden h-full lg:grid" style={{ gridTemplateColumns: '33.33% 66.67%' }}>
-        {/* Left panel: logo top, date + form vertically centred */}
-        <div
-          className="flex h-full flex-col py-16"
-          style={{
-            paddingLeft: 'clamp(3rem, 7vw, 7rem)',
-            paddingRight: 'clamp(1.5rem, 3vw, 3rem)'
-          }}
-        >
-          <div className="animate-fade-in">
-            <LogoAsset variant="horizontal" style={{ width: 'clamp(160px, 14vw, 260px)' }} />
-          </div>
-
-          <div className="my-auto animate-fade-up" style={{ animationDelay: '80ms' }}>
-            <div className="mb-3 h-0.5 w-8 bg-accent" />
-            <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
-              Opening Soon
-            </p>
-            <p
-              className="mb-3 font-semibold leading-none tracking-tight text-ink"
-              style={{ fontSize: 'clamp(2.2rem, 4.5vw, 5rem)' }}
-            >
-              March
-              <br />
-              31st.
-            </p>
-            <div className="mb-6">
-              <RotatingText />
-            </div>
-            <WaitlistForm />
-          </div>
-        </div>
-
-        {/* Right panel: responsive gallery row — GalleryRow measures this panel
-            via ResizeObserver and shows as many frames as fit, with the last
-            one bleeding off the right edge. */}
-        <div className="relative h-full overflow-hidden bg-sun">
-          <GalleryRow />
-        </div>
-      </div>
+      <ComingSoonDesktop />
     </main>
   );
 }

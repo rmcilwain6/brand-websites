@@ -49,6 +49,9 @@ const config: Config = {
       animation: {
         'fade-up': 'fadeUp 280ms ease-out both',
         'fade-in': 'fadeIn 220ms ease-out both',
+        'hang-drop': 'hangDrop 420ms cubic-bezier(0.22, 1, 0.36, 1) both',
+        'stamp-in': 'stampIn 350ms cubic-bezier(0.16, 1, 0.3, 1) both',
+        'gallery-warm': 'galleryWarm 3000ms ease-in-out both',
         marquee: 'marquee var(--marquee-duration, 75s) linear infinite',
         'slide-from-right': 'slideFromRight 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
         'slide-from-left': 'slideFromLeft 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
@@ -62,7 +65,9 @@ const config: Config = {
         // wipe-in-left: new content reveals from left → right (moving to a higher tab index).
         // wipe-in-right: new content reveals from right → left (moving to a lower tab index).
         'wipe-in-left': 'wipeInLeft 160ms ease-out both',
-        'wipe-in-right': 'wipeInRight 160ms ease-out both'
+        'wipe-in-right': 'wipeInRight 160ms ease-out both',
+        // Waitlist loading indicator — three dots staggered via animationDelay
+        'bounce-dot': 'bounceDot 1.2s ease-in-out infinite'
       },
       keyframes: {
         fadeUp: {
@@ -104,6 +109,22 @@ const config: Config = {
         wipeInRight: {
           '0%': { clipPath: 'inset(0 0 0 100%)' },
           '100%': { clipPath: 'inset(0 0 0 0%)' }
+        },
+        hangDrop: {
+          '0%': { opacity: '0', transform: 'translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        stampIn: {
+          '0%': { opacity: '0', transform: 'scale(0.97)' },
+          '100%': { opacity: '1', transform: 'scale(1)' }
+        },
+        galleryWarm: {
+          '0%': { backgroundColor: 'var(--color-canvas)' },
+          '100%': { backgroundColor: 'var(--color-sun)' }
+        },
+        bounceDot: {
+          '0%, 60%, 100%': { transform: 'translateY(0)' },
+          '30%': { transform: 'translateY(-5px)' }
         }
       }
     }
