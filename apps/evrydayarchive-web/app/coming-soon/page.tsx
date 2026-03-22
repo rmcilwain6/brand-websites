@@ -31,10 +31,10 @@ export default function ComingSoonPage() {
     <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
       <div className="h-full overflow-y-auto lg:hidden">
-        {/* Hero: fills the viewport — logo, date, tagline, form */}
-        <div className="flex min-h-full flex-col bg-sun px-6">
+        {/* Hero: fills most of the viewport — frame edge peeks below */}
+        <div className="flex min-h-[90vh] flex-col bg-sun px-6">
           {/* paddingTop controls logo vertical position — easy to tweak */}
-          <div className="animate-fade-in mb-8 flex justify-center" style={{ paddingTop: '3rem' }}>
+          <div className="animate-fade-in mb-8 flex justify-center" style={{ paddingTop: '2rem' }}>
             <LogoAsset variant="stacked" width={135} />
           </div>
 
@@ -52,8 +52,8 @@ export default function ComingSoonPage() {
 
           {/* Rotating text — height sets where "Join the waitlist" starts */}
           <div
-            className="animate-fade-up flex items-center overflow-hidden py-4"
-            style={{ animationDelay: '90ms', height: '22vh' }}
+            className="animate-fade-up flex items-center overflow-hidden py-2"
+            style={{ animationDelay: '90ms', height: '14vh' }}
           >
             <RotatingText className="flex items-start" />
           </div>
@@ -64,8 +64,8 @@ export default function ComingSoonPage() {
           </div>
         </div>
 
-        {/* Frames below the fold — user scrolls to discover */}
-        <div className="bg-sun px-6 pb-16 pt-4">
+        {/* Frames below the fold — top edge peeks at bottom of hero */}
+        <div className="bg-sun px-6 pb-16 pt-0">
           <div className="animate-fade-up mb-10">
             <Frame
               variant="gallery"
