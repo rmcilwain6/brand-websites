@@ -6,6 +6,10 @@ type FrameEntry = {
   title: string;
   offsetY: number;
   catalogRef: string;
+  /** Mobile swipe strip: slide width as a vw value (e.g. 68 → "68vw") */
+  mobileWidthVw: number;
+  /** Mobile swipe strip: CSS aspect-ratio value (e.g. "2/3", "3/4") */
+  mobileAspect: string;
 };
 
 export const FRAME_POOL: FrameEntry[] = [
@@ -16,7 +20,9 @@ export const FRAME_POOL: FrameEntry[] = [
     mat: 'md',
     title: 'your favourite memory',
     offsetY: 0,
-    catalogRef: 'EAC-2026-471'
+    catalogRef: 'EAC-2026-471',
+    mobileWidthVw: 68,
+    mobileAspect: '2/3'
   },
   {
     number: '02',
@@ -25,7 +31,9 @@ export const FRAME_POOL: FrameEntry[] = [
     mat: 'md',
     title: 'doing what you love',
     offsetY: 0,
-    catalogRef: 'EAC-2026-489'
+    catalogRef: 'EAC-2026-489',
+    mobileWidthVw: 58,
+    mobileAspect: '3/4'
   },
   {
     number: '03',
@@ -34,7 +42,9 @@ export const FRAME_POOL: FrameEntry[] = [
     mat: 'md',
     title: 'the people you keep',
     offsetY: 0,
-    catalogRef: 'EAC-2026-503'
+    catalogRef: 'EAC-2026-503',
+    mobileWidthVw: 76,
+    mobileAspect: '2/3'
   },
   {
     number: '04',
@@ -43,7 +53,9 @@ export const FRAME_POOL: FrameEntry[] = [
     mat: 'md',
     title: 'the work you believe in',
     offsetY: 0,
-    catalogRef: 'EAC-2026-517'
+    catalogRef: 'EAC-2026-517',
+    mobileWidthVw: 64,
+    mobileAspect: '4/5'
   },
   {
     number: '05',
@@ -52,7 +64,9 @@ export const FRAME_POOL: FrameEntry[] = [
     mat: 'md',
     title: 'the moments that become stories',
     offsetY: 0,
-    catalogRef: 'EAC-2026-534'
+    catalogRef: 'EAC-2026-534',
+    mobileWidthVw: 74,
+    mobileAspect: '3/4'
   },
   {
     number: '06',
@@ -61,6 +75,8 @@ export const FRAME_POOL: FrameEntry[] = [
     mat: 'md',
     title: 'whatever you can dream up',
     offsetY: 0,
-    catalogRef: 'EAC-2026-562'
+    catalogRef: 'EAC-2026-562',
+    mobileWidthVw: 62,
+    mobileAspect: '2/3'
   }
 ];

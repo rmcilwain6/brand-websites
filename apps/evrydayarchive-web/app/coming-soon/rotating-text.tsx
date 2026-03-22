@@ -32,7 +32,7 @@ export function RotatingText({ className }: { className?: string }) {
     // means more wrapping and we want the text to fill vertical space.
     <div className={className ?? 'flex h-10 items-start overflow-hidden'}>
       <p
-        className="text-sm leading-snug text-ink-muted transition-opacity duration-500"
+        className="text-sm leading-snug text-ink-muted transition-opacity duration-500 sm:text-base"
         style={{ opacity: visible ? 1 : 0 }}
       >
         {PHRASES[index]}
