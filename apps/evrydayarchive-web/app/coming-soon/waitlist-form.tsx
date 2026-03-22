@@ -42,7 +42,7 @@ export const WaitlistForm = () => {
 
   return (
     <div>
-      <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
+      <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-faint">
         Join the waitlist
       </p>
       <form onSubmit={handleSubmit} className="max-w-xs">
