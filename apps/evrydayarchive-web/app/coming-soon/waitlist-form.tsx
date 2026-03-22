@@ -16,7 +16,6 @@ export const WaitlistForm = () => {
   const [leaving, setLeaving] = useState(false);
 
   const arrowRef = useRef<SVGSVGElement>(null);
-  const spinUpRef = useRef<Animation | null>(null);
   const spinCruiseRef = useRef<Animation | null>(null);
   const easterEggActiveRef = useRef(false);
 
@@ -52,41 +51,26 @@ export const WaitlistForm = () => {
       };
     });
 
-  // Two-phase spin: ease-in ramp-up → seamless cruise at matching speed.
-  // Spin-up: 0→720° in 600ms ease-in. Exit velocity ≈ 2 × (720/600) = 2.4°/ms = 150ms/rev,
-  // which matches the cruise duration exactly — no perceptible speed bump at the handoff.
+  // Snap straight to cruise speed — no ramp-up crawl.
+  // The settle's ease-out curve handles the satisfying deceleration.
   const startSpin = () => {
     const el = arrowRef.current;
     if (!el) return;
-
-    const spinUp = el.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(720deg)' }], {
-      duration: 600,
-      easing: 'ease-in'
-    });
-    spinUpRef.current = spinUp;
-
-    spinUp.onfinish = () => {
-      // Guard: if settleSpin already cancelled spin-up, skip starting cruise.
-      if (spinUpRef.current !== spinUp) return;
-      spinUpRef.current = null;
-
-      spinCruiseRef.current = el.animate(
-        [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
-        { duration: 150, iterations: Infinity, easing: 'linear' }
-      );
-    };
+    spinCruiseRef.current = el.animate(
+      [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
+      { duration: 150, iterations: Infinity, easing: 'linear' }
+    );
   };
 
-  // Cancel whatever spin phase is running, then decelerate to ← with at least
-  // 3 extra rotations so it always feels like a proper spin-down.
+  // Commit the live cruise position before cancelling so doSettle reads the
+  // correct mid-spin angle rather than the previously committed inline style.
   const settleSpin = async (): Promise<void> => {
     const el = arrowRef.current;
-
-    spinCruiseRef.current?.cancel();
-    spinCruiseRef.current = null;
-    spinUpRef.current?.cancel();
-    spinUpRef.current = null;
-
+    if (spinCruiseRef.current) {
+      spinCruiseRef.current.commitStyles();
+      spinCruiseRef.current.cancel();
+      spinCruiseRef.current = null;
+    }
     if (!el) return;
     await doSettle(el, 3);
   };
@@ -100,25 +84,17 @@ export const WaitlistForm = () => {
 
     easterEggActiveRef.current = true;
 
-    // Read the committed angle from the inline style left by the previous settle.
-    const matrix = new DOMMatrix(el.style.transform || 'none');
-    const raw = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
-    const currentAngle = ((raw % 360) + 360) % 360;
-
-    // Quick ramp-up from resting angle, then let it spin down naturally.
-    const spinUp = el.animate(
-      [
-        { transform: `rotate(${currentAngle}deg)` },
-        { transform: `rotate(${currentAngle + 720}deg)` }
-      ],
-      { duration: 600, easing: 'ease-in', fill: 'forwards' }
+    // Snap to cruise from the committed resting angle, hold briefly, then settle.
+    const startAngle = readAngle(el);
+    const cruise = el.animate(
+      [{ transform: `rotate(${startAngle}deg)` }, { transform: `rotate(${startAngle + 360}deg)` }],
+      { duration: 150, iterations: Infinity, easing: 'linear' }
     );
 
-    await new Promise<void>((resolve) => {
-      spinUp.onfinish = () => resolve();
-    });
-    spinUp.commitStyles();
-    spinUp.cancel();
+    // Brief cruise moment before settling — feels like a flick.
+    await new Promise<void>((resolve) => setTimeout(resolve, 300));
+    cruise.commitStyles();
+    cruise.cancel();
 
     await doSettle(el, 3);
     easterEggActiveRef.current = false;
@@ -155,8 +131,6 @@ export const WaitlistForm = () => {
     } catch {
       spinCruiseRef.current?.cancel();
       spinCruiseRef.current = null;
-      spinUpRef.current?.cancel();
-      spinUpRef.current = null;
       setLeaving(false);
       setStatus('error');
       setErrorMsg('Something went wrong — please try again.');
