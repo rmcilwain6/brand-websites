@@ -10,7 +10,13 @@ const PHRASES = [
   'Sessions shaped around your life, not the other way around.'
 ];
 
-export function RotatingText({ className }: { className?: string }) {
+export function RotatingText({
+  className,
+  textClassName
+}: {
+  className?: string;
+  textClassName?: string;
+}) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
 
@@ -32,7 +38,7 @@ export function RotatingText({ className }: { className?: string }) {
     // means more wrapping and we want the text to fill vertical space.
     <div className={className ?? 'flex h-10 items-start overflow-hidden'}>
       <p
-        className="text-sm leading-snug text-ink-muted transition-opacity duration-500 sm:text-base"
+        className={`leading-snug text-ink-muted transition-opacity duration-500 ${textClassName ?? 'text-sm sm:text-base'}`}
         style={{ opacity: visible ? 1 : 0 }}
       >
         {PHRASES[index]}
