@@ -1,6 +1,8 @@
 import './globals.css';
 import type { ReactNode } from 'react';
 import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { ThemeProvider } from './providers/theme-provider';
 import { SiteHeader } from './components/site-header';
@@ -46,6 +48,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           {children}
           {!isComingSoon && <SiteFooter />}
         </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
