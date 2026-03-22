@@ -33,7 +33,8 @@ export default function ComingSoonPage() {
       <div className="flex h-full bg-sun lg:hidden">
         {/* Left: top 62% holds logo + date content, form sits at ~60% mark */}
         <div className="flex flex-1 flex-col">
-          <div className="flex h-[60%] flex-col px-4">
+          {/* Logo + date — natural height, sits at the top */}
+          <div className="px-4">
             {/* paddingTop controls logo vertical position — easy to tweak */}
             <div
               className="animate-fade-in mb-8 flex justify-center"
@@ -46,16 +47,23 @@ export default function ComingSoonPage() {
               <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
                 Opening Soon
               </p>
-              <p className="mb-5 text-3xl font-semibold leading-snug tracking-tight text-ink">
+              <p className="text-3xl font-semibold leading-snug tracking-tight text-ink">
                 March
                 <br />
                 31st.
               </p>
-              <RotatingText />
             </div>
           </div>
 
-          <div className="animate-fade-up px-4 pb-10 pt-4" style={{ animationDelay: '120ms' }}>
+          {/* Rotating text fills the gap between date and waitlist */}
+          <div
+            className="animate-fade-up flex flex-1 items-center px-4 py-4"
+            style={{ animationDelay: '90ms' }}
+          >
+            <RotatingText className="flex items-start" />
+          </div>
+
+          <div className="animate-fade-up px-4 pb-10" style={{ animationDelay: '120ms' }}>
             <div className="mb-3 h-0.5 w-6 bg-accent" />
             <WaitlistForm />
           </div>

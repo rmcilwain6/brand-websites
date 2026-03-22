@@ -10,7 +10,7 @@ const PHRASES = [
   'Sessions shaped around your life, not the other way around.'
 ];
 
-export function RotatingText() {
+export function RotatingText({ className }: { className?: string }) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
 
@@ -27,9 +27,10 @@ export function RotatingText() {
   }, []);
 
   return (
-    // Fixed height holds two lines of text — prevents layout shift when phrases
-    // wrap differently. text-sm leading-snug = ~19px/line, two lines = ~38px.
-    <div className="flex h-10 items-start overflow-hidden">
+    // Default h-10 prevents layout shift on desktop (two lines max).
+    // Pass className to override — e.g. on mobile where narrower width
+    // means more wrapping and we want the text to fill vertical space.
+    <div className={className ?? 'flex h-10 items-start overflow-hidden'}>
       <p
         className="text-sm leading-snug text-ink-muted transition-opacity duration-500"
         style={{ opacity: visible ? 1 : 0 }}
