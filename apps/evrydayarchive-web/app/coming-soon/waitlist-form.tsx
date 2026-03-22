@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 const Disclaimer = () => (
   <p className="mt-3 max-w-xs text-xs leading-relaxed text-ink-faint">
@@ -14,6 +14,7 @@ export const WaitlistForm = () => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [leaving, setLeaving] = useState(false);
+  const loadingStartRef = useRef<number>(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +23,7 @@ export const WaitlistForm = () => {
     setStatus('loading');
     setErrorMsg('');
     setLeaving(true);
+    loadingStartRef.current = Date.now();
 
     try {
       const res = await fetch('/api/waitlist', {
@@ -31,6 +33,12 @@ export const WaitlistForm = () => {
       });
 
       if (!res.ok) throw new Error('Something went wrong');
+
+      // Ensure loading animation plays for at least 1 second.
+      const elapsed = Date.now() - loadingStartRef.current;
+      const remaining = Math.max(0, 1000 - elapsed);
+      await new Promise((resolve) => setTimeout(resolve, remaining));
+
       setStatus('success');
     } catch {
       setLeaving(false);
@@ -49,7 +57,7 @@ export const WaitlistForm = () => {
 
         <div className="border-b border-ink/35 pb-2">
           {status === 'success' ? (
-            <div className="animate-fade-up py-0.5">
+            <div className="animate-fade-up py-0.5" style={{ animationDuration: '800ms' }}>
               <p className="text-sm leading-snug text-ink-muted">
                 You&apos;re in. We&apos;ll be in touch soon.
               </p>
@@ -125,7 +133,7 @@ export const WaitlistForm = () => {
               {/* Bouncing dots — fade in after the wipe completes */}
               {leaving && (
                 <div
-                  className="animate-fade-in absolute inset-0 flex items-center"
+                  className="animate-fade-in absolute inset-0 flex items-center justify-center"
                   style={{ animationDelay: '250ms', animationDuration: '200ms' }}
                 >
                   <div className="flex gap-2">
