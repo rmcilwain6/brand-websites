@@ -156,13 +156,16 @@ export default function ComingSoonPage() {
             paddingRight: 'clamp(1.5rem, 3vw, 3rem)'
           }}
         >
-          <div className="animate-fade-in">
+          <div className="animate-fade-in" style={{ animationDuration: '600ms' }}>
             <LogoAsset variant="horizontal" style={{ width: 'clamp(160px, 14vw, 260px)' }} />
           </div>
 
           <div className="my-auto">
             {/* Accent bar + label — slides in from left like a placard being placed */}
-            <div className="animate-slide-from-left" style={{ animationDelay: '200ms' }}>
+            <div
+              className="animate-slide-from-left"
+              style={{ animationDelay: '300ms', animationDuration: '550ms' }}
+            >
               <div className="mb-3 h-0.5 w-8 bg-accent" />
               <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
                 Opening Soon
@@ -172,7 +175,11 @@ export default function ComingSoonPage() {
             {/* Date — stamps in, settles into place */}
             <p
               className="mb-3 animate-stamp-in font-semibold leading-none tracking-tight text-ink"
-              style={{ fontSize: 'clamp(2.2rem, 4.5vw, 5rem)', animationDelay: '420ms' }}
+              style={{
+                fontSize: 'clamp(2.2rem, 4.5vw, 5rem)',
+                animationDelay: '700ms',
+                animationDuration: '550ms'
+              }}
             >
               March
               <br />
@@ -180,12 +187,18 @@ export default function ComingSoonPage() {
             </p>
 
             {/* Rotating text — fades up after the date lands */}
-            <div className="mb-6 animate-fade-up" style={{ animationDelay: '640ms' }}>
+            <div
+              className="mb-6 animate-fade-up"
+              style={{ animationDelay: '1100ms', animationDuration: '450ms' }}
+            >
               <RotatingText />
             </div>
 
             {/* Waitlist form — last thing to appear, draws the eye */}
-            <div className="animate-fade-up" style={{ animationDelay: '820ms' }}>
+            <div
+              className="animate-fade-up"
+              style={{ animationDelay: '1500ms', animationDuration: '450ms' }}
+            >
               <WaitlistForm />
             </div>
           </div>

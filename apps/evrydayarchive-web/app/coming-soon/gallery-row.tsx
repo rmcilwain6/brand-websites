@@ -117,8 +117,8 @@ export function GalleryRow() {
         {/* All frames stay in the DOM. Frames beyond `count` fade to invisible so
             there are no layout pops — the overflow-hidden panel hides the empty space. */}
         {FRAME_POOL.map((f, i) => {
-          const frameDelay = 700 + i * 100;
-          const labelDelay = frameDelay + 150;
+          const frameDelay = 1100 + i * 450;
+          const labelDelay = frameDelay + 250;
           return (
             <div
               key={f.number}
@@ -129,7 +129,11 @@ export function GalleryRow() {
                 {/* Frame drops in from above — like being placed on a hook */}
                 <div
                   className="animate-hang-drop"
-                  style={{ width: f.widthPx, animationDelay: `${frameDelay}ms` }}
+                  style={{
+                    width: f.widthPx,
+                    animationDelay: `${frameDelay}ms`,
+                    animationDuration: '650ms'
+                  }}
                 >
                   <Frame
                     variant="gallery"
@@ -142,7 +146,10 @@ export function GalleryRow() {
                   </Frame>
                 </div>
                 {/* Placard fades in after the frame settles */}
-                <div className="animate-fade-in" style={{ animationDelay: `${labelDelay}ms` }}>
+                <div
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${labelDelay}ms`, animationDuration: '400ms' }}
+                >
                   <FrameLabel frameLabel={f.label} title={f.title} />
                 </div>
               </div>
