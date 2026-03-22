@@ -31,35 +31,33 @@ export default function ComingSoonPage() {
     <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
       <div className="flex h-full bg-sun lg:hidden">
-        {/* Left: logo top → date + tagline → form bottom */}
-        <div className="flex flex-1 flex-col px-5">
-          <div className="animate-fade-in pb-6 pt-10">
-            <LogoAsset variant="stacked" width={110} />
+        {/* Left: top 62% holds logo + date content, form sits at ~60% mark */}
+        <div className="flex flex-1 flex-col">
+          <div className="flex h-[62%] flex-col px-4 pt-10">
+            <div className="animate-fade-in mb-6 flex justify-center">
+              <LogoAsset variant="stacked" width={135} />
+            </div>
+            <div className="animate-fade-up" style={{ animationDelay: '60ms' }}>
+              <div className="mb-2 h-0.5 w-6 bg-accent" />
+              <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+                Opening Soon
+              </p>
+              <p className="mb-3 text-3xl font-semibold leading-tight tracking-tight text-ink">
+                March
+                <br />
+                31st.
+              </p>
+              <RotatingText />
+            </div>
           </div>
 
-          <div
-            className="animate-fade-up flex flex-1 flex-col justify-center pb-4"
-            style={{ animationDelay: '60ms' }}
-          >
-            <div className="mb-2 h-0.5 w-6 bg-accent" />
-            <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
-              Opening Soon
-            </p>
-            <p className="mb-3 text-3xl font-semibold leading-tight tracking-tight text-ink">
-              March
-              <br />
-              31st.
-            </p>
-            <RotatingText />
-          </div>
-
-          <div className="animate-fade-up pb-10" style={{ animationDelay: '120ms' }}>
+          <div className="animate-fade-up px-4 pb-10" style={{ animationDelay: '120ms' }}>
             <WaitlistForm />
           </div>
         </div>
 
         {/* Right: two frame sections, each with placard below, filling available height */}
-        <div className="flex w-[65%] flex-col py-8 pr-0">
+        <div className="flex w-[58%] flex-col py-8 pr-0">
           <div
             className="animate-fade-up flex flex-1 min-h-0 flex-col"
             style={{ animationDelay: '80ms' }}
@@ -73,7 +71,7 @@ export default function ComingSoonPage() {
             >
               <FrameInterior number="01" catalogRef="EAC-2026-471" />
             </Frame>
-            <div className="pt-3 pb-1">
+            <div className="pb-1 pt-3">
               <FrameLabel frameLabel="Events" title="your favourite memory" />
             </div>
           </div>
@@ -90,7 +88,7 @@ export default function ComingSoonPage() {
             >
               <FrameInterior number="02" catalogRef="EAC-2026-389" />
             </Frame>
-            <div className="pt-3 pb-1">
+            <div className="pb-1 pt-3">
               <FrameLabel frameLabel="Portraits" title="a quiet afternoon" />
             </div>
           </div>
