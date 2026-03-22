@@ -31,53 +31,75 @@ export default function ComingSoonPage() {
     <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
       <div className="flex h-full bg-sun lg:hidden">
-        {/* Left: logo top, content pinned to bottom */}
+        {/* Left: three distinct sections — logo / date+tagline / form */}
         <div className="flex flex-1 flex-col px-6 py-10">
           <div className="animate-fade-in">
             <LogoAsset variant="stacked" width={80} />
           </div>
-          <div className="mt-auto animate-fade-up" style={{ animationDelay: '60ms' }}>
+
+          <div className="my-auto animate-fade-up" style={{ animationDelay: '60ms' }}>
             <div className="mb-3 h-0.5 w-8 bg-accent" />
             <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
               Opening Soon
             </p>
-            <p className="mb-3 text-3xl font-semibold leading-tight tracking-tight text-ink">
+            <p className="mb-4 text-3xl font-semibold leading-tight tracking-tight text-ink">
               March
               <br />
               31st.
             </p>
-            <div className="mb-6">
-              <RotatingText />
-            </div>
+            <RotatingText />
+          </div>
+
+          <div className="animate-fade-up" style={{ animationDelay: '120ms' }}>
             <WaitlistForm />
           </div>
         </div>
 
-        {/* Right: two tall frames flush to screen edge */}
-        <div className="flex w-[42%] flex-col items-stretch justify-center gap-5 overflow-hidden py-10 pl-4 pr-0">
-          <div className="animate-fade-up flex flex-col gap-2" style={{ animationDelay: '80ms' }}>
+        {/* Right: two tall frames stretched to fill height, labels on left, flush to edge */}
+        <div className="flex w-[42%] flex-col gap-4 overflow-hidden py-10 pl-3 pr-0">
+          <div
+            className="flex flex-1 min-h-0 flex-row gap-2 animate-fade-up"
+            style={{ animationDelay: '80ms' }}
+          >
+            <div className="self-end mb-1 border-r-2 border-accent pr-2">
+              <span className="block text-[9px] uppercase tracking-[0.1em] text-ink-faint">
+                Events
+              </span>
+              <span className="block text-[10px] lowercase tracking-[0.06em] text-ink-muted">
+                your favourite memory
+              </span>
+            </div>
             <Frame
               variant="gallery"
               mat="lg"
               matStyle="linen"
-              className="aspect-[2/3] w-full rounded-none"
+              className="h-full flex-1 rounded-none"
               borderColor="#4A4540"
             >
               <FrameInterior number="01" catalogRef="EAC-2026-471" />
             </Frame>
-            <FrameLabel frameLabel="Events" title="your favourite memory" />
           </div>
-          <div className="animate-fade-up flex flex-col gap-2" style={{ animationDelay: '140ms' }}>
+          <div
+            className="flex flex-1 min-h-0 flex-row gap-2 animate-fade-up"
+            style={{ animationDelay: '140ms' }}
+          >
+            <div className="self-end mb-1 border-r-2 border-accent pr-2">
+              <span className="block text-[9px] uppercase tracking-[0.1em] text-ink-faint">
+                Portraits
+              </span>
+              <span className="block text-[10px] lowercase tracking-[0.06em] text-ink-muted">
+                a quiet afternoon
+              </span>
+            </div>
             <Frame
               variant="gallery"
               mat="lg"
               matStyle="linen"
-              className="aspect-[2/3] w-full rounded-none"
+              className="h-full flex-1 rounded-none"
               borderColor="#4A4540"
             >
               <FrameInterior number="02" catalogRef="EAC-2026-389" />
             </Frame>
-            <FrameLabel frameLabel="Portraits" title="a quiet afternoon" />
           </div>
         </div>
       </div>
