@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { WaitlistForm } from './waitlist-form';
 import { RotatingText } from './rotating-text';
@@ -18,6 +18,14 @@ export function ComingSoonDesktop() {
   // well before the 2000ms frame-start delay, so the real count is known
   // before any animation actually runs.
   const [frameCount, setFrameCount] = useState(6);
+  // Freeze after the first measurement so subsequent resizes don't change
+  // formDelay, which would reset and replay the CSS animation.
+  const countLockedRef = useRef(false);
+  const handleCountChange = useCallback((count: number) => {
+    if (countLockedRef.current) return;
+    countLockedRef.current = true;
+    setFrameCount(count);
+  }, []);
 
   // Form appears after the last frame's hang-drop finishes.
   // Frame i starts at: 2000 + i*400ms, takes 1000ms → finishes at 3000 + i*400.
@@ -85,7 +93,7 @@ export function ComingSoonDesktop() {
       {/* Right panel: starts at canvas colour, warms to sun over the full
           animation — like gallery lights slowly heating up. */}
       <div className="animate-gallery-warm relative h-full overflow-hidden">
-        <GalleryRow onCountChange={setFrameCount} />
+        <GalleryRow onCountChange={handleCountChange} />
       </div>
     </div>
   );
