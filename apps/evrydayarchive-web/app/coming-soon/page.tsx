@@ -31,75 +31,72 @@ export default function ComingSoonPage() {
     <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
       <div className="flex h-full bg-sun lg:hidden">
-        {/* Left: three distinct sections — logo / date+tagline / form */}
-        <div className="flex flex-1 flex-col px-6 py-10">
-          <div className="animate-fade-in">
-            <LogoAsset variant="stacked" width={80} />
+        {/* Left: two zones aligned to the two frame rows */}
+        <div className="flex flex-1 flex-col">
+          {/* Zone 1: logo + opening soon + date */}
+          <div className="flex flex-1 flex-col justify-center px-5 pb-4 pt-10">
+            <div className="animate-fade-in mb-5">
+              <LogoAsset variant="stacked" width={70} />
+            </div>
+            <div className="animate-fade-up" style={{ animationDelay: '60ms' }}>
+              <div className="mb-2 h-0.5 w-6 bg-accent" />
+              <p className="mb-1 text-[9px] font-medium uppercase tracking-widest text-ink-faint">
+                Opening Soon
+              </p>
+              <p className="text-2xl font-semibold leading-tight tracking-tight text-ink">
+                March
+                <br />
+                31st.
+              </p>
+            </div>
           </div>
 
-          <div className="my-auto animate-fade-up" style={{ animationDelay: '60ms' }}>
-            <div className="mb-3 h-0.5 w-8 bg-accent" />
-            <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
-              Opening Soon
-            </p>
-            <p className="mb-4 text-3xl font-semibold leading-tight tracking-tight text-ink">
-              March
-              <br />
-              31st.
-            </p>
-            <RotatingText />
-          </div>
-
-          <div className="animate-fade-up" style={{ animationDelay: '120ms' }}>
-            <WaitlistForm />
+          {/* Zone 2: tagline + form */}
+          <div className="flex flex-1 flex-col justify-center px-5 pb-10 pt-4">
+            <div className="animate-fade-up mb-5" style={{ animationDelay: '120ms' }}>
+              <RotatingText />
+            </div>
+            <div className="animate-fade-up" style={{ animationDelay: '180ms' }}>
+              <WaitlistForm />
+            </div>
           </div>
         </div>
 
-        {/* Right: two tall frames stretched to fill height, labels on left, flush to edge */}
-        <div className="flex w-[42%] flex-col gap-4 overflow-hidden py-10 pl-3 pr-0">
+        {/* Right: two tall frames filling height, placards bleeding left, flush to edge */}
+        <div className="flex w-[65%] flex-col pr-0">
           <div
-            className="flex flex-1 min-h-0 flex-row gap-2 animate-fade-up"
+            className="animate-fade-up flex flex-1 min-h-0 flex-col"
             style={{ animationDelay: '80ms' }}
           >
-            <div className="self-end mb-1 border-r-2 border-accent pr-2">
-              <span className="block text-[9px] uppercase tracking-[0.1em] text-ink-faint">
-                Events
-              </span>
-              <span className="block text-[10px] lowercase tracking-[0.06em] text-ink-muted">
-                your favourite memory
-              </span>
-            </div>
             <Frame
               variant="gallery"
               mat="lg"
               matStyle="linen"
-              className="h-full flex-1 rounded-none"
+              className="min-h-0 flex-1 w-full rounded-none"
               borderColor="#4A4540"
             >
               <FrameInterior number="01" catalogRef="EAC-2026-471" />
             </Frame>
+            <div className="-ml-10 py-3">
+              <FrameLabel frameLabel="Events" title="your favourite memory" />
+            </div>
           </div>
           <div
-            className="flex flex-1 min-h-0 flex-row gap-2 animate-fade-up"
+            className="animate-fade-up flex flex-1 min-h-0 flex-col"
             style={{ animationDelay: '140ms' }}
           >
-            <div className="self-end mb-1 border-r-2 border-accent pr-2">
-              <span className="block text-[9px] uppercase tracking-[0.1em] text-ink-faint">
-                Portraits
-              </span>
-              <span className="block text-[10px] lowercase tracking-[0.06em] text-ink-muted">
-                a quiet afternoon
-              </span>
-            </div>
             <Frame
               variant="gallery"
               mat="lg"
               matStyle="linen"
-              className="h-full flex-1 rounded-none"
+              className="min-h-0 flex-1 w-full rounded-none"
               borderColor="#4A4540"
             >
               <FrameInterior number="02" catalogRef="EAC-2026-389" />
             </Frame>
+            <div className="-ml-10 py-3">
+              <FrameLabel frameLabel="Portraits" title="a quiet afternoon" />
+            </div>
           </div>
         </div>
       </div>
