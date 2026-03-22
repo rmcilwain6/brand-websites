@@ -30,78 +30,67 @@ export default function ComingSoonPage() {
   return (
     <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
-      <div className="flex h-full bg-sun lg:hidden">
-        {/* Left: top 62% holds logo + date content, form sits at ~60% mark */}
-        <div className="flex flex-1 flex-col">
-          {/* Logo + date — natural height, sits at the top */}
-          <div className="px-4">
-            {/* paddingTop controls logo vertical position — easy to tweak */}
-            <div
-              className="animate-fade-in mb-8 flex justify-center"
-              style={{ paddingTop: '3rem' }}
-            >
-              <LogoAsset variant="stacked" width={135} />
-            </div>
-            <div className="animate-fade-up" style={{ animationDelay: '60ms' }}>
-              <div className="mb-3 h-0.5 w-6 bg-accent" />
-              <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
-                Opening Soon
-              </p>
-              <p className="text-3xl font-semibold leading-snug tracking-tight text-ink">
-                March
-                <br />
-                31st.
-              </p>
-            </div>
+      <div className="h-full overflow-y-auto lg:hidden">
+        {/* Hero: fills the viewport — logo, date, tagline, form */}
+        <div className="flex min-h-full flex-col bg-sun px-6">
+          {/* paddingTop controls logo vertical position — easy to tweak */}
+          <div className="animate-fade-in mb-8 flex justify-center" style={{ paddingTop: '3rem' }}>
+            <LogoAsset variant="stacked" width={135} />
           </div>
 
-          {/* Rotating text — height here sets where "Join the waitlist" starts */}
+          <div className="animate-fade-up" style={{ animationDelay: '60ms' }}>
+            <div className="mb-3 h-0.5 w-6 bg-accent" />
+            <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+              Opening Soon
+            </p>
+            <p className="text-3xl font-semibold leading-snug tracking-tight text-ink">
+              March
+              <br />
+              31st.
+            </p>
+          </div>
+
+          {/* Rotating text — height sets where "Join the waitlist" starts */}
           <div
-            className="animate-fade-up flex items-center overflow-hidden px-4 py-4"
+            className="animate-fade-up flex items-center overflow-hidden py-4"
             style={{ animationDelay: '90ms', height: '22vh' }}
           >
             <RotatingText className="flex items-start" />
           </div>
 
-          <div className="animate-fade-up px-4 pb-10" style={{ animationDelay: '120ms' }}>
+          <div className="animate-fade-up pb-12" style={{ animationDelay: '120ms' }}>
             <div className="mb-3 h-0.5 w-6 bg-accent" />
             <WaitlistForm />
           </div>
         </div>
 
-        {/* Right: two frame sections, each with placard below, filling available height */}
-        <div className="flex w-[52%] flex-col py-8 pr-0">
-          <div
-            className="animate-fade-up flex flex-1 min-h-0 flex-col"
-            style={{ animationDelay: '80ms' }}
-          >
+        {/* Frames below the fold — user scrolls to discover */}
+        <div className="bg-sun px-6 pb-16 pt-4">
+          <div className="animate-fade-up mb-10">
             <Frame
               variant="gallery"
               mat="lg"
               matStyle="linen"
-              className="min-h-0 flex-1 w-full rounded-none"
+              className="aspect-[2/3] w-full rounded-none"
               borderColor="#4A4540"
             >
               <FrameInterior number="01" catalogRef="EAC-2026-471" />
             </Frame>
-            <div className="pb-1 pt-3">
+            <div className="pt-3">
               <FrameLabel frameLabel="Events" title="your favourite memory" />
             </div>
           </div>
-          <div
-            className="animate-fade-up flex flex-1 min-h-0 flex-col"
-            style={{ animationDelay: '140ms' }}
-          >
+          <div className="animate-fade-up">
             <Frame
               variant="gallery"
               mat="lg"
               matStyle="linen"
-              className="min-h-0 flex-1 w-full rounded-none"
+              className="aspect-[2/3] w-full rounded-none"
               borderColor="#4A4540"
             >
               <FrameInterior number="02" catalogRef="EAC-2026-389" />
             </Frame>
-            <div className="pb-1 pt-3">
+            <div className="pt-3">
               <FrameLabel frameLabel="Portraits" title="a quiet afternoon" />
             </div>
           </div>
