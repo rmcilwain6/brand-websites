@@ -185,28 +185,40 @@ export const WaitlistForm = () => {
           >
             <svg
               ref={arrowRef}
-              width="22"
+              width="28"
               height="14"
-              viewBox="0 0 22 14"
+              viewBox="0 0 28 14"
               fill="none"
               aria-hidden
               style={{ display: 'block', transformBox: 'fill-box', transformOrigin: 'center' }}
             >
+              {/* Serif foot — small perpendicular tick at the tail, like a museum directional mark */}
               <line
-                x1="0"
-                y1="7"
-                x2="17"
-                y2="7"
+                x1="2.5"
+                y1="3.5"
+                x2="2.5"
+                y2="10.5"
                 stroke="currentColor"
-                strokeWidth="1.75"
+                strokeWidth="1.25"
                 strokeLinecap="round"
               />
-              <path
-                d="M11 1L18 7L11 13"
+              {/* Shaft */}
+              <line
+                x1="2.5"
+                y1="7"
+                x2="21"
+                y2="7"
                 stroke="currentColor"
-                strokeWidth="1.75"
+                strokeWidth="1.25"
                 strokeLinecap="round"
-                strokeLinejoin="round"
+              />
+              {/* Arrowhead — narrow spread, miter tip for a sharp, precise point */}
+              <path
+                d="M15 2.5L23 7L15 11.5"
+                stroke="currentColor"
+                strokeWidth="1.25"
+                strokeLinecap="round"
+                strokeLinejoin="miter"
                 fill="none"
               />
             </svg>
