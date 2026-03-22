@@ -204,10 +204,9 @@ export default function ComingSoonPage() {
           </div>
         </div>
 
-        {/* Right panel: responsive gallery row — GalleryRow measures this panel
-            via ResizeObserver and shows as many frames as fit, with the last
-            one bleeding off the right edge. */}
-        <div className="relative h-full overflow-hidden bg-sun">
+        {/* Right panel: starts at canvas colour, warms to sun over the full
+            animation — like gallery lights slowly heating up. */}
+        <div className="animate-gallery-warm relative h-full overflow-hidden">
           <GalleryRow />
         </div>
       </div>

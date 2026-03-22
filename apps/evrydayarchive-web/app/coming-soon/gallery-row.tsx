@@ -117,8 +117,8 @@ export function GalleryRow() {
         {/* All frames stay in the DOM. Frames beyond `count` fade to invisible so
             there are no layout pops — the overflow-hidden panel hides the empty space. */}
         {FRAME_POOL.map((f, i) => {
-          const frameDelay = 1100 + i * 450;
-          const labelDelay = frameDelay + 250;
+          const frameDelay = 2000 + i * 650;
+          const labelDelay = frameDelay + 300;
           return (
             <div
               key={f.number}
@@ -132,7 +132,7 @@ export function GalleryRow() {
                   style={{
                     width: f.widthPx,
                     animationDelay: `${frameDelay}ms`,
-                    animationDuration: '650ms'
+                    animationDuration: '750ms'
                   }}
                 >
                   <Frame
