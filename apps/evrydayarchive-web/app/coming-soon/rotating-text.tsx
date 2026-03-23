@@ -36,7 +36,7 @@ export function RotatingText({
     // Default h-10 prevents layout shift on desktop (two lines max).
     // Pass className to override — e.g. on mobile where narrower width
     // means more wrapping and we want the text to fill vertical space.
-    <div className={className ?? 'flex h-10 items-start overflow-hidden'}>
+    <div className={className ?? 'flex h-12 items-start overflow-hidden'}>
       <p
         className={`leading-snug text-ink-muted transition-opacity duration-500 ${textClassName ?? 'text-sm sm:text-base'}`}
         style={{ opacity: visible ? 1 : 0 }}

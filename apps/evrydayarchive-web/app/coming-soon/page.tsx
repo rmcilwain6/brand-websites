@@ -31,11 +31,11 @@ export default function ComingSoonPage() {
   return (
     <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
-      <div className="h-full overflow-y-auto bg-sun lg:hidden">
+      <div className="h-full overflow-y-auto bg-canvas lg:hidden">
         {/* Hero: clamp-based sizing so every phone uses its full canvas.
             min-h leaves 72px visible so the frame strip peeks below the fold. */}
         <section
-          className="flex flex-col bg-sun"
+          className="flex flex-col bg-canvas"
           style={{
             minHeight: 'min(calc(100svh - 72px), 680px)',
             paddingLeft: 'clamp(1.25rem, 6vw, 2.25rem)',
@@ -95,7 +95,7 @@ export default function ComingSoonPage() {
             continuous surface. Only the frames move; the background stays still.
             Each frame has its own width + aspect ratio for organic variety. */}
         <section
-          className="animate-fade-in bg-sun pb-20 pt-8"
+          className="animate-fade-in bg-canvas pb-20 pt-8"
           style={{ animationDelay: '900ms', animationDuration: '800ms' }}
         >
           <div
