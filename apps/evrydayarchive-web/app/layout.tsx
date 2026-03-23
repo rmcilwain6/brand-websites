@@ -1,4 +1,5 @@
 import './globals.css';
+import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
@@ -14,10 +15,26 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   display: 'swap'
 });
 
-export const metadata = {
+export const metadata: Metadata = {
+  metadataBase: new URL('https://evrydayarchive.co'),
   title: 'Evryday Archive Co | Reed McIlwain, Photographer',
   description:
-    'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.'
+    'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
+  openGraph: {
+    type: 'website',
+    url: 'https://evrydayarchive.co',
+    title: 'Evryday Archive Co | Reed McIlwain, Photographer',
+    description:
+      'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
+    locale: 'en_CA',
+    siteName: 'Evryday Archive Co'
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Evryday Archive Co | Reed McIlwain, Photographer',
+    description:
+      'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.'
+  }
 };
 
 const isComingSoon = process.env.NEXT_PUBLIC_COMING_SOON === 'true';

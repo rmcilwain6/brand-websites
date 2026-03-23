@@ -1,9 +1,16 @@
+import type { Metadata } from 'next';
 import { Frame } from '../components/frame';
 import { WaitlistForm } from './waitlist-form';
 import { RotatingText } from './rotating-text';
 import { FrameInterior, FrameLabel } from './frame-pieces';
 import { ComingSoonDesktop } from './coming-soon-desktop';
 import { FRAME_POOL } from './frames-data';
+
+export const metadata: Metadata = {
+  title: 'Coming Soon | Evryday Archive Co',
+  description:
+    'Evryday Archive Co is almost here. Join the waitlist and be the first to know when we launch.'
+};
 
 // Plain <img> — Next.js <Image> does not serve SVGs without unoptimized={true}.
 const LogoAsset = ({
