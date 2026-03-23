@@ -9,9 +9,11 @@ const Disclaimer = () => (
   </p>
 );
 
+type Status = 'idle' | 'loading' | 'exiting' | 'success' | 'error';
+
 export const WaitlistForm = () => {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<Status>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [leaving, setLeaving] = useState(false);
   const loadingStartRef = useRef<number>(0);
