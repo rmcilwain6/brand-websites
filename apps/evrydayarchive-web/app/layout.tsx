@@ -15,8 +15,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  title: 'Evryday Archive Co',
-  description: 'A photography studio committed to documenting the moments that matter.'
+  title: 'Evryday Archive Co | Reed McIlwain, Photographer',
+  description:
+    'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.'
 };
 
 const isComingSoon = process.env.NEXT_PUBLIC_COMING_SOON === 'true';
