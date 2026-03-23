@@ -31,7 +31,7 @@ export default function ComingSoonPage() {
   return (
     <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
-      <div className="h-full overflow-y-auto lg:hidden">
+      <div className="h-full overflow-y-auto bg-sun lg:hidden">
         {/* Hero: clamp-based sizing so every phone uses its full canvas.
             min-h leaves 72px visible so the frame strip peeks below the fold. */}
         <section
