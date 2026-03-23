@@ -1,6 +1,23 @@
+# Normalize all text files to LF
+* text=auto eol=lf
+
+# Explicit overrides (redundant with catch-all but kept for clarity)
 *.js   text eol=lf
 *.ts   text eol=lf
+*.tsx  text eol=lf
 *.json text eol=lf
 *.cjs  text eol=lf
 *.mjs  text eol=lf
 *.md   text eol=lf
+*.css  text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# Binary files — never touch line endings
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.woff binary
+*.woff2 binary

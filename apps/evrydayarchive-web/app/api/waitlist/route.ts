@@ -38,7 +38,8 @@ export async function POST(req: Request) {
     });
 
     return Response.json({ ok: true });
-  } catch {
+  } catch (err) {
+    console.error('[waitlist] error:', err);
     return Response.json({ error: 'Invalid request' }, { status: 400 });
   }
 }

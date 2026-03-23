@@ -2,7 +2,8 @@ import { Frame } from '../components/frame';
 import { WaitlistForm } from './waitlist-form';
 import { RotatingText } from './rotating-text';
 import { FrameInterior, FrameLabel } from './frame-pieces';
-import { GalleryRow } from './gallery-row';
+import { ComingSoonDesktop } from './coming-soon-desktop';
+import { FRAME_POOL } from './frames-data';
 
 // Plain <img> — Next.js <Image> does not serve SVGs without unoptimized={true}.
 const LogoAsset = ({
@@ -30,163 +31,104 @@ export default function ComingSoonPage() {
   return (
     <main className="fixed inset-0 overflow-hidden">
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
-      <div className="h-full overflow-y-auto lg:hidden">
-        {/* Hero: fills most of the viewport — frame edge peeks below */}
-        <div className="flex min-h-[90vh] flex-col bg-sun px-6">
-          {/* paddingTop controls logo vertical position — easy to tweak */}
-          <div className="animate-fade-in mb-8 flex justify-center" style={{ paddingTop: '2rem' }}>
-            <LogoAsset variant="stacked" width={135} />
-          </div>
-
-          <div className="animate-fade-up" style={{ animationDelay: '60ms' }}>
-            <div className="mb-3 h-0.5 w-6 bg-accent" />
-            <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
-              Opening Soon
-            </p>
-            <p className="text-3xl font-semibold leading-snug tracking-tight text-ink">
-              March
-              <br />
-              31st.
-            </p>
-          </div>
-
-          {/* Rotating text — height sets where "Join the waitlist" starts */}
-          <div
-            className="animate-fade-up flex items-center overflow-hidden py-2"
-            style={{ animationDelay: '90ms', height: '14vh' }}
-          >
-            <RotatingText className="flex items-start" />
-          </div>
-
-          <div className="animate-fade-up pb-12" style={{ animationDelay: '120ms' }}>
-            <div className="mb-3 h-0.5 w-6 bg-accent" />
-            <WaitlistForm />
-          </div>
-        </div>
-
-        {/* Frames below the fold — tight gallery grid */}
-        <div className="bg-sun px-4 pb-16 pt-0">
-          <div className="grid grid-cols-2 gap-2">
-            {/* Row 1: two portraits */}
-            <div>
-              <Frame
-                variant="gallery"
-                mat="md"
-                matStyle="linen"
-                className="aspect-[2/3] w-full rounded-none"
-                borderColor="#4A4540"
-              >
-                <FrameInterior number="01" catalogRef="EAC-2026-471" />
-              </Frame>
-              <div className="pt-2">
-                <FrameLabel frameLabel="Events" title="your favourite memory" />
-              </div>
-            </div>
-            <div>
-              <Frame
-                variant="gallery"
-                mat="md"
-                matStyle="linen"
-                className="aspect-[2/3] w-full rounded-none"
-                borderColor="#4A4540"
-              >
-                <FrameInterior number="02" catalogRef="EAC-2026-389" />
-              </Frame>
-              <div className="pt-2">
-                <FrameLabel frameLabel="Portraits" title="a quiet afternoon" />
-              </div>
-            </div>
-
-            {/* Row 2: landscape spanning full width */}
-            <div className="col-span-2">
-              <Frame
-                variant="gallery"
-                mat="md"
-                matStyle="linen"
-                className="aspect-[16/9] w-full rounded-none"
-                borderColor="#4A4540"
-              >
-                <FrameInterior number="03" catalogRef="EAC-2026-512" />
-              </Frame>
-              <div className="pt-2">
-                <FrameLabel frameLabel="Family" title="sunday morning" />
-              </div>
-            </div>
-
-            {/* Row 3: square + portrait */}
-            <div>
-              <Frame
-                variant="gallery"
-                mat="md"
-                matStyle="linen"
-                className="aspect-square w-full rounded-none"
-                borderColor="#4A4540"
-              >
-                <FrameInterior number="04" catalogRef="EAC-2026-203" />
-              </Frame>
-              <div className="pt-2">
-                <FrameLabel frameLabel="Lifestyle" title="the small hours" />
-              </div>
-            </div>
-            <div>
-              <Frame
-                variant="gallery"
-                mat="md"
-                matStyle="linen"
-                className="aspect-[2/3] w-full rounded-none"
-                borderColor="#4A4540"
-              >
-                <FrameInterior number="05" catalogRef="EAC-2026-318" />
-              </Frame>
-              <div className="pt-2">
-                <FrameLabel frameLabel="Weddings" title="forever begins here" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Desktop layout ─────────────────────────────────────────────────── */}
-      <div className="hidden h-full lg:grid" style={{ gridTemplateColumns: '33.33% 66.67%' }}>
-        {/* Left panel: logo top, date + form vertically centred */}
-        <div
-          className="flex h-full flex-col py-16"
+      <div className="h-full overflow-y-auto bg-canvas lg:hidden">
+        {/* Hero: clamp-based sizing so every phone uses its full canvas.
+            min-h leaves 72px visible so the frame strip peeks below the fold. */}
+        <section
+          className="flex flex-col bg-canvas"
           style={{
-            paddingLeft: 'clamp(3rem, 7vw, 7rem)',
-            paddingRight: 'clamp(1.5rem, 3vw, 3rem)'
+            minHeight: 'min(calc(100svh - 72px), 680px)',
+            paddingLeft: 'clamp(1.25rem, 6vw, 2.25rem)',
+            paddingRight: 'clamp(1.25rem, 6vw, 2.25rem)'
           }}
         >
-          <div className="animate-fade-in">
-            <LogoAsset variant="horizontal" style={{ width: 'clamp(160px, 14vw, 260px)' }} />
+          {/* Logo — top third: fades in slowly, anchors the page */}
+          <div
+            className="animate-fade-in flex justify-center"
+            style={{
+              paddingTop: 'clamp(1.75rem, 5.5vh, 3.5rem)',
+              animationDuration: '700ms'
+            }}
+          >
+            <LogoAsset variant="stacked" style={{ width: 'clamp(150px, 44vw, 220px)' }} />
           </div>
 
-          <div className="my-auto animate-fade-up" style={{ animationDelay: '80ms' }}>
-            <div className="mb-3 h-0.5 w-8 bg-accent" />
-            <p className="mb-2 text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+          {/* Date + rotating text — follows logo with a deliberate pause */}
+          <div
+            className="animate-fade-up flex flex-1 flex-col justify-center"
+            style={{ animationDelay: '350ms', animationDuration: '550ms' }}
+          >
+            <div className="mb-3 h-0.5 bg-accent" style={{ width: 'clamp(1.25rem, 5vw, 2rem)' }} />
+            <p
+              className="mb-2 font-medium uppercase tracking-widest text-ink-faint"
+              style={{ fontSize: 'clamp(9px, 2.5vw, 11px)' }}
+            >
               Opening Soon
             </p>
             <p
-              className="mb-3 font-semibold leading-none tracking-tight text-ink"
-              style={{ fontSize: 'clamp(2.2rem, 4.5vw, 5rem)' }}
+              className="font-semibold leading-snug tracking-tight text-ink"
+              style={{ fontSize: 'clamp(1.85rem, 9vw, 2.9rem)' }}
             >
               March
               <br />
               31st.
             </p>
-            <div className="mb-6">
+            <div style={{ marginTop: 'clamp(0.75rem, 2.5vh, 1.5rem)' }}>
               <RotatingText />
             </div>
+          </div>
+
+          {/* Waitlist form — arrives after content settles */}
+          <div
+            className="animate-fade-up"
+            style={{
+              animationDelay: '580ms',
+              animationDuration: '550ms',
+              paddingBottom: 'clamp(1.75rem, 5.5vh, 3rem)'
+            }}
+          >
             <WaitlistForm />
           </div>
-        </div>
+        </section>
 
-        {/* Right panel: responsive gallery row — GalleryRow measures this panel
-            via ResizeObserver and shows as many frames as fit, with the last
-            one bleeding off the right edge. */}
-        <div className="relative h-full overflow-hidden bg-sun">
-          <GalleryRow />
-        </div>
+        {/* Swipeable frame strip — bg-sun matches the hero so the wall is one
+            continuous surface. Only the frames move; the background stays still.
+            Each frame has its own width + aspect ratio for organic variety. */}
+        <section
+          className="animate-fade-in bg-canvas pb-20 pt-8"
+          style={{ animationDelay: '900ms', animationDuration: '800ms' }}
+        >
+          <div
+            className="flex gap-4 overflow-x-auto [scroll-snap-type:x_mandatory] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            style={{ paddingLeft: '14vw', paddingRight: '14vw' }}
+          >
+            {FRAME_POOL.map((f) => (
+              <div
+                key={f.number}
+                className="flex flex-shrink-0 flex-col gap-2 [scroll-snap-align:center]"
+                style={{ width: `${f.mobileWidthVw}vw` }}
+              >
+                {/* Wrapper sets the aspect ratio; Frame fills it with h-full */}
+                <div style={{ aspectRatio: f.mobileAspect }}>
+                  <Frame
+                    variant="gallery"
+                    mat="md"
+                    matStyle="linen"
+                    className="h-full w-full rounded-none"
+                    borderColor="#4A4540"
+                  >
+                    <FrameInterior number={f.number} catalogRef={f.catalogRef} />
+                  </Frame>
+                </div>
+                <FrameLabel frameLabel={f.label} title={f.title} />
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
+
+      {/* ── Desktop layout ─────────────────────────────────────────────────── */}
+      <ComingSoonDesktop />
     </main>
   );
 }

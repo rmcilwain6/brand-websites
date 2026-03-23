@@ -10,13 +10,15 @@ Always run the following in order and fix any issues before committing:
 pnpm format          # Prettier — format all files
 pnpm lint            # ESLint across all packages
 pnpm typecheck       # TypeScript checks across all packages
+pnpm build           # Next.js production build — catches config/bundler errors
 ```
 
-If only touching a single app, you can scope lint/typecheck:
+If only touching a single app, you can scope lint/typecheck/build:
 
 ```bash
 pnpm --filter evrydayarchive-web lint
 pnpm --filter evrydayarchive-web typecheck
+pnpm --filter evrydayarchive-web build
 ```
 
 `pnpm format` must always be run at the workspace root (not per-package) since Prettier is configured there.
