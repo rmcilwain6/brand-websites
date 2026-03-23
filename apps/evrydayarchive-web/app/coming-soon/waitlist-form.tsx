@@ -3,10 +3,18 @@
 import { useRef, useState } from 'react';
 
 const Disclaimer = () => (
-  <p className="mt-3 max-w-xs text-xs leading-relaxed text-ink-faint">
-    Waitlist members are entered to win a complimentary session and receive an exclusive discount on
-    May bookings.
-  </p>
+  <div className="mt-3 max-w-xs space-y-1.5">
+    <p className="text-xs leading-relaxed text-ink-faint">
+      {
+        'Waitlist members get 5 extra images on their first session, and are entered to win a complimentary shoot.'
+      }
+    </p>
+    <p className="text-xs leading-relaxed text-ink-faint">
+      {
+        'By signing up you agree to receive occasional emails from Evryday Archive Co. You can unsubscribe at any time.'
+      }
+    </p>
+  </div>
 );
 
 type Status = 'idle' | 'loading' | 'exiting' | 'success' | 'error';
