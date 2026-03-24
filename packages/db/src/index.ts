@@ -14,6 +14,7 @@ export type {
   PackageModifier,
   PackageStatus,
   Prisma as PrismaTypes,
+  Review,
   TimeSlot,
   TimeSlotStatus,
   WaitlistEntry
