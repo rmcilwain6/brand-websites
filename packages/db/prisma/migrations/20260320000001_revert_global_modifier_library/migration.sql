@@ -12,19 +12,29 @@ DROP INDEX IF EXISTS "PackageModifier_modifierId_idx";
 -- Remove modifierId column
 ALTER TABLE "PackageModifier" DROP COLUMN IF EXISTS "modifierId";
 
--- Restore original columns
-ALTER TABLE "PackageModifier"
-    ADD COLUMN "name" TEXT NOT NULL DEFAULT '',
-    ADD COLUMN "description" TEXT,
-    ADD COLUMN "type" "ModifierType" NOT NULL DEFAULT 'CHECKBOX',
-    ADD COLUMN "priceDeltaCents" INTEGER,
-    ADD COLUMN "config" JSONB;
-
--- Remove the temporary default on name
-ALTER TABLE "PackageModifier" ALTER COLUMN "name" DROP DEFAULT;
+-- Restore original columns (conditional to handle both fresh DBs and ones that had the forward migration applied)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='PackageModifier' AND column_name='name') THEN
+        ALTER TABLE "PackageModifier" ADD COLUMN "name" TEXT NOT NULL DEFAULT '';
+        ALTER TABLE "PackageModifier" ALTER COLUMN "name" DROP DEFAULT;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='PackageModifier' AND column_name='description') THEN
+        ALTER TABLE "PackageModifier" ADD COLUMN "description" TEXT;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='PackageModifier' AND column_name='type') THEN
+        ALTER TABLE "PackageModifier" ADD COLUMN "type" "ModifierType" NOT NULL DEFAULT 'CHECKBOX';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='PackageModifier' AND column_name='priceDeltaCents') THEN
+        ALTER TABLE "PackageModifier" ADD COLUMN "priceDeltaCents" INTEGER;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='PackageModifier' AND column_name='config') THEN
+        ALTER TABLE "PackageModifier" ADD COLUMN "config" JSONB;
+    END IF;
+END$$;
 
 -- Restore original unique constraint and index
-CREATE UNIQUE INDEX "PackageModifier_packageId_name_key" ON "PackageModifier"("packageId", "name");
+CREATE UNIQUE INDEX IF NOT EXISTS "PackageModifier_packageId_name_key" ON "PackageModifier"("packageId", "name");
 
 -- Drop the Modifier table
 DROP TABLE IF EXISTS "Modifier";
