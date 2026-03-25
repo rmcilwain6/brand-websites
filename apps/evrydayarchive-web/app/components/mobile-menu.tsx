@@ -79,18 +79,19 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
               ? pathname === '/'
               : pathname === link.href || pathname.startsWith(link.href);
           const catalogNum = String(i + 1).padStart(2, '0');
-          // Stagger: items fade up one by one, 70ms apart, starting 80ms after
-          // the clip-path reveal begins. Closing resets instantly (delay: 0).
-          const staggerDelay = isOpen ? `${80 + i * 70}ms` : '0ms';
+          // Stagger: use animate-fade-up (keyframe, fill-mode:both) so items
+          // always start from opacity:0 — eliminates the first-render flash
+          // that transition-based approaches can produce after navigation.
+          const staggerDelay = `${80 + i * 70}ms`;
           return (
             <Link
               key={link.href}
               href={link.href}
               onClick={onClose}
-              style={{ transitionDelay: staggerDelay }}
+              style={isOpen ? { animationDelay: staggerDelay } : undefined}
               className={cn(
-                'flex items-baseline gap-3 transition-[opacity,transform] duration-standard hover:opacity-70',
-                isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
+                'flex items-baseline gap-3 transition-opacity duration-fast hover:opacity-70',
+                isOpen ? 'animate-fade-up' : 'opacity-0'
               )}
             >
               {/* Catalog number — archival detail, visually subordinate */}
