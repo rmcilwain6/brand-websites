@@ -1,10 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { cn } from '../lib/cn';
-import { ThemeToggle } from './theme-toggle';
 
 type NavLink = { href: string; label: string };
 
@@ -17,8 +17,12 @@ type MobileMenuProps = {
 
 /**
  * Full-screen mobile navigation overlay.
- * Nav items are centered both vertically and horizontally.
- * Active link is indicated by an orange underline.
+ *
+ * Sits at z-30, below the bottom bar (z-40), so the bar always remains
+ * visible on top. The overlay stops at bottom-16 to leave the bar exposed.
+ *
+ * Layout: logo centered at top → nav links centered in remaining space.
+ * Active link: orange underline (matches desktop NavLink).
  */
 export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
   const pathname = usePathname();
@@ -32,22 +36,35 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
       aria-label="Navigation menu"
       aria-hidden={!isOpen}
       className={cn(
-        'fixed inset-0 z-50 flex flex-col bg-canvas md:hidden',
+        // Stop at bottom-16 so the fixed bottom bar (h-16) stays visible on top.
+        'fixed inset-x-0 top-0 bottom-16 z-30 flex flex-col bg-canvas md:hidden',
         'transition-opacity duration-standard',
         isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
       )}
     >
-      {/* Close button — top-right corner */}
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Close navigation menu"
-        className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-card text-ink-muted transition-colors hover:bg-sun focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-      >
-        <XIcon />
-      </button>
+      {/* Logo — centered at the top */}
+      <div className="flex justify-center pt-10">
+        <Link href="/" onClick={onClose} aria-label="Evryday Archive Co — home">
+          <Image
+            src="/logo/horizontal.svg"
+            alt="Evryday Archive Co"
+            width={120}
+            height={50}
+            priority
+            className="dark:hidden"
+          />
+          <Image
+            src="/logo/horizontal-dark.svg"
+            alt="Evryday Archive Co"
+            width={120}
+            height={50}
+            priority
+            className="hidden dark:block"
+          />
+        </Link>
+      </div>
 
-      {/* Centered nav links */}
+      {/* Nav links — centered in remaining space */}
       <nav
         className="flex flex-1 flex-col items-center justify-center gap-10"
         aria-label="Mobile navigation"
@@ -64,7 +81,6 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
               onClick={onClose}
               className={cn(
                 'relative text-3xl font-medium text-ink transition-opacity duration-fast hover:opacity-70',
-                // Orange underline sits 6px below the text baseline
                 'after:absolute after:left-0 after:-bottom-[6px] after:h-[2px] after:w-full after:bg-accent after:transition-transform after:duration-fast',
                 isActive ? 'after:scale-x-100' : 'after:scale-x-0'
               )}
@@ -74,24 +90,6 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
           );
         })}
       </nav>
-
-      {/* Bottom actions */}
-      <div className="flex items-center gap-3 px-6 pb-10 pt-6">
-        <Link
-          href="/inquire"
-          onClick={onClose}
-          className="flex-1 rounded-card bg-accent py-4 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90"
-        >
-          Inquire
-        </Link>
-        <ThemeToggle />
-      </div>
     </div>
   );
 };
-
-const XIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-    <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);

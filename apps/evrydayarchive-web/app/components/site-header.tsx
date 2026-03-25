@@ -81,7 +81,11 @@ export const SiteHeader = () => {
         )}
       >
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          {/* ── Mobile layout: hamburger left, Inquire right ────────── */}
+          {/* ── Mobile layout ───────────────────────────────────────
+           * Closed: [☰ left] ........................ [Inquire right]
+           * Open:   [✕ left] [Inquire — fills remaining width      ]
+           * Transition: padding + flex-grow animate via transition-all.
+           */}
           <div className="flex w-full items-center justify-between md:hidden">
             <button
               type="button"
@@ -89,14 +93,17 @@ export const SiteHeader = () => {
               aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-menu"
-              className="flex h-9 w-9 items-center justify-center rounded-card text-ink-muted hover:bg-sun focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-card text-ink-muted transition-colors hover:bg-sun focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
-              <MenuIcon />
+              {mobileMenuOpen ? <XIcon /> : <MenuIcon />}
             </button>
 
             <Link
               href="/inquire"
-              className="rounded-card bg-accent px-3 py-1.5 text-xs font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className={cn(
+                'rounded-card bg-accent font-medium text-white transition-all duration-standard hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
+                mobileMenuOpen ? 'ml-3 flex-1 py-3 text-center text-sm' : 'px-3 py-1.5 text-xs'
+              )}
             >
               Inquire
             </Link>
@@ -167,5 +174,11 @@ const MenuIcon = () => (
       strokeWidth="1.5"
       strokeLinecap="round"
     />
+  </svg>
+);
+
+const XIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+    <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
