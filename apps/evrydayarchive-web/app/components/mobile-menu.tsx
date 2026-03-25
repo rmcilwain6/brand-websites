@@ -21,8 +21,8 @@ type MobileMenuProps = {
  * Sits at z-30, below the bottom bar (z-40), so the bar always remains
  * visible on top. The overlay stops at bottom-16 to leave the bar exposed.
  *
- * Layout: logo centered at top → nav links centered in remaining space.
- * Active link: orange underline (matches desktop NavLink).
+ * Opens via clip-path reveal from bottom → top (like a print being uncovered).
+ * Nav items have archival catalog numbers (01, 02…) in mono to the left.
  */
 export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
   const pathname = usePathname();
@@ -36,13 +36,14 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
       aria-label="Navigation menu"
       aria-hidden={!isOpen}
       className={cn(
-        // Stop at bottom-16 so the fixed bottom bar (h-16) stays visible on top.
         'fixed inset-x-0 top-0 bottom-16 z-30 flex flex-col bg-canvas md:hidden',
-        // Grows upward from the bottom bar: scale-y from origin-bottom + fade.
-        'origin-bottom transition-[transform,opacity] duration-standard',
+        // clip-path reveal: inset(100% 0 0 0) = fully clipped from top edge down,
+        // visible area is a 0-height strip at the bottom. Animating top inset to 0%
+        // uncovers the content upward — like a print sliding out of its sleeve.
+        'transition-[clip-path,opacity] duration-standard',
         isOpen
-          ? 'scale-y-100 opacity-100 pointer-events-auto'
-          : 'scale-y-0 opacity-0 pointer-events-none'
+          ? '[clip-path:inset(0%_0_0_0)] opacity-100 pointer-events-auto'
+          : '[clip-path:inset(100%_0_0_0)] opacity-0 pointer-events-none'
       )}
     >
       {/* Logo — centered at the top */}
@@ -72,23 +73,33 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
         className="flex flex-1 flex-col items-center justify-center gap-10"
         aria-label="Mobile navigation"
       >
-        {allLinks.map((link) => {
+        {allLinks.map((link, i) => {
           const isActive =
             link.href === '/'
               ? pathname === '/'
               : pathname === link.href || pathname.startsWith(link.href);
+          const catalogNum = String(i + 1).padStart(2, '0');
           return (
             <Link
               key={link.href}
               href={link.href}
               onClick={onClose}
-              className={cn(
-                'relative text-3xl font-medium text-ink transition-opacity duration-fast hover:opacity-70',
-                'after:absolute after:left-0 after:-bottom-[6px] after:h-[2px] after:w-full after:bg-accent after:transition-transform after:duration-fast',
-                isActive ? 'after:scale-x-100' : 'after:scale-x-0'
-              )}
+              className="flex items-baseline gap-3 transition-opacity duration-fast hover:opacity-70"
             >
-              {link.label}
+              {/* Catalog number — archival detail, visually subordinate */}
+              <span className="font-mono text-[10px] font-medium tracking-widest text-ink-faint">
+                {catalogNum}
+              </span>
+              {/* Label — underline on active */}
+              <span
+                className={cn(
+                  'relative text-3xl font-medium text-ink',
+                  'after:absolute after:left-0 after:-bottom-[6px] after:h-[2px] after:w-full after:bg-accent after:transition-transform after:duration-fast',
+                  isActive ? 'after:scale-x-100' : 'after:scale-x-0'
+                )}
+              >
+                {link.label}
+              </span>
             </Link>
           );
         })}
