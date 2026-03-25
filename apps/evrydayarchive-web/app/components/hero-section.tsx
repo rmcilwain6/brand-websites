@@ -46,18 +46,18 @@ const ClassicHero = () => (
       <div className="mb-8 flex justify-center md:hidden">
         <Link href="/" aria-label="Evryday Archive Co — home">
           <Image
-            src="/logo/horizontal.svg"
+            src="/logo/stacked.svg"
             alt="Evryday Archive Co"
-            width={110}
-            height={46}
+            width={100}
+            height={76}
             priority
             className="dark:hidden"
           />
           <Image
-            src="/logo/horizontal-dark.svg"
+            src="/logo/stacked-dark.svg"
             alt="Evryday Archive Co"
-            width={110}
-            height={46}
+            width={100}
+            height={76}
             priority
             className="hidden dark:block"
           />

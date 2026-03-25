@@ -50,18 +50,18 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
       <div className="flex justify-center pt-10">
         <Link href="/" onClick={onClose} aria-label="Evryday Archive Co — home">
           <Image
-            src="/logo/horizontal.svg"
+            src="/logo/stacked.svg"
             alt="Evryday Archive Co"
-            width={120}
-            height={50}
+            width={100}
+            height={76}
             priority
             className="dark:hidden"
           />
           <Image
-            src="/logo/horizontal-dark.svg"
+            src="/logo/stacked-dark.svg"
             alt="Evryday Archive Co"
-            width={120}
-            height={50}
+            width={100}
+            height={76}
             priority
             className="hidden dark:block"
           />
