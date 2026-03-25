@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { cn } from '../lib/cn';
 
@@ -23,10 +23,20 @@ type MobileMenuProps = {
  *
  * Opens via clip-path reveal from bottom → top (like a print being uncovered).
  * Nav items have archival catalog numbers (01, 02…) in mono to the left.
+ *
+ * On item press: active state gives instant tactile scale+dim feedback.
+ * On release: close animation and navigation fire simultaneously so the
+ * menu collapses downward while the new page loads behind it.
  */
 export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
   const pathname = usePathname();
+  const router = useRouter();
   const allLinks: NavLink[] = [{ href: '/', label: 'Home' }, ...links];
+
+  const handleNavClick = (href: string) => {
+    onClose();
+    router.push(href);
+  };
 
   return (
     <div
@@ -37,9 +47,6 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
       aria-hidden={!isOpen}
       className={cn(
         'fixed inset-x-0 top-0 bottom-16 z-30 flex flex-col bg-canvas md:hidden',
-        // clip-path reveal: inset(100% 0 0 0) = fully clipped from top edge down,
-        // visible area is a 0-height strip at the bottom. Animating top inset to 0%
-        // uncovers the content upward — like a print sliding out of its sleeve.
         'transition-[clip-path] duration-standard',
         isOpen
           ? '[clip-path:inset(0%_0_0_0)] pointer-events-auto'
@@ -79,23 +86,20 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
               ? pathname === '/'
               : pathname === link.href || pathname.startsWith(link.href);
           const catalogNum = String(i + 1).padStart(2, '0');
-          // Stagger: use animate-fade-up (keyframe, fill-mode:both) so items
-          // always start from opacity:0 — eliminates the first-render flash
-          // that transition-based approaches can produce after navigation.
           const staggerDelay = `${80 + i * 70}ms`;
           return (
-            <Link
+            <button
               key={link.href}
-              href={link.href}
-              onClick={onClose}
+              type="button"
+              onClick={() => handleNavClick(link.href)}
               style={isOpen ? { animationDelay: staggerDelay } : undefined}
               className={cn(
-                'relative transition-opacity duration-fast hover:opacity-70',
+                // active: fires on touchstart — instant tactile press feedback
+                'relative transition-[opacity,transform] duration-fast active:scale-[0.97] active:opacity-50',
                 isOpen ? 'animate-fade-up' : 'opacity-0'
               )}
             >
-              {/* Catalog number — absolutely positioned left of the text so it
-                  doesn't affect the centering of the label in the nav */}
+              {/* Catalog number — absolutely positioned so it doesn't affect centering */}
               <span
                 aria-hidden
                 className="absolute right-full top-1/2 -translate-y-1/2 pr-3 font-mono text-[10px] font-medium tracking-widest text-ink-faint"
@@ -112,7 +116,7 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
               >
                 {link.label}
               </span>
-            </Link>
+            </button>
           );
         })}
       </nav>
