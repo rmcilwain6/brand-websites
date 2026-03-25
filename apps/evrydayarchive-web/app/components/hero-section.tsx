@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { useFeatureFlag } from '../lib/use-feature-flag';
@@ -39,8 +40,30 @@ export const HeroSection = () => {
 // ── Classic (original) hero ───────────────────────────────────────────────────
 
 const ClassicHero = () => (
-  <section className="relative px-4 pb-20 pt-16 sm:px-6 lg:px-8">
+  <section className="relative px-4 pb-20 pt-10 sm:px-6 md:pt-16 lg:px-8">
     <div className="mx-auto max-w-5xl">
+      {/* Mobile logo — centered at top; desktop has logo in the sticky header */}
+      <div className="mb-8 flex justify-center md:hidden">
+        <Link href="/" aria-label="Evryday Archive Co — home">
+          <Image
+            src="/logo/horizontal.svg"
+            alt="Evryday Archive Co"
+            width={110}
+            height={46}
+            priority
+            className="dark:hidden"
+          />
+          <Image
+            src="/logo/horizontal-dark.svg"
+            alt="Evryday Archive Co"
+            width={110}
+            height={46}
+            priority
+            className="hidden dark:block"
+          />
+        </Link>
+      </div>
+
       {/* Stage 1: exhibit text (appears first) */}
       <div className="animate-fade-up mb-10 max-w-xl">
         <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
