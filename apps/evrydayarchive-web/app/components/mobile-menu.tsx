@@ -38,8 +38,11 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
       className={cn(
         // Stop at bottom-16 so the fixed bottom bar (h-16) stays visible on top.
         'fixed inset-x-0 top-0 bottom-16 z-30 flex flex-col bg-canvas md:hidden',
-        'transition-opacity duration-standard',
-        isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        // Grows upward from the bottom bar: scale-y from origin-bottom + fade.
+        'origin-bottom transition-[transform,opacity] duration-standard',
+        isOpen
+          ? 'scale-y-100 opacity-100 pointer-events-auto'
+          : 'scale-y-0 opacity-0 pointer-events-none'
       )}
     >
       {/* Logo — centered at the top */}

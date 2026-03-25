@@ -101,8 +101,8 @@ export const SiteHeader = () => {
             <Link
               href="/inquire"
               className={cn(
-                'rounded-card bg-accent font-medium text-white transition-all duration-standard hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
-                mobileMenuOpen ? 'ml-3 flex-1 py-3 text-center text-sm' : 'px-3 py-1.5 text-xs'
+                'rounded-card bg-accent text-center text-sm font-medium text-white transition-[padding,flex-grow,margin] duration-standard hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
+                mobileMenuOpen ? 'ml-3 flex-1 py-3' : 'px-3 py-1.5'
               )}
             >
               Inquire
