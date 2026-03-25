@@ -52,16 +52,16 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
           <Image
             src="/logo/stacked.svg"
             alt="Evryday Archive Co"
-            width={100}
-            height={76}
+            width={140}
+            height={107}
             priority
             className="dark:hidden"
           />
           <Image
             src="/logo/stacked-dark.svg"
             alt="Evryday Archive Co"
-            width={100}
-            height={76}
+            width={140}
+            height={107}
             priority
             className="hidden dark:block"
           />
