@@ -1,10 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { cn } from '../lib/cn';
-import { ThemeToggle } from './theme-toggle';
 
 type NavLink = { href: string; label: string };
 
@@ -15,31 +15,28 @@ type MobileMenuProps = {
   links: readonly NavLink[];
 };
 
-// Archival reference codes — one per route, shown on the active link
-// as a rubber-stamp detail instead of a colour/style change.
-const ARCHIVE_CODES: Record<string, string> = {
-  '/portfolio': 'FILE/041',
-  '/packages': 'PKG/007',
-  '/process': 'SEQ/003',
-  '/contact': 'REF/099'
-};
-
-const ArchiveStamp = ({ code }: { code: string }) => (
-  <span
-    aria-hidden
-    className="flex-shrink-0 rotate-[-3deg] border border-accent/55 px-2 py-[3px] font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-accent/70"
-  >
-    {code}
-  </span>
-);
-
 /**
- * Mobile navigation drawer.
- * Expands downward from the header with a scaleY + opacity transition.
- * Overlays the page content rather than pushing it.
+ * Full-screen mobile navigation overlay.
+ *
+ * Sits at z-30, below the bottom bar (z-40), so the bar always remains
+ * visible on top. The overlay stops at bottom-16 to leave the bar exposed.
+ *
+ * Opens via clip-path reveal from bottom → top (like a print being uncovered).
+ * Nav items have archival catalog numbers (01, 02…) in mono to the left.
+ *
+ * On item press: active state gives instant tactile scale+dim feedback.
+ * On release: close animation and navigation fire simultaneously so the
+ * menu collapses downward while the new page loads behind it.
  */
 export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const allLinks: NavLink[] = [{ href: '/', label: 'Home' }, ...links];
+
+  const handleNavClick = (href: string) => {
+    onClose();
+    router.push(href);
+  };
 
   return (
     <div
@@ -49,43 +46,80 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
       aria-label="Navigation menu"
       aria-hidden={!isOpen}
       className={cn(
-        'fixed inset-x-0 top-16 z-30 flex flex-col bg-canvas md:hidden',
-        'border-b border-border shadow-warm-lg',
-        // Expand downward: scale from origin-top + fade in
-        'origin-top transition-all duration-standard',
+        'fixed inset-x-0 top-0 bottom-16 z-30 flex flex-col bg-canvas md:hidden',
+        'transition-[clip-path] duration-standard',
         isOpen
-          ? 'scale-y-100 opacity-100 pointer-events-auto'
-          : 'scale-y-95 opacity-0 pointer-events-none'
+          ? '[clip-path:inset(0%_0_0_0)] pointer-events-auto'
+          : '[clip-path:inset(100%_0_0_0)] pointer-events-none'
       )}
     >
-      <nav className="flex flex-col px-6 pt-6" aria-label="Mobile navigation">
-        {links.map((link) => {
+      {/* Logo — centered at the top */}
+      <div className="flex justify-center pt-10">
+        <Link href="/" onClick={onClose} aria-label="Evryday Archive Co — home">
+          <Image
+            src="/logo/stacked.svg"
+            alt="Evryday Archive Co"
+            width={140}
+            height={107}
+            priority
+            className="dark:hidden"
+          />
+          <Image
+            src="/logo/stacked-dark.svg"
+            alt="Evryday Archive Co"
+            width={140}
+            height={107}
+            priority
+            className="hidden dark:block"
+          />
+        </Link>
+      </div>
+
+      {/* Nav links — centered in remaining space */}
+      <nav
+        className="flex flex-1 flex-col items-center justify-center gap-10"
+        aria-label="Mobile navigation"
+      >
+        {allLinks.map((link, i) => {
           const isActive =
-            pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+            link.href === '/'
+              ? pathname === '/'
+              : pathname === link.href || pathname.startsWith(link.href);
+          const catalogNum = String(i + 1).padStart(2, '0');
+          const staggerDelay = `${80 + i * 70}ms`;
           return (
-            <Link
+            <button
               key={link.href}
-              href={link.href}
-              onClick={onClose}
-              className="flex items-center justify-between border-b border-border py-5 text-2xl font-medium text-ink transition-opacity duration-fast hover:opacity-70"
+              type="button"
+              onClick={() => handleNavClick(link.href)}
+              style={isOpen ? { animationDelay: staggerDelay } : undefined}
+              className={cn(
+                // active: fires on touchstart — instant tactile press feedback
+                'relative transition-[opacity,transform] duration-fast active:scale-[0.97] active:opacity-50',
+                isOpen ? 'animate-fade-up' : 'opacity-0'
+              )}
             >
-              {link.label}
-              {isActive && <ArchiveStamp code={ARCHIVE_CODES[link.href] ?? 'ARCH/000'} />}
-            </Link>
+              {/* Catalog number — absolutely positioned so it doesn't affect centering */}
+              <span
+                aria-hidden
+                className="absolute right-full top-1/2 -translate-y-1/2 pr-3 font-mono text-[10px] font-medium tracking-widest text-ink-faint"
+              >
+                {catalogNum}
+              </span>
+              {/* Label — underline on active */}
+              <span
+                className={cn(
+                  'relative text-3xl font-medium text-ink',
+                  'after:absolute after:left-0 after:-bottom-[6px] after:h-[2px] after:w-full after:bg-accent after:transition-transform after:duration-fast',
+                  isActive ? 'after:scale-x-100' : 'after:scale-x-0'
+                )}
+              >
+                {link.label}
+              </span>
+            </button>
           );
         })}
       </nav>
-
-      <div className="flex items-center gap-3 px-6 pb-8 pt-6">
-        <Link
-          href="/inquire"
-          onClick={onClose}
-          className="flex-1 rounded-card bg-accent py-4 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90"
-        >
-          Inquire
-        </Link>
-        <ThemeToggle />
-      </div>
     </div>
   );
 };

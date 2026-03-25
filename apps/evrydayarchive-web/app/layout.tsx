@@ -63,7 +63,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       <body>
         <ThemeProvider>
           {!isComingSoon && <SiteHeader />}
-          {children}
+          {/* pb-16 on mobile reserves space for the fixed bottom nav bar */}
+          <div className="pb-16 md:pb-0">{children}</div>
           {!isComingSoon && <SiteFooter />}
         </ThemeProvider>
         <Analytics />
