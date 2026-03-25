@@ -170,20 +170,16 @@ export const SiteHeader = () => {
               />
             )}
 
-            {/* Hamburger — fades out on collapse */}
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen((o) => !o)}
-              aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              aria-expanded={mobileMenuOpen}
-              aria-controls="mobile-menu"
+            {/* Inquire — fades out on collapse */}
+            <Link
+              href="/inquire"
               className={cn(
-                'flex h-9 w-9 items-center justify-center rounded-card text-ink-muted transition-all duration-standard hover:bg-sun focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
+                'rounded-card bg-accent px-3 py-1.5 text-xs font-medium text-white transition-all duration-standard hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
                 scrolledDown ? 'pointer-events-none opacity-0' : 'opacity-100'
               )}
             >
-              {mobileMenuOpen ? <XIcon /> : <MenuIcon />}
-            </button>
+              Inquire
+            </Link>
 
             {/* Logo — slides left and shrinks on collapse, crossfades horizontal ↔ icon */}
             <Link
@@ -246,16 +242,20 @@ export const SiteHeader = () => {
               </div>
             </Link>
 
-            {/* Inquire — fades out on collapse */}
-            <Link
-              href="/inquire"
+            {/* Hamburger — fades out on collapse */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((o) => !o)}
+              aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
               className={cn(
-                'rounded-card bg-accent px-3 py-1.5 text-xs font-medium text-white transition-all duration-standard hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
+                'flex h-9 w-9 items-center justify-center rounded-card text-ink-muted transition-all duration-standard hover:bg-sun focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
                 scrolledDown ? 'pointer-events-none opacity-0' : 'opacity-100'
               )}
             >
-              Inquire
-            </Link>
+              <MenuIcon />
+            </button>
           </div>
 
           {/* ── Desktop layout ─────────────────────────────────────── */}
@@ -324,11 +324,5 @@ const MenuIcon = () => (
       strokeWidth="1.5"
       strokeLinecap="round"
     />
-  </svg>
-);
-
-const XIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-    <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );

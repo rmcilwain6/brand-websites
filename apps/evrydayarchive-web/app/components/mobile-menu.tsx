@@ -15,31 +15,14 @@ type MobileMenuProps = {
   links: readonly NavLink[];
 };
 
-// Archival reference codes — one per route, shown on the active link
-// as a rubber-stamp detail instead of a colour/style change.
-const ARCHIVE_CODES: Record<string, string> = {
-  '/portfolio': 'FILE/041',
-  '/packages': 'PKG/007',
-  '/process': 'SEQ/003',
-  '/contact': 'REF/099'
-};
-
-const ArchiveStamp = ({ code }: { code: string }) => (
-  <span
-    aria-hidden
-    className="flex-shrink-0 rotate-[-3deg] border border-accent/55 px-2 py-[3px] font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-accent/70"
-  >
-    {code}
-  </span>
-);
-
 /**
- * Mobile navigation drawer.
- * Expands downward from the header with a scaleY + opacity transition.
- * Overlays the page content rather than pushing it.
+ * Full-screen mobile navigation overlay.
+ * Nav items are centered both vertically and horizontally.
+ * Active link is indicated by an orange underline.
  */
 export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
   const pathname = usePathname();
+  const allLinks: NavLink[] = [{ href: '/', label: 'Home' }, ...links];
 
   return (
     <div
@@ -49,34 +32,51 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
       aria-label="Navigation menu"
       aria-hidden={!isOpen}
       className={cn(
-        'fixed inset-x-0 top-16 z-30 flex flex-col bg-canvas md:hidden',
-        'border-b border-border shadow-warm-lg',
-        // Expand downward: scale from origin-top + fade in
-        'origin-top transition-all duration-standard',
-        isOpen
-          ? 'scale-y-100 opacity-100 pointer-events-auto'
-          : 'scale-y-95 opacity-0 pointer-events-none'
+        'fixed inset-0 z-50 flex flex-col bg-canvas md:hidden',
+        'transition-opacity duration-standard',
+        isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
       )}
     >
-      <nav className="flex flex-col px-6 pt-6" aria-label="Mobile navigation">
-        {links.map((link) => {
+      {/* Close button — top-right corner */}
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close navigation menu"
+        className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-card text-ink-muted transition-colors hover:bg-sun focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+      >
+        <XIcon />
+      </button>
+
+      {/* Centered nav links */}
+      <nav
+        className="flex flex-1 flex-col items-center justify-center gap-10"
+        aria-label="Mobile navigation"
+      >
+        {allLinks.map((link) => {
           const isActive =
-            pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+            link.href === '/'
+              ? pathname === '/'
+              : pathname === link.href || pathname.startsWith(link.href);
           return (
             <Link
               key={link.href}
               href={link.href}
               onClick={onClose}
-              className="flex items-center justify-between border-b border-border py-5 text-2xl font-medium text-ink transition-opacity duration-fast hover:opacity-70"
+              className={cn(
+                'relative text-3xl font-medium text-ink transition-opacity duration-fast hover:opacity-70',
+                // Orange underline sits 6px below the text baseline
+                'after:absolute after:left-0 after:-bottom-[6px] after:h-[2px] after:w-full after:bg-accent after:transition-transform after:duration-fast',
+                isActive ? 'after:scale-x-100' : 'after:scale-x-0'
+              )}
             >
               {link.label}
-              {isActive && <ArchiveStamp code={ARCHIVE_CODES[link.href] ?? 'ARCH/000'} />}
             </Link>
           );
         })}
       </nav>
 
-      <div className="flex items-center gap-3 px-6 pb-8 pt-6">
+      {/* Bottom actions */}
+      <div className="flex items-center gap-3 px-6 pb-10 pt-6">
         <Link
           href="/inquire"
           onClick={onClose}
@@ -89,3 +89,9 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
     </div>
   );
 };
+
+const XIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+    <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
