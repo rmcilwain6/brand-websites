@@ -90,12 +90,16 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
               onClick={onClose}
               style={isOpen ? { animationDelay: staggerDelay } : undefined}
               className={cn(
-                'flex items-baseline gap-3 transition-opacity duration-fast hover:opacity-70',
+                'relative transition-opacity duration-fast hover:opacity-70',
                 isOpen ? 'animate-fade-up' : 'opacity-0'
               )}
             >
-              {/* Catalog number — archival detail, visually subordinate */}
-              <span className="font-mono text-[10px] font-medium tracking-widest text-ink-faint">
+              {/* Catalog number — absolutely positioned left of the text so it
+                  doesn't affect the centering of the label in the nav */}
+              <span
+                aria-hidden
+                className="absolute right-full top-1/2 -translate-y-1/2 pr-3 font-mono text-[10px] font-medium tracking-widest text-ink-faint"
+              >
                 {catalogNum}
               </span>
               {/* Label — underline on active */}
