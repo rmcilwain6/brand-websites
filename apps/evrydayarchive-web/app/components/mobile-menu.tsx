@@ -40,10 +40,10 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
         // clip-path reveal: inset(100% 0 0 0) = fully clipped from top edge down,
         // visible area is a 0-height strip at the bottom. Animating top inset to 0%
         // uncovers the content upward — like a print sliding out of its sleeve.
-        'transition-[clip-path,opacity] duration-standard',
+        'transition-[clip-path] duration-standard',
         isOpen
-          ? '[clip-path:inset(0%_0_0_0)] opacity-100 pointer-events-auto'
-          : '[clip-path:inset(100%_0_0_0)] opacity-0 pointer-events-none'
+          ? '[clip-path:inset(0%_0_0_0)] pointer-events-auto'
+          : '[clip-path:inset(100%_0_0_0)] pointer-events-none'
       )}
     >
       {/* Logo — centered at the top */}
