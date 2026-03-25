@@ -141,7 +141,9 @@ export const SiteHeader = () => {
     <>
       <header
         className={cn(
-          'sticky top-0 z-40 border-b border-border bg-canvas overflow-hidden',
+          // Mobile: fixed to the bottom. Desktop: sticky at the top.
+          'fixed bottom-0 z-40 w-full overflow-hidden border-t border-border bg-canvas',
+          'md:sticky md:top-0 md:bottom-auto md:border-t-0 md:border-b',
           'transition-[height] duration-standard',
           // Desktop: always full height — collapse is mobile-only.
           'md:h-16',
