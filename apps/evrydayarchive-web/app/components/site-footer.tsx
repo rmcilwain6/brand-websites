@@ -17,7 +17,7 @@ export const SiteFooter = () => {
   return (
     <footer className="border-t border-border bg-canvas">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1fr_auto_minmax(260px,1fr)]">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1fr_auto_minmax(130px,auto)]">
           {/* Column 1: Brand + Social */}
           <div className="space-y-5">
             <div className="space-y-2">
@@ -94,38 +94,50 @@ export const SiteFooter = () => {
           </nav>
 
           {/* Column 3: Email capture + Back to entrance */}
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col">
             <FooterEmailCapture />
             <Link
               href="/"
-              className="flex items-center gap-2.5 text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
+              className="mt-auto self-end pt-8 flex items-center gap-2.5 text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
             >
-              {/* Archway / entrance icon */}
+              Back to the entrance
+              {/* Open door icon */}
               <svg
-                width="14"
-                height="16"
-                viewBox="0 0 14 16"
+                width="18"
+                height="20"
+                viewBox="0 0 18 20"
                 fill="none"
                 aria-hidden
                 className="shrink-0"
               >
+                {/* Frame: top + right side */}
                 <path
-                  d="M1 15V7.5A6 6 0 0 1 13 7.5V15"
+                  d="M1 20V1H17V20"
                   stroke="currentColor"
                   strokeWidth="1.5"
                   strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
+                {/* Floor */}
                 <line
                   x1="0"
-                  y1="15"
-                  x2="14"
-                  y2="15"
+                  y1="20"
+                  x2="18"
+                  y2="20"
                   stroke="currentColor"
                   strokeWidth="1.5"
                   strokeLinecap="round"
                 />
+                {/* Open door panel — left-hinged, foreshortened */}
+                <path
+                  d="M1 1L7 2.5L7 20H1"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinejoin="round"
+                />
+                {/* Knob */}
+                <circle cx="5.5" cy="11" r="1" fill="currentColor" />
               </svg>
-              Back to the entrance
             </Link>
           </div>
         </div>
