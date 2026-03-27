@@ -96,12 +96,12 @@ export const SiteFooter = () => {
 
           {/* Column 3: Email capture + Back to entrance */}
           <div className="flex flex-col">
-            <div className="w-3/5">
+            <div className="ml-auto w-3/5">
               <FooterEmailCapture />
             </div>
             <Link
               href="/"
-              className="mt-auto pt-8 flex items-center gap-2.5 text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
+              className="mt-auto self-end pt-8 flex items-center gap-2.5 text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
             >
               Back to the entrance
               {/* Entrance icon — Zach Bogart / Noun Project */}
