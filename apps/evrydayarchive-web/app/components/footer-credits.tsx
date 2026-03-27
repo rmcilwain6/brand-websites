@@ -23,6 +23,12 @@ const CREDITS: Credit[] = [
     href: 'https://fonts.google.com/specimen/JetBrains+Mono'
   },
   {
+    label: 'Icon',
+    name: 'Entrance icon',
+    author: 'Zach Bogart / Noun Project',
+    href: 'https://thenounproject.com'
+  },
+  {
     label: 'Brand asset',
     name: 'Instagram glyph',
     author: 'Meta',
