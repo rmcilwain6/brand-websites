@@ -29,7 +29,7 @@ export const FooterEmailCapture = () => {
   return (
     <div>
       <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
-        Stay in the loop
+        Get updates
       </p>
       <form onSubmit={handleSubmit}>
         <div className="border-b border-ink/35 pb-2">

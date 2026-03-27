@@ -20,56 +20,63 @@ export const SiteFooter = () => {
         <div className="flex flex-col gap-10 sm:flex-row sm:justify-between">
           {/* Column 1: Brand + Social */}
           <div className="space-y-5">
-            <div className="space-y-1.5">
+            <div className="space-y-2">
+              {/* Camera icon mark */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo/icon.svg" alt="" className="h-8 w-auto dark:invert" />
               <p className="text-sm font-semibold text-ink">Evryday Archive Co</p>
               <p className="text-xs text-ink-faint">Documenting life in Kamloops & BC</p>
             </div>
-            <div className="flex flex-col gap-2">
-              <p className="text-xs font-medium uppercase tracking-widest text-ink-faint">Follow</p>
-              <a
-                href="https://www.instagram.com/evrydayarchive.co/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
-              >
-                <Image
-                  src="/logo/Instagram_Glyph_Black.svg"
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="dark:hidden"
-                />
-                <Image
-                  src="/logo/Instagram_Glyph_White.svg"
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="hidden dark:block"
-                />
-                Instagram
-              </a>
-              <a
-                href="https://www.linkedin.com/in/reedmcilwain/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
-              >
-                <Image
-                  src="/logo/InBug-Black.png"
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="dark:hidden"
-                />
-                <Image
-                  src="/logo/InBug-White.png"
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="hidden dark:block"
-                />
-                LinkedIn
-              </a>
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-widest text-ink-faint">
+                Find me on
+              </p>
+              <div className="flex items-center gap-4">
+                <a
+                  href="https://www.instagram.com/evrydayarchive.co/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-opacity duration-fast hover:opacity-70"
+                >
+                  <Image
+                    src="/logo/Instagram_Glyph_Black.svg"
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="dark:hidden"
+                  />
+                  <Image
+                    src="/logo/Instagram_Glyph_White.svg"
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="hidden dark:block"
+                  />
+                  <span className="sr-only">Instagram</span>
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/reedmcilwain/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-opacity duration-fast hover:opacity-70"
+                >
+                  <Image
+                    src="/logo/InBug-Black.png"
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="dark:hidden"
+                  />
+                  <Image
+                    src="/logo/InBug-White.png"
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="hidden dark:block"
+                  />
+                  <span className="sr-only">LinkedIn</span>
+                </a>
+              </div>
             </div>
           </div>
 
@@ -91,7 +98,7 @@ export const SiteFooter = () => {
             <FooterEmailCapture />
             <Link
               href="/"
-              className="group flex items-center gap-2.5 text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
+              className="flex items-center gap-2.5 text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
             >
               {/* Archway / entrance icon */}
               <svg
@@ -122,8 +129,18 @@ export const SiteFooter = () => {
             </Link>
           </div>
         </div>
+      </div>
 
-        <div className="mt-10 border-t border-border pt-6 flex items-center justify-between">
+      {/* Full-width divider split by accent dot */}
+      <div className="flex items-center">
+        <div className="flex-1 border-t border-border" />
+        <div className="mx-3 h-1.5 w-1.5 flex-none rounded-full bg-accent" />
+        <div className="flex-1 border-t border-border" />
+      </div>
+
+      {/* Copyright bar */}
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between">
           <p className="text-xs text-ink-faint">© {year} Evryday Archive Co. Kamloops, BC.</p>
           <p className="text-xs text-ink-faint">Site by Reed McIlwain</p>
         </div>
