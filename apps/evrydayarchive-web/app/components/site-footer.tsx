@@ -94,7 +94,7 @@ export const SiteFooter = () => {
           </nav>
 
           {/* Column 3: Email capture + Back to entrance */}
-          <div className="flex flex-col sm:min-w-[160px]">
+          <div className="flex flex-col sm:min-w-[260px]">
             <FooterEmailCapture />
             <Link
               href="/"
