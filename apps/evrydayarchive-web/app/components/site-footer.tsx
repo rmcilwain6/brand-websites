@@ -18,7 +18,7 @@ export const SiteFooter = () => {
   return (
     <footer className="border-t border-border bg-canvas">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-10 sm:flex-row sm:items-stretch sm:justify-between">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:items-stretch">
           {/* Column 1: Brand + Social */}
           <div className="space-y-5">
             <div className="space-y-2">
@@ -95,17 +95,17 @@ export const SiteFooter = () => {
           </nav>
 
           {/* Column 3: Email capture + Back to entrance */}
-          <div className="flex flex-col sm:min-w-[260px]">
+          <div className="flex flex-col">
             <FooterEmailCapture />
             <Link
               href="/"
-              className="mt-auto self-end pt-8 flex items-center gap-2.5 text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
+              className="mt-auto pt-8 flex items-center gap-2.5 text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
             >
               Back to the entrance
               {/* Entrance icon — Zach Bogart / Noun Project */}
               <svg
-                width="24"
-                height="24"
+                width="30"
+                height="30"
                 viewBox="0 0 100 100"
                 fill="currentColor"
                 fillRule="evenodd"
