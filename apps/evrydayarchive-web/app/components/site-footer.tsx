@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 const NAV = [
@@ -41,16 +42,44 @@ export const SiteFooter = () => {
               href="https://www.instagram.com/evrydayarchive.co/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
+              className="flex items-center gap-2 text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
             >
+              <Image
+                src="/logo/Instagram_Glyph_Black.svg"
+                alt=""
+                width={16}
+                height={16}
+                className="dark:hidden"
+              />
+              <Image
+                src="/logo/Instagram_Glyph_White.svg"
+                alt=""
+                width={16}
+                height={16}
+                className="hidden dark:block"
+              />
               Instagram
             </a>
             <a
               href="https://www.linkedin.com/in/reedmcilwain/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
+              className="flex items-center gap-2 text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
             >
+              <Image
+                src="/logo/InBug-Black.png"
+                alt=""
+                width={16}
+                height={16}
+                className="dark:hidden"
+              />
+              <Image
+                src="/logo/InBug-White.png"
+                alt=""
+                width={16}
+                height={16}
+                className="hidden dark:block"
+              />
               LinkedIn
             </a>
           </div>
