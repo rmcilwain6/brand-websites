@@ -18,7 +18,7 @@ export const SiteFooter = () => {
   return (
     <footer className="border-t border-border bg-canvas">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-10 sm:flex-row sm:items-stretch sm:justify-between">
           {/* Column 1: Brand + Social */}
           <div className="space-y-5">
             <div className="space-y-2">
@@ -104,8 +104,8 @@ export const SiteFooter = () => {
               Back to the entrance
               {/* Entrance icon — Zach Bogart / Noun Project */}
               <svg
-                width="20"
-                height="20"
+                width="24"
+                height="24"
                 viewBox="0 0 100 100"
                 fill="currentColor"
                 fillRule="evenodd"
