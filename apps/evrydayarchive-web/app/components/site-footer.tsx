@@ -23,7 +23,7 @@ export const SiteFooter = () => {
             <div className="space-y-2">
               {/* Camera icon mark */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo/icon.svg" alt="" className="h-8 w-auto dark:invert" />
+              <img src="/logo/icon.svg" alt="" className="h-8 w-auto" />
               <p className="text-sm font-semibold text-ink">Evryday Archive Co</p>
               <p className="text-xs text-ink-faint">Documenting life in Kamloops & BC</p>
             </div>
@@ -131,16 +131,14 @@ export const SiteFooter = () => {
         </div>
       </div>
 
-      {/* Full-width divider split by accent dot */}
-      <div className="flex items-center">
-        <div className="flex-1 border-t border-border" />
-        <div className="mx-3 h-1.5 w-1.5 flex-none rounded-full bg-accent" />
-        <div className="flex-1 border-t border-border" />
-      </div>
-
       {/* Copyright bar */}
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mt-10 flex items-center">
+          <div className="flex-1 border-t border-border" />
+          <div className="mx-3 h-1.5 w-1.5 flex-none rounded-full bg-accent" />
+          <div className="flex-1 border-t border-border" />
+        </div>
+        <div className="mt-6 flex items-center justify-between">
           <p className="text-xs text-ink-faint">© {year} Evryday Archive Co. Kamloops, BC.</p>
           <p className="text-xs text-ink-faint">Site by Reed McIlwain</p>
         </div>
