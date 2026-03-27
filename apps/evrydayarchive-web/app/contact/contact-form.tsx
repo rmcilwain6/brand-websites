@@ -2,16 +2,25 @@
 
 import { useState } from 'react';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
 export const ContactForm = () => {
   const [state, setState] = useState<FormState>('idle');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!EMAIL_RE.test(email)) {
+      setEmailError('Please enter a valid email address.');
+      return;
+    }
+    setEmailError('');
     setState('submitting');
 
     try {
@@ -71,11 +80,23 @@ export const ContactForm = () => {
           required
           autoComplete="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (emailError) setEmailError('');
+          }}
           disabled={state === 'submitting'}
-          className="w-full rounded-card border border-border bg-canvas px-4 py-3 text-base text-ink placeholder-ink-faint transition-colors duration-fast focus:border-ink focus:outline-none disabled:opacity-50"
+          aria-describedby={emailError ? 'email-error' : undefined}
+          className={[
+            'w-full rounded-card border bg-canvas px-4 py-3 text-base text-ink placeholder-ink-faint transition-colors duration-fast focus:outline-none disabled:opacity-50',
+            emailError ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-ink'
+          ].join(' ')}
           placeholder="you@example.com"
         />
+        {emailError && (
+          <p id="email-error" role="alert" className="mt-1.5 text-sm text-red-600">
+            {emailError}
+          </p>
+        )}
       </div>
 
       <div>

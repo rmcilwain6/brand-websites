@@ -38,20 +38,29 @@ export const SiteFooter = () => {
           <div className="flex flex-col gap-2">
             <p className="text-xs font-medium uppercase tracking-widest text-ink-faint">Follow</p>
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/evrydayarchive.co/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
             >
               Instagram
             </a>
+            <a
+              href="https://www.linkedin.com/in/reedmcilwain/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
+            >
+              LinkedIn
+            </a>
           </div>
         </div>
 
-        <div className="mt-10 border-t border-border pt-6">
+        <div className="mt-10 border-t border-border pt-6 flex items-center justify-between">
           <p className="text-xs text-ink-faint">
             © {year} Evryday Archive Co. All rights reserved.
           </p>
+          <p className="text-xs text-ink-faint">Site by Reed McIlwain</p>
         </div>
       </div>
     </footer>
