@@ -37,7 +37,7 @@ export const SiteFooter = () => {
                   href="https://www.instagram.com/evrydayarchive.co/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="transition-opacity duration-fast hover:opacity-70"
+                  className="opacity-50 transition-opacity duration-fast hover:opacity-100"
                 >
                   <Image
                     src="/logo/Instagram_Glyph_Black.svg"
@@ -59,7 +59,7 @@ export const SiteFooter = () => {
                   href="https://www.linkedin.com/in/reedmcilwain/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="transition-opacity duration-fast hover:opacity-70"
+                  className="opacity-50 transition-opacity duration-fast hover:opacity-100"
                 >
                   <Image
                     src="/logo/InBug-Black.png"
@@ -87,7 +87,7 @@ export const SiteFooter = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
+                className="text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
               >
                 {link.label}
               </Link>
