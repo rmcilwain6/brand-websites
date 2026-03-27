@@ -139,8 +139,10 @@ export const SiteFooter = () => {
           <div className="flex-1 border-t border-border" />
         </div>
         <div className="mt-6 flex items-center justify-between">
-          <p className="text-xs text-ink-faint">© {year} Evryday Archive Co. Kamloops, BC.</p>
-          <p className="text-xs text-ink-faint">Site by Reed McIlwain</p>
+          <p className="font-mono text-xs text-ink-faint">
+            © {year} Evryday Archive Co. Kamloops, BC.
+          </p>
+          <p className="font-mono text-xs text-ink-faint">Site by Reed McIlwain</p>
         </div>
       </div>
     </footer>
