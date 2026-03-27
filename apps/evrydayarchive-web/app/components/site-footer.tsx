@@ -136,12 +136,21 @@ export const SiteFooter = () => {
           </div>
           <div className="flex-1 border-t border-border" />
         </div>
-        <div className="mt-6 pb-28 sm:pb-10 space-y-3">
-          <div className="flex items-center justify-between">
+        <div className="mt-6 pb-28 md:pb-10">
+          {/* Mobile: two rows */}
+          <div className="flex items-center justify-between md:hidden">
             <p className="text-xs text-ink-faint">© {year} Evryday Archive Co.</p>
             <FooterCredits />
           </div>
-          <p className="text-xs text-ink-faint">Site by Reed McIlwain</p>
+          <p className="mt-3 text-xs text-ink-faint md:hidden">Site by Reed McIlwain</p>
+          {/* Desktop: single row, three columns */}
+          <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] md:items-center">
+            <p className="text-xs text-ink-faint">© {year} Evryday Archive Co.</p>
+            <p className="text-xs text-ink-faint">Site by Reed McIlwain</p>
+            <div className="flex justify-end">
+              <FooterCredits />
+            </div>
+          </div>
         </div>
       </div>
     </footer>
