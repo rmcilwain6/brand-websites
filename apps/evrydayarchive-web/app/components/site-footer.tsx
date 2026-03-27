@@ -17,7 +17,7 @@ export const SiteFooter = () => {
   return (
     <footer className="border-t border-border bg-canvas">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1fr_auto_minmax(130px,auto)]">
+        <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           {/* Column 1: Brand + Social */}
           <div className="space-y-5">
             <div className="space-y-2">
@@ -94,7 +94,7 @@ export const SiteFooter = () => {
           </nav>
 
           {/* Column 3: Email capture + Back to entrance */}
-          <div className="flex flex-col">
+          <div className="flex flex-col sm:min-w-[160px]">
             <FooterEmailCapture />
             <Link
               href="/"
