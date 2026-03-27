@@ -17,7 +17,7 @@ export const SiteFooter = () => {
   return (
     <footer className="border-t border-border bg-canvas">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-10 sm:flex-row sm:justify-between">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1fr_auto_minmax(260px,1fr)]">
           {/* Column 1: Brand + Social */}
           <div className="space-y-5">
             <div className="space-y-2">
@@ -138,11 +138,9 @@ export const SiteFooter = () => {
           <div className="mx-3 h-1.5 w-1.5 flex-none rounded-full bg-accent" />
           <div className="flex-1 border-t border-border" />
         </div>
-        <div className="mt-6 flex items-center justify-between">
-          <p className="font-mono text-xs text-ink-faint">
-            © {year} Evryday Archive Co. Kamloops, BC.
-          </p>
-          <p className="font-mono text-xs text-ink-faint">Site by Reed McIlwain</p>
+        <div className="mt-6 pb-10 flex items-center justify-between">
+          <p className="text-xs text-ink-faint">© {year} Evryday Archive Co. Kamloops, BC.</p>
+          <p className="text-xs text-ink-faint">Site by Reed McIlwain</p>
         </div>
       </div>
     </footer>
