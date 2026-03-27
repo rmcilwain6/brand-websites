@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { FooterCredits } from './footer-credits';
 import { FooterEmailCapture } from './footer-email-capture';
 
 const NAV = [
@@ -150,9 +151,12 @@ export const SiteFooter = () => {
           <div className="mx-3 h-1.5 w-1.5 flex-none rounded-full bg-accent" />
           <div className="flex-1 border-t border-border" />
         </div>
-        <div className="mt-6 pb-10 flex items-center justify-between">
+        <div className="mt-6 pb-10 grid grid-cols-3 items-center">
           <p className="text-xs text-ink-faint">© {year} Evryday Archive Co. Kamloops, BC.</p>
-          <p className="text-xs text-ink-faint">Site by Reed McIlwain</p>
+          <p className="text-center text-xs text-ink-faint">Site by Reed McIlwain</p>
+          <div className="flex justify-end">
+            <FooterCredits />
+          </div>
         </div>
       </div>
     </footer>
