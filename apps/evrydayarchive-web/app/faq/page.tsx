@@ -16,7 +16,7 @@ const FAQ_ITEMS = [
   {
     question: 'Do you travel for sessions?',
     answer:
-      "Yes. I'm based in Ottawa–Gatineau and available for travel across Canada. Travel sessions are priced to include logistics — reach out with your location and we'll work out the details."
+      "Yes. I'm based in Kamloops, BC and available for travel across Canada. Travel sessions are priced to include logistics — reach out with your location and we'll work out the details."
   },
   {
     question: 'What should we wear / how should we prepare?',

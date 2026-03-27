@@ -19,7 +19,7 @@ export const SiteFooter = () => {
           {/* Brand block */}
           <div className="space-y-2">
             <p className="text-sm font-semibold text-ink">Evryday Archive Co</p>
-            <p className="text-xs text-ink-faint">Ottawa–Gatineau · Canada</p>
+            <p className="text-xs text-ink-faint">Kamloops · British Columbia</p>
           </div>
 
           {/* Nav block */}

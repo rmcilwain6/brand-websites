@@ -67,7 +67,7 @@ const ClassicHero = () => (
       {/* Stage 1: exhibit text (appears first) */}
       <div className="animate-fade-up mb-10 max-w-xl">
         <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
-          Ottawa–Gatineau · Photography
+          Kamloops & British Columbia · Photography
         </p>
         <h1 className="text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">
           Quiet days,
