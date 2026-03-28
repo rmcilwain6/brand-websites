@@ -146,7 +146,7 @@ export default async function HomePage() {
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
           <Placard
-            title="Ottawa–Gatineau"
+            title="Kamloops & British Columbia"
             subtitle="Available for local and travel sessions across Canada"
             meta="Where we work"
           />

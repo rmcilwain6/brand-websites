@@ -23,7 +23,8 @@ const config: Config = {
         border: 'var(--color-border)'
       },
       fontFamily: {
-        sans: ['var(--font-plus-jakarta)', 'system-ui', 'sans-serif']
+        sans: ['var(--font-plus-jakarta)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains-mono)', 'monospace']
       },
       borderRadius: {
         // Named radii matching the brand metaphor

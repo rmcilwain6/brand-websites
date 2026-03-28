@@ -6,29 +6,10 @@ import { useCallback, useMemo, useState } from 'react';
 import type { PublicPackage, PublicPackageModifier } from '@repo/core';
 
 // ── Control type definitions ────────────────────────────────────────────────
-// The current API modifier model is binary (add/remove via checkbox).
-// Stepper and slider controls are demonstrated here as POC items; they will be
-// driven by the API once the questionnaire/modifier engine supports control types.
 
 type CheckboxState = { type: 'checkbox'; checked: boolean };
-type StepperState = {
-  type: 'stepper';
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  pricePerUnitCents: number;
-};
-type SliderState = {
-  type: 'slider';
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  pricePerUnitCents: number;
-};
 
-type ControlState = CheckboxState | StepperState | SliderState;
+type ControlState = CheckboxState;
 
 type BuilderItem = {
   id: string;
@@ -50,37 +31,8 @@ const formatPrice = (cents: number): string =>
 
 const itemPrice = (item: BuilderItem): number => {
   if (item.isRequired) return item.basePriceDeltaCents ?? 0;
-  const { control } = item;
-  if (control.type === 'checkbox') {
-    return control.checked ? (item.basePriceDeltaCents ?? 0) : 0;
-  }
-  if (control.type === 'stepper' || control.type === 'slider') {
-    return control.value * control.pricePerUnitCents;
-  }
-  return 0;
+  return item.control.checked ? (item.basePriceDeltaCents ?? 0) : 0;
 };
-
-// ── POC demo items (hardcoded to showcase stepper + slider controls) ─────────
-// These would eventually be driven by API-configurable modifier types.
-
-const DEMO_ITEMS: BuilderItem[] = [
-  {
-    id: 'poc-subjects',
-    name: 'Additional subjects',
-    description: 'Base session includes up to 2 people. Add more here.',
-    basePriceDeltaCents: null,
-    isRequired: false,
-    control: { type: 'stepper', value: 0, min: 0, max: 8, step: 1, pricePerUnitCents: 2500 }
-  },
-  {
-    id: 'poc-print-credit',
-    name: 'Print credit',
-    description: 'Put toward prints, albums, or wall art after delivery.',
-    basePriceDeltaCents: null,
-    isRequired: false,
-    control: { type: 'slider', value: 0, min: 0, max: 20000, step: 2500, pricePerUnitCents: 1 }
-  }
-];
 
 // ── Conversion from API modifier → BuilderItem ───────────────────────────────
 
@@ -96,7 +48,7 @@ const modifierToItem = (m: PublicPackageModifier): BuilderItem => ({
 // ── Main component ────────────────────────────────────────────────────────────
 
 export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
-  const initialItems: BuilderItem[] = [...pkg.modifiers.map(modifierToItem), ...DEMO_ITEMS];
+  const initialItems: BuilderItem[] = pkg.modifiers.map(modifierToItem);
 
   const [items, setItems] = useState<BuilderItem[]>(initialItems);
 
@@ -115,11 +67,7 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
 
   const queryString = useMemo(() => {
     const selected = items
-      .filter((item) => {
-        const { control } = item;
-        if (control.type === 'checkbox') return control.checked && !item.isRequired;
-        return (control.value ?? 0) > 0;
-      })
+      .filter((item) => item.control.checked && !item.isRequired)
       .map((item) => item.id)
       .join(',');
     return selected ? `?package=${pkg.slug}&modifiers=${selected}` : `?package=${pkg.slug}`;
@@ -270,74 +218,6 @@ const Control = ({ item, onChange }: ControlProps) => {
           />
         </svg>
       </button>
-    );
-  }
-
-  if (control.type === 'stepper') {
-    return (
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          aria-label={`Decrease ${item.name}`}
-          disabled={control.value <= control.min}
-          onClick={() =>
-            onChange(item.id, {
-              type: 'stepper',
-              value: Math.max(control.min, control.value - control.step)
-            } as Partial<StepperState>)
-          }
-          className="flex h-7 w-7 items-center justify-center rounded-sm border border-border text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-        >
-          <svg width="10" height="2" viewBox="0 0 10 2" fill="none" aria-hidden="true">
-            <path d="M1 1h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
-        <span className="w-5 text-center text-sm font-medium tabular-nums text-ink">
-          {control.value}
-        </span>
-        <button
-          type="button"
-          aria-label={`Increase ${item.name}`}
-          disabled={control.value >= control.max}
-          onClick={() =>
-            onChange(item.id, {
-              type: 'stepper',
-              value: Math.min(control.max, control.value + control.step)
-            } as Partial<StepperState>)
-          }
-          className="flex h-7 w-7 items-center justify-center rounded-sm border border-border text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-        >
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-            <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
-      </div>
-    );
-  }
-
-  if (control.type === 'slider') {
-    const displayValue = control.value * control.pricePerUnitCents;
-    return (
-      <div className="flex w-36 flex-col gap-1.5">
-        <input
-          type="range"
-          min={control.min}
-          max={control.max}
-          step={control.step}
-          value={control.value}
-          aria-label={item.name}
-          onChange={(e) =>
-            onChange(item.id, {
-              type: 'slider',
-              value: Number(e.target.value)
-            } as Partial<SliderState>)
-          }
-          className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-border accent-accent"
-        />
-        <span className="text-right text-xs tabular-nums text-ink-muted">
-          {displayValue === 0 ? 'None' : formatPrice(displayValue)}
-        </span>
-      </div>
     );
   }
 
