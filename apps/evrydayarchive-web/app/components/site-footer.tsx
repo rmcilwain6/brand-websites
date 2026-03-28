@@ -6,10 +6,9 @@ import { FooterEmailCapture } from './footer-email-capture';
 
 const NAV = [
   { href: '/portfolio', label: 'Portfolio' },
+  { href: '/about', label: 'About' },
   { href: '/packages', label: 'Packages' },
-  { href: '/process', label: 'Process' },
-  { href: '/inquire', label: 'Inquire' },
-  { href: '/contact', label: 'Contact' }
+  { href: '/inquire', label: 'Inquire' }
 ];
 
 export const SiteFooter = () => {
