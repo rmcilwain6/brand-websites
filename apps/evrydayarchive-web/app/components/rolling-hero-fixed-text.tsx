@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Link from 'next/link';
 
 import { HERO_TEXT_VARIANTS } from '../lib/hero-copy';
+import { useFeatureFlag } from '../lib/use-feature-flag';
 import {
   BLOCK_A_ITEMS,
   BLOCK_B_ITEMS,
@@ -22,7 +23,7 @@ import {
 
 /**
  * Computes the pixel width of the left text panel at the current viewport width.
- * Mirrors the CSS: clamp(300px, 32vw, 500px).
+ * Mirrors the CSS: clamp(300px, 33.333vw, 640px).
  */
 function calcLeftPanelW(): number {
   return Math.min(Math.max(window.innerWidth * 0.3333, 300), 640);
@@ -62,6 +63,9 @@ function buildPhotoSequence(blockW: number, tier: Tier): (WallBlock | WallSpacer
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export const RollingHeroFixedText = () => {
+  // ROLLING_HERO_DRAG: stops auto-scroll, enables mouse drag + native touch scroll.
+  const dragMode = useFeatureFlag('ROLLING_HERO_DRAG');
+
   // Locked on mount — same strategy as RollingHero.
   const [locked, setLocked] = useState<{
     blockW: number;
@@ -74,6 +78,12 @@ export const RollingHeroFixedText = () => {
   const [textIdx, setTextIdx] = useState(0);
   // Controls opacity of the copy block — false during the brief fade-out gap.
   const [textVisible, setTextVisible] = useState(true);
+
+  // Drag-mode state
+  const stripRef = useRef<HTMLDivElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const startX = useRef(0);
+  const scrollLeftRef = useRef(0);
 
   useEffect(() => {
     const leftPanelW = calcLeftPanelW();
@@ -96,11 +106,25 @@ export const RollingHeroFixedText = () => {
     return () => clearInterval(id);
   }, []);
 
+  const onMouseDown = (e: React.MouseEvent) => {
+    setDragging(true);
+    startX.current = e.pageX;
+    scrollLeftRef.current = stripRef.current?.scrollLeft ?? 0;
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!dragging || !stripRef.current) return;
+    e.preventDefault();
+    stripRef.current.scrollLeft = scrollLeftRef.current - (e.pageX - startX.current);
+  };
+
+  const stopDrag = () => setDragging(false);
+
   if (!locked) return null;
 
   const variant = HERO_TEXT_VARIANTS[textIdx];
-  // Double the sequence for the seamless translateX(-50%) loop.
-  const trackItems = [...locked.sequence, ...locked.sequence];
+  // Drag mode uses a single sequence (native scroll); auto mode doubles it for the seamless loop.
+  const trackItems = dragMode ? locked.sequence : [...locked.sequence, ...locked.sequence];
 
   return (
     <section className="relative flex overflow-hidden" style={{ height: locked.sectionH }}>
@@ -161,20 +185,35 @@ export const RollingHeroFixedText = () => {
         </div>
       </div>
 
-      {/* ── Right: scrolling photo strip ───────────────────────────────────── */}
+      {/* ── Right: photo strip — auto-scroll or drag/touch depending on flag ── */}
       <div
+        ref={dragMode ? stripRef : undefined}
         aria-hidden="true"
-        className="relative flex-1 overflow-hidden"
-        style={{ maskImage: STRIP_MASK, WebkitMaskImage: STRIP_MASK }}
+        className={
+          dragMode
+            ? 'scrollbar-none relative flex-1 overflow-x-scroll overflow-y-hidden'
+            : 'relative flex-1 overflow-hidden'
+        }
+        style={{
+          maskImage: STRIP_MASK,
+          WebkitMaskImage: STRIP_MASK,
+          cursor: dragMode ? (dragging ? 'grabbing' : 'grab') : undefined
+        }}
+        {...(dragMode && {
+          onMouseDown,
+          onMouseMove,
+          onMouseUp: stopDrag,
+          onMouseLeave: stopDrag
+        })}
       >
         <div
-          className="flex animate-marquee items-start"
+          className={dragMode ? 'flex items-start' : 'flex animate-marquee items-start'}
           style={
             {
               width: 'max-content',
               height: '100%',
               userSelect: 'none',
-              '--marquee-duration': MARQUEE_DURATION
+              ...(!dragMode && { '--marquee-duration': MARQUEE_DURATION })
             } as React.CSSProperties
           }
         >

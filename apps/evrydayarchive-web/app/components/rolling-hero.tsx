@@ -170,8 +170,8 @@ const BLOCK_A_SM: BlockPhoto[] = [
     top: 90,
     left: 300,
     placardPosition: 'right-top',
-    placard: { title: 'Family Portrait', subtitle: 'Kamloops, 2024' },
-    src: '/images/top-brand-images/'
+    placard: { title: 'Julia & Benjamin', subtitle: 'Nanaimo, Jan 2026' },
+    src: '/images/top-brand-images/julia-08.webp'
   },
 
   // Upper-left small portrait (frameH=272, frameW=192)
