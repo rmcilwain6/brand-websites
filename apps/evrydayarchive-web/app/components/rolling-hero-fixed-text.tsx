@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
-import { cn } from '../lib/cn';
 import { HERO_TEXT_VARIANTS } from '../lib/hero-copy';
 import {
   BLOCK_A_ITEMS,
@@ -44,32 +43,6 @@ const STRIP_MASK =
 const TEXT_CYCLE_MS = 7000;
 /** Opacity transition duration (matches the CSS transition-duration). */
 const TEXT_FADE_MS = 600;
-
-// ── Per-variant layout config ──────────────────────────────────────────────────
-// Each variant gets a distinct position and typographic treatment on the wall.
-// Text fades out at its current position, then fades back in at the new one —
-// deliberately no motion, just a placement change between cycles.
-
-type VariantLayout = {
-  /** Distance from the top of the panel as a CSS percentage string */
-  top: string;
-  align: 'left' | 'center' | 'right';
-  headingClass: string;
-};
-
-const VARIANT_LAYOUTS: VariantLayout[] = [
-  // V1: "Your everyday life is worth documenting."
-  // Primary manifesto — owns the upper-left, most prominent.
-  { top: '10%', align: 'left', headingClass: 'text-3xl' },
-
-  // V2: "Build a session around your budget"
-  // Practical/actionable — sits mid-wall, right-aligned, near the CTAs.
-  { top: '30%', align: 'right', headingClass: 'text-2xl' },
-
-  // V3: "Made for first timers and the curious."
-  // Warm and welcoming — upper-center.
-  { top: '7%', align: 'center', headingClass: 'text-3xl' }
-];
 
 // ── Photo sequence ─────────────────────────────────────────────────────────────
 
@@ -126,7 +99,6 @@ export const RollingHeroFixedText = () => {
   if (!locked) return null;
 
   const variant = HERO_TEXT_VARIANTS[textIdx];
-  const layout = VARIANT_LAYOUTS[textIdx];
   // Double the sequence for the seamless translateX(-50%) loop.
   const trackItems = [...locked.sequence, ...locked.sequence];
 
@@ -140,48 +112,33 @@ export const RollingHeroFixedText = () => {
         <Link href="/package-builder">Build your package</Link>
       </div>
 
-      {/* ── Left: fixed text panel — used as a gallery wall surface ────────── */}
+      {/* ── Left: fixed text panel ─────────────────────────────────────────── */}
       <div
         aria-hidden="true"
-        className="relative z-10 flex-none overflow-hidden bg-canvas"
-        style={{ width: 'clamp(300px, 33.333vw, 640px)' }}
+        className="z-10 flex flex-none flex-col justify-start bg-canvas"
+        style={{
+          width: 'clamp(300px, 33.333vw, 640px)',
+          paddingTop: '22%',
+          paddingLeft: 'clamp(2rem, 5vw, 5rem)',
+          paddingRight: '2.5rem'
+        }}
       >
-        {/* Fading copy — placement shifts per variant */}
+        {/* Fading text — all variants occupy the same position */}
         <div
-          className="absolute transition-opacity"
-          style={{
-            top: layout.top,
-            left: 'clamp(2rem, 5vw, 5rem)',
-            right: '2.5rem',
-            textAlign: layout.align,
-            opacity: textVisible ? 1 : 0,
-            transitionDuration: `${TEXT_FADE_MS}ms`
-          }}
+          className="transition-opacity"
+          style={{ opacity: textVisible ? 1 : 0, transitionDuration: `${TEXT_FADE_MS}ms` }}
         >
           <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
             {variant.eyebrow}
           </p>
-          <h2
-            className={cn(
-              'font-semibold leading-tight tracking-tight text-ink',
-              layout.headingClass
-            )}
-          >
+          <h2 className="text-3xl font-semibold leading-tight tracking-tight text-ink">
             {variant.heading}
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-ink-muted">{variant.body}</p>
         </div>
 
-        {/* CTAs — fixed anchor at 2/3 down, horizontally centered, equal width */}
-        <div
-          className="absolute flex flex-col gap-2"
-          style={{
-            top: '66.666%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 'min(220px, calc(100% - clamp(4rem, 10vw, 10rem)))'
-          }}
-        >
+        {/* CTAs — always visible, naturally anchored below the text */}
+        <div className="mt-8 flex flex-col gap-2" style={{ maxWidth: 220 }}>
           <Link
             href="/inquire"
             className="w-full rounded-card bg-accent px-5 py-2.5 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
