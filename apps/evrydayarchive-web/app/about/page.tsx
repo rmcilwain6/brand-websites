@@ -206,6 +206,7 @@ export default function AboutPage() {
             fill
             className="object-cover"
             sizes="100vw"
+            quality={90}
           />
           <div className="absolute bottom-3 left-3">
             <PhotoCredit credit="Photo taken by Carolyn Dahl" />
