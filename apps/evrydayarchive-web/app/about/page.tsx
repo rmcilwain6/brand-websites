@@ -205,7 +205,7 @@ export default function AboutPage() {
             alt="Reed in the field, Kamloops BC"
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 200vw, 50vw"
+            sizes="(max-width: 768px) 150, 50vw"
             quality={90}
           />
           <div className="absolute bottom-3 left-3">
