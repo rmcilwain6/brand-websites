@@ -144,17 +144,17 @@ export const RollingHeroFixedText = () => {
           </div>
         </div>
 
-        {/* CTAs — side by side when room, stacked when not; equal width always */}
+        {/* CTAs — fixed width so both buttons are equal; wrap to stack when no room */}
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/inquire"
-            className="flex-1 basis-40 whitespace-nowrap rounded-card bg-accent px-5 py-2.5 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="w-44 shrink-0 whitespace-nowrap rounded-card bg-accent px-5 py-2.5 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Inquire
           </Link>
           <Link
             href="/package-builder"
-            className="flex-1 basis-40 whitespace-nowrap rounded-card border border-border px-5 py-2.5 text-center text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="w-44 shrink-0 whitespace-nowrap rounded-card border border-border px-5 py-2.5 text-center text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Build your package
           </Link>
