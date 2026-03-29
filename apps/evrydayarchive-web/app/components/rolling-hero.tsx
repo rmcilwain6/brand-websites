@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import Link from 'next/link';
 
+import Image from 'next/image';
+
 import { cn } from '../lib/cn';
 import { HERO_TEXT_VARIANTS } from '../lib/hero-copy';
 import { useFeatureFlag } from '../lib/use-feature-flag';
@@ -22,6 +24,8 @@ export type BlockPhoto = {
   left: number;
   placardPosition: PlacardPosition;
   placard: { title: string; subtitle?: string };
+  /** Path to the photo in /public. Omit to show the placeholder. */
+  src?: string;
 };
 
 export type WallBlock = {
@@ -166,7 +170,8 @@ const BLOCK_A_SM: BlockPhoto[] = [
     top: 90,
     left: 300,
     placardPosition: 'right-top',
-    placard: { title: 'Family Portrait', subtitle: 'Kamloops, 2024' }
+    placard: { title: 'Family Portrait', subtitle: 'Kamloops, 2024' },
+    src: '/images/top-brand-images/'
   },
 
   // Upper-left small portrait (frameH=272, frameW=192)
@@ -551,6 +556,8 @@ const WallPhotoEl = ({ item, shortH }: { item: BlockPhoto; shortH: boolean }) =>
   const scale = shortH ? COMPACT_H_SCALE : 1;
   const photoH = Math.round(item.photoH * scale);
   const top = Math.round(item.top * scale);
+  const [aw, ah] = item.aspect.split('/').map(Number);
+  const photoW = Math.round(photoH * (aw / ah));
 
   return (
     <div className="absolute" style={{ top, left: item.left }}>
@@ -563,12 +570,24 @@ const WallPhotoEl = ({ item, shortH }: { item: BlockPhoto; shortH: boolean }) =>
         placardPosition={item.placardPosition}
       >
         <div
-          className="flex items-center justify-center overflow-hidden bg-black/[0.06]"
+          className="relative overflow-hidden bg-black/[0.06]"
           style={{ height: photoH, aspectRatio: item.aspect }}
         >
-          <span className="select-none font-mono text-[11px] text-black/20" aria-hidden>
-            +
-          </span>
+          {item.src ? (
+            <Image
+              src={item.src}
+              alt={item.placard.title}
+              fill
+              className="object-cover"
+              sizes={`${photoW}px`}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <span className="select-none font-mono text-[11px] text-black/20" aria-hidden>
+                +
+              </span>
+            </div>
+          )}
         </div>
       </Frame>
     </div>
