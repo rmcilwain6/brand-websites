@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
+import { cn } from '../lib/cn';
 import { HERO_TEXT_VARIANTS } from '../lib/hero-copy';
 import {
   BLOCK_A_ITEMS,
   BLOCK_B_ITEMS,
   BLOCK_C_ITEMS,
-  COMPACT_H_SCALE,
   HEADER_H,
   MIN_SECTION_H,
   SHORT_H_THRESHOLD,
@@ -44,6 +44,35 @@ const STRIP_MASK =
 const TEXT_CYCLE_MS = 7000;
 /** Opacity transition duration (matches the CSS transition-duration). */
 const TEXT_FADE_MS = 600;
+
+// ── Per-variant layout config ──────────────────────────────────────────────────
+// Each variant gets a distinct position and typographic treatment on the wall.
+// Text fades out at its current position, then fades back in at the new one —
+// deliberately no motion, just a placement change between cycles.
+
+type VariantLayout = {
+  /** Distance from the top of the panel as a CSS percentage string */
+  top: string;
+  align: 'left' | 'center' | 'right';
+  headingClass: string;
+  showEyebrow: boolean;
+  showBody: boolean;
+};
+
+const VARIANT_LAYOUTS: VariantLayout[] = [
+  // V1: "Your everyday life is worth documenting."
+  // Primary manifesto — owns the upper-left, full content, most prominent.
+  { top: '10%', align: 'left', headingClass: 'text-3xl', showEyebrow: true, showBody: true },
+
+  // V2: "Build a session around your budget"
+  // Practical/actionable — sits mid-wall, right-aligned, near the CTAs.
+  // Body omitted: the copy is long and proximity to the buttons carries the intent.
+  { top: '30%', align: 'right', headingClass: 'text-2xl', showEyebrow: true, showBody: false },
+
+  // V3: "Made for first timers and the curious."
+  // Warm and welcoming — upper-center, eyebrow dropped so the heading breathes.
+  { top: '7%', align: 'center', headingClass: 'text-3xl', showEyebrow: false, showBody: true }
+];
 
 // ── Photo sequence ─────────────────────────────────────────────────────────────
 
@@ -100,6 +129,7 @@ export const RollingHeroFixedText = () => {
   if (!locked) return null;
 
   const variant = HERO_TEXT_VARIANTS[textIdx];
+  const layout = VARIANT_LAYOUTS[textIdx];
   // Double the sequence for the seamless translateX(-50%) loop.
   const trackItems = [...locked.sequence, ...locked.sequence];
 
@@ -107,49 +137,67 @@ export const RollingHeroFixedText = () => {
     <section className="relative flex overflow-hidden" style={{ height: locked.sectionH }}>
       {/* Accessible content — screen readers get the primary heading + links */}
       <div className="sr-only">
-        <h1>Quiet days, carefully documented.</h1>
-        <p>
-          A studio practice rooted in intention — capturing everyday life with honesty and care.
-        </p>
+        <h1>{HERO_TEXT_VARIANTS[0].heading}</h1>
+        <p>{HERO_TEXT_VARIANTS[0].body}</p>
         <Link href="/inquire">Inquire</Link>
         <Link href="/package-builder">Build your package</Link>
       </div>
 
-      {/* ── Left: fixed text panel ──────────────────────────────────────────── */}
+      {/* ── Left: fixed text panel — used as a gallery wall surface ────────── */}
       <div
         aria-hidden="true"
-        className="relative z-10 flex flex-none flex-col justify-center bg-canvas"
-        style={{
-          width: 'clamp(300px, 33.333vw, 640px)',
-          paddingLeft: 'clamp(2rem, 5vw, 5rem)',
-          paddingRight: '2.5rem'
-        }}
+        className="relative z-10 flex-none overflow-hidden bg-canvas"
+        style={{ width: 'clamp(300px, 33.333vw, 640px)' }}
       >
-        {/* Fading copy block */}
+        {/* Fading copy — placement shifts per variant */}
         <div
-          className="transition-opacity"
-          style={{ opacity: textVisible ? 1 : 0, transitionDuration: `${TEXT_FADE_MS}ms` }}
+          className="absolute transition-opacity"
+          style={{
+            top: layout.top,
+            left: 'clamp(2rem, 5vw, 5rem)',
+            right: '2.5rem',
+            textAlign: layout.align,
+            opacity: textVisible ? 1 : 0,
+            transitionDuration: `${TEXT_FADE_MS}ms`
+          }}
         >
-          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
-            {variant.eyebrow}
-          </p>
-          <h2 className="whitespace-pre-line text-3xl font-semibold leading-tight tracking-tight text-ink">
+          {layout.showEyebrow && (
+            <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
+              {variant.eyebrow}
+            </p>
+          )}
+          <h2
+            className={cn(
+              'font-semibold leading-tight tracking-tight text-ink',
+              layout.headingClass
+            )}
+          >
             {variant.heading}
           </h2>
-          <p className="mt-4 text-sm leading-relaxed text-ink-muted">{variant.body}</p>
+          {layout.showBody && (
+            <p className="mt-4 text-sm leading-relaxed text-ink-muted">{variant.body}</p>
+          )}
         </div>
 
-        {/* CTAs — always visible, outside the fade */}
-        <div className="mt-6 flex flex-wrap gap-3">
+        {/* CTAs — fixed anchor at 2/3 down, horizontally centered, equal width */}
+        <div
+          className="absolute flex flex-col gap-2"
+          style={{
+            top: '66.666%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 'min(220px, calc(100% - clamp(4rem, 10vw, 10rem)))'
+          }}
+        >
           <Link
             href="/inquire"
-            className="rounded-card bg-accent px-5 py-2.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="w-full rounded-card bg-accent px-5 py-2.5 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Inquire
           </Link>
           <Link
             href="/package-builder"
-            className="rounded-card border border-border px-5 py-2.5 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="w-full rounded-card border border-border px-5 py-2.5 text-center text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Build your package
           </Link>
