@@ -118,36 +118,43 @@ export const RollingHeroFixedText = () => {
         className="z-10 flex flex-none flex-col justify-start bg-canvas"
         style={{
           width: 'clamp(300px, 33.333vw, 640px)',
-          paddingTop: '22%',
+          paddingTop: '15%',
           paddingLeft: 'clamp(2rem, 5vw, 5rem)',
           paddingRight: '2.5rem'
         }}
       >
-        {/* Fading text — all variants occupy the same position */}
+        {/* Fading text — min-heights lock the layout so CTAs never move */}
         <div
           className="transition-opacity"
           style={{ opacity: textVisible ? 1 : 0, transitionDuration: `${TEXT_FADE_MS}ms` }}
         >
-          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
-            {variant.eyebrow}
-          </p>
-          <h2 className="text-3xl font-semibold leading-tight tracking-tight text-ink">
-            {variant.heading}
-          </h2>
-          <p className="mt-4 text-sm leading-relaxed text-ink-muted">{variant.body}</p>
+          {/* Eyebrow + heading */}
+          <div className="min-h-[6.5rem]">
+            <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
+              {variant.eyebrow}
+            </p>
+            <h2 className="text-3xl font-semibold leading-tight tracking-tight text-ink">
+              {variant.heading}
+            </h2>
+          </div>
+
+          {/* Gap — description — same gap below */}
+          <div className="mt-6 min-h-[5rem]">
+            <p className="text-sm leading-relaxed text-ink-muted">{variant.body}</p>
+          </div>
         </div>
 
-        {/* CTAs — always visible, naturally anchored below the text */}
-        <div className="mt-8 flex flex-col gap-2" style={{ maxWidth: 220 }}>
+        {/* CTAs — always visible, same gap as above/below description */}
+        <div className="mt-6 flex gap-3">
           <Link
             href="/inquire"
-            className="w-full rounded-card bg-accent px-5 py-2.5 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="rounded-card bg-accent px-5 py-2.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Inquire
           </Link>
           <Link
             href="/package-builder"
-            className="w-full rounded-card border border-border px-5 py-2.5 text-center text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="rounded-card border border-border px-5 py-2.5 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Build your package
           </Link>
