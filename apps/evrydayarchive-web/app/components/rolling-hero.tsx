@@ -412,14 +412,14 @@ export const BLOCK_C_ITEMS: Record<Tier, BlockPhoto[]> = {
 
 function buildSequence(blockW: number, tier: Tier): WallItem[] {
   return [
-    { type: 'spacer', width: 120 },
+    // { type: 'spacer', width: 120 },
     TEXT_A,
     { type: 'block', width: blockW, ml: 0, items: BLOCK_A_ITEMS[tier] },
     TEXT_B,
     { type: 'block', width: blockW, ml: 0, items: BLOCK_B_ITEMS[tier] },
     TEXT_C,
-    { type: 'block', width: blockW, ml: 0, items: BLOCK_C_ITEMS[tier] },
-    { type: 'spacer', width: 60 }
+    { type: 'block', width: blockW, ml: 0, items: BLOCK_C_ITEMS[tier] }
+    // { type: 'spacer', width: 60 }
   ];
 }
 

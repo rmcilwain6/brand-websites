@@ -144,17 +144,17 @@ export const RollingHeroFixedText = () => {
           </div>
         </div>
 
-        {/* CTAs — always visible, same gap as above/below description */}
-        <div className="mt-6 flex gap-3">
+        {/* CTAs — side by side when room, stacked when not; equal width always */}
+        <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/inquire"
-            className="rounded-card bg-accent px-5 py-2.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="flex-1 basis-40 whitespace-nowrap rounded-card bg-accent px-5 py-2.5 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Inquire
           </Link>
           <Link
             href="/package-builder"
-            className="rounded-card border border-border px-5 py-2.5 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="flex-1 basis-40 whitespace-nowrap rounded-card border border-border px-5 py-2.5 text-center text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Build your package
           </Link>
