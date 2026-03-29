@@ -140,7 +140,7 @@ export const RollingHeroFixedText = () => {
 
           {/* Gap — description — same gap below */}
           <div className="mt-6 min-h-[5rem]">
-            <p className="text-sm leading-relaxed text-ink-muted">{variant.body}</p>
+            <p className="max-w-[400px] text-sm leading-relaxed text-ink-muted">{variant.body}</p>
           </div>
         </div>
 
