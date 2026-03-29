@@ -13,37 +13,21 @@ import {
   HEADER_H,
   MIN_SECTION_H,
   SHORT_H_THRESHOLD,
-  getTier,
   WallBlockEl,
-  type Tier,
   type WallBlock
 } from './rolling-hero';
 
 // ── Layout constants ───────────────────────────────────────────────────────────
 
-/**
- * Computes the pixel width of the left text panel at the current viewport width.
- * Mirrors the CSS: clamp(300px, 33.333vw, 640px).
- */
-function calcLeftPanelW(): number {
-  return Math.min(Math.max(window.innerWidth * 0.3333, 300), 640);
-}
-
-/** Marquee duration — photos only, no text panels, so slightly shorter than the full hero. */
+/** Marquee duration. */
 const MARQUEE_DURATION = '120s';
 
 /**
- * Fixed block widths per tier.
- * Sized to tightly contain each tier's frames so the inter-block gap stays constant
- * regardless of exact viewport width. Frames are absolute-positioned, so the block width
- * only controls spacing — it doesn't clip frames that extend past the boundary.
+ * Fixed pixel width of each photo block.
+ * Sized to contain the rightmost frame (~1228px) plus breathing room.
+ * The wall layout is viewport-independent — wider screens simply reveal more of it.
  */
-const BLOCK_W_BY_TIER: Record<Tier, number> = {
-  sm: 850,
-  md: 1300,
-  lg: 1300,
-  xl: 1300
-};
+const BLOCK_W = 1300;
 
 /**
  * Mask applied to the photo strip.
@@ -62,15 +46,11 @@ const TEXT_FADE_MS = 600;
 
 type WallSpacer = { type: 'spacer'; width: number };
 
-function buildPhotoSequence(tier: Tier): (WallBlock | WallSpacer)[] {
-  const blockW = BLOCK_W_BY_TIER[tier];
+function buildPhotoSequence(): (WallBlock | WallSpacer)[] {
   return [
-    { type: 'block', width: blockW, ml: 0, items: BLOCK_A_ITEMS[tier] },
-    // { type: 'spacer', width: 60 },
-    { type: 'block', width: blockW, ml: 0, items: BLOCK_B_ITEMS[tier] },
-    // { type: 'spacer', width: 60 },
-    { type: 'block', width: blockW, ml: 0, items: BLOCK_C_ITEMS[tier] }
-    // { type: 'spacer', width: 60 }
+    { type: 'block', width: BLOCK_W, ml: 0, items: BLOCK_A_ITEMS },
+    { type: 'block', width: BLOCK_W, ml: 0, items: BLOCK_B_ITEMS },
+    { type: 'block', width: BLOCK_W, ml: 0, items: BLOCK_C_ITEMS }
   ];
 }
 
@@ -80,9 +60,7 @@ export const RollingHeroFixedText = () => {
   // ROLLING_HERO_DRAG: stops auto-scroll, enables mouse drag + native touch scroll.
   const dragMode = useFeatureFlag('ROLLING_HERO_DRAG');
 
-  // Locked on mount — same strategy as RollingHero.
   const [locked, setLocked] = useState<{
-    blockW: number;
     sectionH: number;
     shortH: boolean;
     sequence: (WallBlock | WallSpacer)[];
@@ -100,12 +78,9 @@ export const RollingHeroFixedText = () => {
   const scrollLeftRef = useRef(0);
 
   useEffect(() => {
-    const leftPanelW = calcLeftPanelW();
-    const blockW = window.innerWidth - leftPanelW;
     const sectionH = Math.max(window.innerHeight - HEADER_H, MIN_SECTION_H);
     const shortH = sectionH < SHORT_H_THRESHOLD;
-    const tier = getTier(blockW);
-    setLocked({ blockW, sectionH, shortH, sequence: buildPhotoSequence(tier) });
+    setLocked({ sectionH, shortH, sequence: buildPhotoSequence() });
   }, []);
 
   useEffect(() => {
