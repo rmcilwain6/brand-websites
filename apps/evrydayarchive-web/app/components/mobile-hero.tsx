@@ -9,7 +9,7 @@ import { HERO_TEXT_VARIANTS } from '../lib/hero-copy';
 import { Frame } from './frame';
 import { Placard } from './placard';
 
-const TEXT_CYCLE_MS = 7000;
+const TEXT_CYCLE_MS = 11000;
 const TEXT_FADE_MS = 600;
 
 export const MobileHero = () => {

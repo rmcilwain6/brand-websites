@@ -29,7 +29,7 @@ function calcLeftPanelW(): number {
 }
 
 /** Marquee duration — photos only, no text panels, so slightly shorter than the full hero. */
-const MARQUEE_DURATION = '90s';
+const MARQUEE_DURATION = '120s';
 
 /**
  * Mask applied to the photo strip.
@@ -40,7 +40,7 @@ const STRIP_MASK =
   'linear-gradient(to right, transparent 0%, black 4%, black 91%, transparent 100%)';
 
 /** How long each text variant is shown before cross-fading to the next. */
-const TEXT_CYCLE_MS = 7000;
+const TEXT_CYCLE_MS = 11000;
 /** Opacity transition duration (matches the CSS transition-duration). */
 const TEXT_FADE_MS = 600;
 
