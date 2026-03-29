@@ -198,12 +198,12 @@ export default function AboutPage() {
                   <PhotoCredit credit="Photo by Annika Kiss" />
                 </div>
                 <div className="absolute bottom-3 right-3 text-right">
-                  <p className="font-mono text-[9px] text-[#b0a898]">Montreal, QC</p>
+                  <p className="font-mono text-[9px] text-[#b0a898]">Montréal, QC</p>
                   <p className="font-mono text-[9px] text-[#b0a898]">Nov 2024</p>
                 </div>
               </div>
               <p className="mt-2 font-mono text-[10px] italic text-[#9a9088] dark:text-ink-faint">
-                A Montreal trip amidst some very big changes.
+                A Montréal trip amidst some very big changes.
               </p>
             </div>
           </div>
@@ -288,12 +288,12 @@ export default function AboutPage() {
                   <PhotoCredit credit="Photo taken by Carolyn Dahl" />
                 </div>
                 <div className="absolute bottom-3 right-3 text-right">
-                  <p className="font-mono text-[9px] text-[#b0a898]">Quebec, QC</p>
+                  <p className="font-mono text-[9px] text-[#b0a898]">Québec, QC</p>
                   <p className="font-mono text-[9px] text-[#b0a898]">Aug 2025</p>
                 </div>
               </div>
               <p className="mt-2 font-mono text-[10px] italic text-[#9a9088] dark:text-ink-faint">
-                Backpacking the Maritimes, starting in Quebec.
+                Backpacking the Maritimes, starting in Québec.
               </p>
             </div>
           </div>
@@ -309,8 +309,12 @@ export default function AboutPage() {
             <div className="absolute bottom-3 left-3">
               <PhotoCredit credit="Photo taken by Lena Mutafov" />
             </div>
+            <div className="absolute bottom-3 right-3 text-right">
+                  <p className="font-mono text-[9px] text-[#b0a898]">Victoria, BC</p>
+                  <p className="font-mono text-[9px] text-[#b0a898]">Oct 2020</p>
+                </div>
           </div>
-          <p className="mt-3 px-6 font-mono text-[11px] italic text-[#9a9088] dark:text-ink-faint"></p>
+          <p className="mt-3 px-6 font-mono text-[11px] italic text-[#9a9088] dark:text-ink-faint">Learning how to use a new flash mount with a friend in Fernwood.</p>
         </section>
 
         <AboutDivider />
@@ -322,12 +326,13 @@ export default function AboutPage() {
           </p>
           <div className="space-y-4 text-sm leading-[1.75] text-[#4a4540] dark:text-ink-muted">
             <p>
-              When I started looking at why people only book photographers for the big occasions,
-              two things kept coming up.
+              Two things kept coming up when I started asking why people only book photographers for the big occasions.
             </p>
             <p>
-              One is that nobody&apos;s told them their everyday life deserves it. Milestones feel
-              justified. The rest of it doesn&apos;t. That&apos;s something worth pushing back on.
+              The first is that everyday moments don&apos;t feel significant while you&apos;re in them. The
+              people you saw every week, the places you passed through, the version of yourself you
+              were before things shifted — none of it announces its own importance. You only find
+              out what it was worth when you can&apos;t get it back.
             </p>
             <p>
               The other is price. Photography feels expensive, and expensive things get saved for
@@ -361,8 +366,8 @@ export default function AboutPage() {
         <AboutDivider />
 
         {/* ── Close ──────────────────────────────────────────────────── */}
-        <section className="px-6 pb-12 pt-9 text-center">
-          <div className="space-y-3 text-sm leading-[1.75] text-[#4a4540] dark:text-ink-muted">
+        <section className="px-6 text-center">
+          <div className="space-y-6 text-sm leading-[1.75] text-[#4a4540] dark:text-ink-muted">
             <p>
               Sessions are built around what matters to you. Your job, your hobby, your people, your
               pet, the thing you do every weekend that nobody has ever thought to photograph. If it

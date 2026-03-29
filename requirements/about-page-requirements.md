@@ -1,7 +1,8 @@
 # About Page — Requirements Document
+
 **Evryday Archive Co**
-*Internal reference. For use in development and design implementation.*
-*Last updated: March 2026*
+_Internal reference. For use in development and design implementation._
+_Last updated: March 2026_
 
 ---
 
@@ -12,6 +13,7 @@ The about page has one job: turn a curious visitor into someone who trusts Reed 
 The page leans deliberately **archival** in its design language — distinct from the portfolio page (which is gallery-forward) and the home page (which blends both instincts). Here, images function as documents. Text functions as reflection. The overall feeling should be: you are looking through someone's archive, not scrolling a photographer's website.
 
 **Design language to carry throughout:**
+
 - Warm off-white background (#F3EDE2)
 - Near-black type (#2B2B2B)
 - Orange accent (#F06F42) used sparingly
@@ -61,6 +63,7 @@ Sections 1, 2, 4, and 7 are one continuous story told in movements. Sections 3 a
 > I started Evryday Archive Co because I think everyone deserves great photos of more of their life than that.
 
 **Design notes:**
+
 - Subtle parallax texture on background — film grain or paper grain
 - Orange accent (#F06F42) could punctuate a single word or phrase, not the whole statement
 - No image in this section. Let the words land first.
@@ -86,6 +89,7 @@ Sections 1, 2, 4, and 7 are one continuous story told in movements. Sections 3 a
 > I left a career in software development because I wanted to spend more of my life doing things that actually light me up. Photography has always been one of those things. This is me taking that seriously.
 
 **Design notes:**
+
 - Image: candid of Reed shooting or behind the scenes on a session
 - Archival timestamp or location tag on the image in small muted type
 - This section can breathe — the longer read is fine here, this is where trust is built
@@ -104,13 +108,14 @@ Sections 1, 2, 4, and 7 are one continuous story told in movements. Sections 3 a
 
 **Copy lines (placeholders — pair with images once selected):**
 
-- *The places you lived when you were figuring things out.*
-- *The people who were there for the in-between.*
-- *The trip that changed how you thought about things.*
-- *The animal that made a house feel like home.*
-- *The version of you that existed before you knew what came next.*
+- _The places you lived when you were figuring things out._
+- _The people who were there for the in-between._
+- _The trip that changed how you thought about things._
+- _The animal that made a house feel like home._
+- _The version of you that existed before you knew what came next._
 
 **Design notes:**
+
 - Images sourced from Reed's personal archive, not client sessions
 - Horizontal scroll on desktop, swipe carousel on mobile
 - Each image framed with photo corner details and a small archival metadata tag (location, year — nothing more)
@@ -141,6 +146,7 @@ Sections 1, 2, 4, and 7 are one continuous story told in movements. Sections 3 a
 > Evryday Archive Co exists to do something about both of those things. Accessible pricing so that booking a session can always feel within reach. And a genuine belief that the ordinary parts of your life are worth just as much attention as the extraordinary ones.
 
 **Design notes:**
+
 - No image required
 - Thin orange horizontal rule above the section or generous padding to mark the beat change
 - This section is the philosophical grounding — design should support the text, not compete with it
@@ -166,6 +172,7 @@ Sections 1, 2, 4, and 7 are one continuous story told in movements. Sections 3 a
 > Pricing is on the site. No surprises, no hidden fees.
 
 **Design notes:**
+
 - Triggered by a small text link or button, not a prominent section header
 - Orange accent dot as divider between steps, consistent with existing Instagram design language
 - Calm and light — functional, not emotional
@@ -187,6 +194,7 @@ Sections 1, 2, 4, and 7 are one continuous story told in movements. Sections 3 a
 > I'm proud of what's come out of these early sessions. And honestly I'm just getting started.
 
 **Design notes:**
+
 - One image, full-bleed or large format — high quality, emotionally resonant, from a real client session
 - No stats, no reach numbers — the image and the honesty do the work
 - Archival metadata tag on the image: client first name, date
@@ -214,6 +222,7 @@ Sections 1, 2, 4, and 7 are one continuous story told in movements. Sections 3 a
 **CTA:** `Get in touch` — links to contact/booking flow
 
 **Design notes:**
+
 - No image. The page has earned this quiet ending.
 - CTA button: brand orange (#F06F42), restrained size
 - Thin orange horizontal rule above the section as a visual close
@@ -222,15 +231,15 @@ Sections 1, 2, 4, and 7 are one continuous story told in movements. Sections 3 a
 
 ## Image Requirements Summary
 
-| Section | Source | Treatment |
-|---|---|---|
-| 1 — Observation | None | — |
-| 2 — Photographer | Candid of Reed in the field | Archival timestamp/location overlay |
-| 3 — Archive | Reed's personal archive | Horizontal scroll, photo corners, archival metadata, copy paired per image |
-| 4 — Why This Exists | None | — |
-| 5 — How It Works | None (collapsed/hidden) | — |
-| 6 — The Work | One client session image | Large format, archival caption |
-| 7 — Invitation | None | — |
+| Section             | Source                      | Treatment                                                                  |
+| ------------------- | --------------------------- | -------------------------------------------------------------------------- |
+| 1 — Observation     | None                        | —                                                                          |
+| 2 — Photographer    | Candid of Reed in the field | Archival timestamp/location overlay                                        |
+| 3 — Archive         | Reed's personal archive     | Horizontal scroll, photo corners, archival metadata, copy paired per image |
+| 4 — Why This Exists | None                        | —                                                                          |
+| 5 — How It Works    | None (collapsed/hidden)     | —                                                                          |
+| 6 — The Work        | One client session image    | Large format, archival caption                                             |
+| 7 — Invitation      | None                        | —                                                                          |
 
 ---
 
@@ -247,15 +256,15 @@ Sections 1, 2, 4, and 7 are one continuous story told in movements. Sections 3 a
 
 ## Copy Status
 
-| Section | Status |
-|---|---|
-| 1 — Observation | Draft — ready to iterate |
-| 2 — Photographer | Draft — ready to iterate |
-| 3 — Archive | Copy lines drafted, images TBD |
-| 4 — Why This Exists | Draft — ready to iterate |
-| 5 — How It Works | Draft — functional, lower priority |
-| 6 — The Work | Draft — ready to iterate |
-| 7 — Invitation | Draft — ready to iterate |
+| Section             | Status                             |
+| ------------------- | ---------------------------------- |
+| 1 — Observation     | Draft — ready to iterate           |
+| 2 — Photographer    | Draft — ready to iterate           |
+| 3 — Archive         | Copy lines drafted, images TBD     |
+| 4 — Why This Exists | Draft — ready to iterate           |
+| 5 — How It Works    | Draft — functional, lower priority |
+| 6 — The Work        | Draft — ready to iterate           |
+| 7 — Invitation      | Draft — ready to iterate           |
 
 ---
 
@@ -272,4 +281,4 @@ Sections 1, 2, 4, and 7 are one continuous story told in movements. Sections 3 a
 
 ---
 
-*This document is a living reference. Copy and section order may shift through iteration. Design notes are directional, not prescriptive.*
+_This document is a living reference. Copy and section order may shift through iteration. Design notes are directional, not prescriptive._
