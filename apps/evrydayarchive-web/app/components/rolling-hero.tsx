@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import { cn } from '../lib/cn';
+import { HERO_TEXT_VARIANTS } from '../lib/hero-copy';
 import { useFeatureFlag } from '../lib/use-feature-flag';
 import { type MatStyle, type PlacardPosition, Frame } from './frame';
 
@@ -111,9 +112,7 @@ export function getTier(blockW: number): Tier {
 
 const TEXT_A: WallText = {
   type: 'text',
-  eyebrow: 'Kamloops & British Columbia · Photography',
-  heading: 'Quiet days,\ncarefully\ndocumented.',
-  body: 'A studio practice rooted in intention — capturing everyday life with honesty and care.',
+  ...HERO_TEXT_VARIANTS[0],
   ctas: [
     { label: 'Inquire', href: '/inquire', variant: 'primary' },
     { label: 'Explore packages', href: '/packages', variant: 'secondary' }
@@ -124,9 +123,7 @@ const TEXT_A: WallText = {
 
 const TEXT_B: WallText = {
   type: 'text',
-  eyebrow: 'The Archive · Est. 2024',
-  heading: 'Every day\nworthwhile.',
-  body: 'Honest photography for real people — no big productions, no forced smiles.',
+  ...HERO_TEXT_VARIANTS[1],
   ctas: [
     { label: 'View portfolio', href: '/portfolio', variant: 'primary' },
     { label: 'Our process', href: '/process', variant: 'secondary' }
@@ -137,9 +134,7 @@ const TEXT_B: WallText = {
 
 const TEXT_C: WallText = {
   type: 'text',
-  eyebrow: 'Real Moments · Real Life',
-  heading: 'Made for\nyour\neveryday.',
-  body: "No big productions, no forced smiles — just honest images of the life you're actually living.",
+  ...HERO_TEXT_VARIANTS[2],
   ctas: [
     { label: 'Our process', href: '/process', variant: 'primary' },
     { label: 'Read our FAQ', href: '/faq', variant: 'secondary' }

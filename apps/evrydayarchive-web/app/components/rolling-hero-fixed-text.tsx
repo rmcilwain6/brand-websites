@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
+import { HERO_TEXT_VARIANTS } from '../lib/hero-copy';
 import {
   BLOCK_A_ITEMS,
   BLOCK_B_ITEMS,
@@ -25,7 +26,7 @@ import {
  * Mirrors the CSS: clamp(300px, 32vw, 500px).
  */
 function calcLeftPanelW(): number {
-  return Math.min(Math.max(window.innerWidth * 0.32, 300), 500);
+  return Math.min(Math.max(window.innerWidth * 0.3333, 300), 640);
 }
 
 /** Marquee duration — photos only, no text panels, so slightly shorter than the full hero. */
@@ -38,28 +39,6 @@ const MARQUEE_DURATION = '90s';
  */
 const STRIP_MASK =
   'linear-gradient(to right, transparent 0%, black 4%, black 91%, transparent 100%)';
-
-// ── Text variants ──────────────────────────────────────────────────────────────
-
-type TextVariant = { eyebrow: string; heading: string; body: string };
-
-const TEXT_VARIANTS: TextVariant[] = [
-  {
-    eyebrow: 'Kamloops & British Columbia · Photography',
-    heading: 'Quiet days,\ncarefully\ndocumented.',
-    body: 'A studio practice rooted in intention — capturing everyday life with honesty and care.'
-  },
-  {
-    eyebrow: 'The Archive · Est. 2024',
-    heading: 'Every day\nworthwhile.',
-    body: 'Honest photography for real people — no big productions, no forced smiles.'
-  },
-  {
-    eyebrow: 'Real Moments · Real Life',
-    heading: 'Made for\nyour\neveryday.',
-    body: "No big productions, no forced smiles — just honest images of the life you're actually living."
-  }
-];
 
 /** How long each text variant is shown before cross-fading to the next. */
 const TEXT_CYCLE_MS = 7000;
@@ -92,7 +71,7 @@ export const RollingHeroFixedText = () => {
     sequence: (WallBlock | WallSpacer)[];
   } | null>(null);
 
-  // Index into TEXT_VARIANTS driving the cross-fade.
+  // Index into HERO_TEXT_VARIANTS driving the cross-fade.
   const [textIdx, setTextIdx] = useState(0);
   // Controls opacity of the copy block — false during the brief fade-out gap.
   const [textVisible, setTextVisible] = useState(true);
@@ -110,7 +89,7 @@ export const RollingHeroFixedText = () => {
     const id = setInterval(() => {
       setTextVisible(false);
       const swap = setTimeout(() => {
-        setTextIdx((i) => (i + 1) % TEXT_VARIANTS.length);
+        setTextIdx((i) => (i + 1) % HERO_TEXT_VARIANTS.length);
         setTextVisible(true);
       }, TEXT_FADE_MS);
       return () => clearTimeout(swap);
@@ -120,7 +99,7 @@ export const RollingHeroFixedText = () => {
 
   if (!locked) return null;
 
-  const variant = TEXT_VARIANTS[textIdx];
+  const variant = HERO_TEXT_VARIANTS[textIdx];
   // Double the sequence for the seamless translateX(-50%) loop.
   const trackItems = [...locked.sequence, ...locked.sequence];
 
@@ -141,7 +120,7 @@ export const RollingHeroFixedText = () => {
         aria-hidden="true"
         className="relative z-10 flex flex-none flex-col justify-center bg-canvas"
         style={{
-          width: 'clamp(300px, 32vw, 500px)',
+          width: 'clamp(300px, 33.333vw, 640px)',
           paddingLeft: 'clamp(2rem, 5vw, 5rem)',
           paddingRight: '2.5rem'
         }}
