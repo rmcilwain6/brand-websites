@@ -9,18 +9,18 @@ export type HeroTextVariant = {
 
 export const HERO_TEXT_VARIANTS: HeroTextVariant[] = [
   {
-    eyebrow: 'Kamloops & British Columbia · Photography',
-    heading: 'Quiet days,\ncarefully\ndocumented.',
-    body: 'A studio practice rooted in intention — capturing everyday life with honesty and care.'
+    eyebrow: 'Kamloops · Vancouver Island',
+    heading: 'Your everyday life is worth documenting.',
+    body: "Most people wait for a milestone. You don't have to. Sessions shaped around who you actually are, right now."
   },
   {
-    eyebrow: 'The Archive · Est. 2024',
-    heading: 'Every day\nworthwhile.',
-    body: 'Honest photography for real people — no big productions, no forced smiles.'
+    eyebrow: 'Accessible · Transparent',
+    heading: 'Build a session around your budget',
+    body: 'Start with a package and make it yours. Adjust the session length, image count, and more — pricing updates as you go'
   },
   {
-    eyebrow: 'Real Moments · Real Life',
-    heading: 'Made for\nyour\neveryday.',
-    body: "No big productions, no forced smiles — just honest images of the life you're actually living."
+    eyebrow: 'No experience needed',
+    heading: 'Made for first timers and the curious.',
+    body: "Sessions are relaxed and there's no wrong way to show up. Just bring yourself."
   }
 ];

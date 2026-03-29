@@ -55,23 +55,20 @@ type VariantLayout = {
   top: string;
   align: 'left' | 'center' | 'right';
   headingClass: string;
-  showEyebrow: boolean;
-  showBody: boolean;
 };
 
 const VARIANT_LAYOUTS: VariantLayout[] = [
   // V1: "Your everyday life is worth documenting."
-  // Primary manifesto — owns the upper-left, full content, most prominent.
-  { top: '10%', align: 'left', headingClass: 'text-3xl', showEyebrow: true, showBody: true },
+  // Primary manifesto — owns the upper-left, most prominent.
+  { top: '10%', align: 'left', headingClass: 'text-3xl' },
 
   // V2: "Build a session around your budget"
   // Practical/actionable — sits mid-wall, right-aligned, near the CTAs.
-  // Body omitted: the copy is long and proximity to the buttons carries the intent.
-  { top: '30%', align: 'right', headingClass: 'text-2xl', showEyebrow: true, showBody: false },
+  { top: '30%', align: 'right', headingClass: 'text-2xl' },
 
   // V3: "Made for first timers and the curious."
-  // Warm and welcoming — upper-center, eyebrow dropped so the heading breathes.
-  { top: '7%', align: 'center', headingClass: 'text-3xl', showEyebrow: false, showBody: true }
+  // Warm and welcoming — upper-center.
+  { top: '7%', align: 'center', headingClass: 'text-3xl' }
 ];
 
 // ── Photo sequence ─────────────────────────────────────────────────────────────
@@ -161,11 +158,9 @@ export const RollingHeroFixedText = () => {
             transitionDuration: `${TEXT_FADE_MS}ms`
           }}
         >
-          {layout.showEyebrow && (
-            <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
-              {variant.eyebrow}
-            </p>
-          )}
+          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
+            {variant.eyebrow}
+          </p>
           <h2
             className={cn(
               'font-semibold leading-tight tracking-tight text-ink',
@@ -174,9 +169,7 @@ export const RollingHeroFixedText = () => {
           >
             {variant.heading}
           </h2>
-          {layout.showBody && (
-            <p className="mt-4 text-sm leading-relaxed text-ink-muted">{variant.body}</p>
-          )}
+          <p className="mt-4 text-sm leading-relaxed text-ink-muted">{variant.body}</p>
         </div>
 
         {/* CTAs — fixed anchor at 2/3 down, horizontally centered, equal width */}
