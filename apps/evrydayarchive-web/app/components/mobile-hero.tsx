@@ -62,7 +62,7 @@ export const MobileHero = () => {
         <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
           {variant.eyebrow}
         </p>
-        <h1 className="text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
+        <h1 className="whitespace-pre-line text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
           {variant.heading}
         </h1>
         <p className="mt-5 text-base leading-relaxed text-ink-muted sm:text-lg">{variant.body}</p>

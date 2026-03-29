@@ -10,17 +10,17 @@ export type HeroTextVariant = {
 export const HERO_TEXT_VARIANTS: HeroTextVariant[] = [
   {
     eyebrow: 'Kamloops · Vancouver Island',
-    heading: 'Your everyday life is worth documenting.',
+    heading: 'Your everyday life\nis worth documenting.',
     body: "Most people wait for a milestone. You don't have to. Sessions shaped around who you actually are, right now."
   },
   {
     eyebrow: 'Accessible · Transparent',
-    heading: 'Build a session around your budget',
+    heading: 'Build a session\naround your budget',
     body: 'Start with a package and make it yours. Adjust the session length, image count, and more — pricing updates as you go'
   },
   {
     eyebrow: 'No experience needed',
-    heading: 'Made for first timers and the curious.',
+    heading: 'Made for first timers\nand the curious.',
     body: "Sessions are relaxed and there's no wrong way to show up. Just bring yourself."
   }
 ];

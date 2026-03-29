@@ -133,7 +133,7 @@ export const RollingHeroFixedText = () => {
             <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
               {variant.eyebrow}
             </p>
-            <h2 className="text-3xl font-semibold leading-tight tracking-tight text-ink">
+            <h2 className="whitespace-pre-line text-3xl font-semibold leading-tight tracking-tight text-ink">
               {variant.heading}
             </h2>
           </div>
