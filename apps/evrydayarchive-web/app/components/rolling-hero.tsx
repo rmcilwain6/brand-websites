@@ -112,41 +112,6 @@ export function getTier(blockW: number): Tier {
   return 'sm';
 }
 
-// ── Wall text panels ──────────────────────────────────────────────────────────
-
-const TEXT_A: WallText = {
-  type: 'text',
-  ...HERO_TEXT_VARIANTS[0],
-  ctas: [
-    { label: 'Inquire', href: '/inquire', variant: 'primary' },
-    { label: 'Explore packages', href: '/packages', variant: 'secondary' }
-  ],
-  mt: 160,
-  ml: 80
-};
-
-const TEXT_B: WallText = {
-  type: 'text',
-  ...HERO_TEXT_VARIANTS[1],
-  ctas: [
-    { label: 'View portfolio', href: '/portfolio', variant: 'primary' },
-    { label: 'Our process', href: '/process', variant: 'secondary' }
-  ],
-  mt: 130,
-  ml: TEXT_LEAD_ML
-};
-
-const TEXT_C: WallText = {
-  type: 'text',
-  ...HERO_TEXT_VARIANTS[2],
-  ctas: [
-    { label: 'Our process', href: '/process', variant: 'primary' },
-    { label: 'Read our FAQ', href: '/faq', variant: 'secondary' }
-  ],
-  mt: 155,
-  ml: TEXT_LEAD_ML
-};
-
 // ── Frame item definitions ─────────────────────────────────────────────────────
 // Items are defined per-tier. Each tier should be a superset of the tier below it
 // (same frames, potentially repositioned, plus additional frames for the extra space).
@@ -176,24 +141,26 @@ const BLOCK_A_SM: BlockPhoto[] = [
 
   // Upper-left small portrait (frameH=272, frameW=192)
   {
-    aspect: '2/3',
+    aspect: '4/5',
     photoH: 240,
     matStyle: 'neutral',
-    top: 55,
-    left: 70,
+    top: 40,
+    left: 50,
     placardPosition: 'bottom-left',
-    placard: { title: 'At Home', subtitle: 'Kamloops' }
+    placard: { title: 'Pokémon Camp', subtitle: 'Victoria, Mar 2026' },
+    src: '/images/top-brand-images/drews-pokemon-camp-02.webp'
   },
 
   // Lower-right small landscape (frameH=192, frameW=272)
   {
     aspect: '3/2',
     photoH: 160,
-    matStyle: 'deep',
+    matStyle: 'neutral',
     top: 540,
     left: 250,
     placardPosition: 'right-middle',
-    placard: { title: 'Golden Hour', subtitle: 'Thompson Valley' }
+    placard: { title: 'Science of Wine', subtitle: 'Kamloops, Mar 2026' },
+    src: '/images/top-brand-images/science-of-wine-2026-9.webp'
   }
 ];
 
@@ -206,32 +173,35 @@ const BLOCK_A_MD: BlockPhoto[] = [
   {
     aspect: '3/2',
     photoH: 200,
-    matStyle: 'neutral',
-    top: 180,
+    matStyle: 'deep',
+    top: 200,
     left: 860,
     placardPosition: 'bottom-right',
-    placard: { title: 'Park Afternoon', subtitle: 'Riverside Drive' }
+    placard: { title: 'Jess & The Yota', subtitle: 'Kamloops, Jan 2026' },
+    src: '/images/top-brand-images/jess&the-yota-12.webp'
   },
 
   // Lower-left small portrait (frameH=152, frameW=112)
   {
     aspect: '2/3',
-    photoH: 200,
+    photoH: 300,
     matStyle: 'warm',
-    top: 420,
-    left: 180,
-    placardPosition: 'bottom-left',
-    placard: { title: 'Backyard Sessions', subtitle: 'Kamloops' }
+    top: 400,
+    left: 100,
+    placardPosition: 'bottom-center',
+    placard: { title: 'Valleyview Alumni Game', subtitle: 'Kamloops, Dec 2025' },
+    src: '/images/top-brand-images/vv-2025-alumni-game-07.webp'
   },
 
   {
-    aspect: '2/3',
-    photoH: 100,
+    aspect: '3/2',
+    photoH: 200,
     matStyle: 'warm',
     top: 550,
     left: 880,
     placardPosition: 'right-middle',
-    placard: { title: 'Backyard Sessions', subtitle: 'Kamloops' }
+    placard: { title: 'Nicole', subtitle: 'Victoria, Jan 2026' },
+    src: '/images/top-brand-images/nikki&nicole-jan15-03.webp'
   }
 ];
 
@@ -257,33 +227,36 @@ const BLOCK_B_SM: BlockPhoto[] = [
   {
     aspect: '3/2',
     photoH: 300,
-    matStyle: 'neutral',
+    matStyle: 'deep',
     top: 300,
     left: 260,
     placardPosition: 'bottom-right',
-    placard: { title: 'Morning Light', subtitle: 'Sun Peaks' }
+    placard: { title: 'Kate & Carter', subtitle: 'Kamloops, Dec 2025' },
+    src: '/images/top-brand-images/kate&carter-wildlights-17.webp'
   },
 
   // Upper-left portrait (frameH=232, frameW=165)
   {
-    aspect: '2/3',
-    photoH: 200,
+    aspect: '4/5',
+    photoH: 250,
     matStyle: 'deep',
-    top: 160,
-    left: 65,
-    placardPosition: 'bottom-right',
-    placard: { title: 'Neighbourhood Walk', subtitle: 'Westside' }
+    top: 120,
+    left: -60,
+    placardPosition: 'top-center',
+    placard: { title: 'Science of Wine', subtitle: 'Kamloops, Mar 2026' },
+    src: '/images/top-brand-images/science-of-wine-2026-22.webp'
   },
 
   // Lower-right small landscape (frameH=162, frameW=227)
   {
     aspect: '3/2',
-    photoH: 130,
-    matStyle: 'warm',
-    top: 110,
-    left: 260,
+    photoH: 180,
+    matStyle: 'deep',
+    top: 40,
+    left: 300,
     placardPosition: 'right-bottom',
-    placard: { title: 'Winter Session', subtitle: 'Sun Peaks' }
+    placard: { title: 'Big White Winter Rally', subtitle: 'Dec 2026' },
+    src: '/images/top-brand-images/angus-1.webp'
   }
 ];
 
@@ -299,19 +272,21 @@ const BLOCK_B_MD: BlockPhoto[] = [
     matStyle: 'warm',
     top: 90,
     left: 980,
-    placardPosition: 'bottom-center',
-    placard: { title: 'Sunday Morning', subtitle: 'Sun Peaks' }
+    placardPosition: 'bottom-left',
+    placard: { title: 'Pinot', subtitle: 'Victoria, Mar 2026' },
+    src: '/images/top-brand-images/pinot.webp'
   },
 
   // Lower-left small landscape (frameH=142, frameW=197)
   {
-    aspect: '3/2',
-    photoH: 80,
-    matStyle: 'deep',
-    top: 540,
-    left: 130,
-    placardPosition: 'right-middle',
-    placard: { title: 'River Walk', subtitle: 'Thompson Valley' }
+    aspect: '2/3',
+    photoH: 280,
+    matStyle: 'neutral',
+    top: 450,
+    left: 180,
+    placardPosition: 'right-bottom',
+    placard: { title: 'Ruben', subtitle: 'UVic, Mar 2026' },
+    src: '/images/top-brand-images/urec-finishedimages-20.webp'
   }
 ];
 
@@ -339,20 +314,22 @@ const BLOCK_C_SM: BlockPhoto[] = [
     photoH: 450,
     matStyle: 'deep',
     top: 146,
-    left: 500,
-    placardPosition: 'bottom-center',
-    placard: { title: 'An Afternoon', subtitle: 'Thompson River' }
+    left: 450,
+    placardPosition: 'bottom-left',
+    placard: { title: 'Valleyview Alumni Game', subtitle: 'Kamloops, Dec 2025' },
+    src: '/images/top-brand-images/vv-2025-alumni-game-26.webp'
   },
 
   // Upper-left medium portrait (frameH=232, frameW=192)
   {
-    aspect: '4/5',
-    photoH: 200,
+    aspect: '5/4',
+    photoH: 250,
     matStyle: 'warm',
-    top: 60,
-    left: 180,
-    placardPosition: 'right-top',
-    placard: { title: 'Childhood', subtitle: 'Kamloops' }
+    top: 25,
+    left: -20,
+    placardPosition: 'bottom-left',
+    placard: { title: 'Julia', subtitle: 'Nanaimo, Jan 2026' },
+    src: '/images/top-brand-images/julia-06.webp'
   },
 
   // Lower-centre landscape (frameH=202, frameW=287)
@@ -360,10 +337,11 @@ const BLOCK_C_SM: BlockPhoto[] = [
     aspect: '3/2',
     photoH: 170,
     matStyle: 'neutral',
-    top: 400,
-    left: 180,
-    placardPosition: 'top-right',
-    placard: { title: 'Summer Evening', subtitle: 'Riverside Park' }
+    top: 360,
+    left: 120,
+    placardPosition: 'bottom-left',
+    placard: { title: 'Summer Evening', subtitle: 'Riverside Park' },
+    src: '/images/top-brand-images/drews-pokemon-camp-06.webp'
   }
 ];
 
@@ -374,24 +352,38 @@ const BLOCK_C_MD: BlockPhoto[] = [
   // ── md extras ────────────────────────────────────────────────────
   // Upper-left small portrait (frameH=132, frameW=99)
   {
-    aspect: '2/3',
-    photoH: 300,
+    aspect: '4/5',
+    photoH: 270,
     matStyle: 'deep',
-    top: 150,
-    left: 90,
+    top: 430,
+    left: 40,
     placardPosition: 'bottom-right',
-    placard: { title: 'Home Archives', subtitle: 'Kamloops' }
+    placard: { title: 'Nikki', subtitle: 'Victoria, Jan 2026' },
+    src: '/images/top-brand-images/nikki&nicole-jan15-08.webp'
   },
 
   // Lower-right landscape (frameH=182, frameW=257)
   {
-    aspect: '3/2',
-    photoH: 100,
+    aspect: '2/3',
+    photoH: 250,
     matStyle: 'warm',
-    top: 300,
-    left: 1060,
-    placardPosition: 'top-center',
-    placard: { title: 'Late Light', subtitle: 'Sun Peaks' }
+    top: 50,
+    left: 1020,
+    placardPosition: 'bottom-center',
+    placard: { title: 'Jess & The Yota', subtitle: 'Kamloops, Jan 2026' },
+    src: '/images/top-brand-images/jess&the-yota-10.webp'
+  },
+
+  // Lower-right landscape (frameH=182, frameW=257)
+  {
+    aspect: '2/3',
+    photoH: 250,
+    matStyle: 'warm',
+    top: 420,
+    left: 1020,
+    placardPosition: 'bottom-center',
+    placard: { title: 'Late Light', subtitle: 'Sun Peaks' },
+    src: '/images/top-brand-images/urec-finishedimages-14.webp'
   }
 ];
 
@@ -418,13 +410,10 @@ export const BLOCK_C_ITEMS: Record<Tier, BlockPhoto[]> = {
 function buildSequence(blockW: number, tier: Tier): WallItem[] {
   return [
     // { type: 'spacer', width: 120 },
-    TEXT_A,
     { type: 'block', width: blockW, ml: 0, items: BLOCK_A_ITEMS[tier] },
-    TEXT_B,
     { type: 'block', width: blockW, ml: 0, items: BLOCK_B_ITEMS[tier] },
-    TEXT_C,
-    { type: 'block', width: blockW, ml: 0, items: BLOCK_C_ITEMS[tier] }
-    // { type: 'spacer', width: 60 }
+    { type: 'block', width: blockW, ml: 0, items: BLOCK_C_ITEMS[tier] },
+    { type: 'spacer', width: 120 }
   ];
 }
 

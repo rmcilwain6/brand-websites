@@ -33,6 +33,19 @@ function calcLeftPanelW(): number {
 const MARQUEE_DURATION = '120s';
 
 /**
+ * Fixed block widths per tier.
+ * Sized to tightly contain each tier's frames so the inter-block gap stays constant
+ * regardless of exact viewport width. Frames are absolute-positioned, so the block width
+ * only controls spacing — it doesn't clip frames that extend past the boundary.
+ */
+const BLOCK_W_BY_TIER: Record<Tier, number> = {
+  sm: 850,
+  md: 1300,
+  lg: 1300,
+  xl: 1300
+};
+
+/**
  * Mask applied to the photo strip.
  * Subtle left-edge fade (~4%) so photos dissolve as they exit toward the text panel.
  * Stronger right-edge fade (~9%) so photos emerge gracefully from the far edge.
@@ -49,14 +62,15 @@ const TEXT_FADE_MS = 600;
 
 type WallSpacer = { type: 'spacer'; width: number };
 
-function buildPhotoSequence(blockW: number, tier: Tier): (WallBlock | WallSpacer)[] {
+function buildPhotoSequence(tier: Tier): (WallBlock | WallSpacer)[] {
+  const blockW = BLOCK_W_BY_TIER[tier];
   return [
     { type: 'block', width: blockW, ml: 0, items: BLOCK_A_ITEMS[tier] },
-    { type: 'spacer', width: 60 },
+    // { type: 'spacer', width: 60 },
     { type: 'block', width: blockW, ml: 0, items: BLOCK_B_ITEMS[tier] },
-    { type: 'spacer', width: 60 },
-    { type: 'block', width: blockW, ml: 0, items: BLOCK_C_ITEMS[tier] },
-    { type: 'spacer', width: 60 }
+    // { type: 'spacer', width: 60 },
+    { type: 'block', width: blockW, ml: 0, items: BLOCK_C_ITEMS[tier] }
+    // { type: 'spacer', width: 60 }
   ];
 }
 
@@ -91,7 +105,7 @@ export const RollingHeroFixedText = () => {
     const sectionH = Math.max(window.innerHeight - HEADER_H, MIN_SECTION_H);
     const shortH = sectionH < SHORT_H_THRESHOLD;
     const tier = getTier(blockW);
-    setLocked({ blockW, sectionH, shortH, sequence: buildPhotoSequence(blockW, tier) });
+    setLocked({ blockW, sectionH, shortH, sequence: buildPhotoSequence(tier) });
   }, []);
 
   useEffect(() => {
