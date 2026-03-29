@@ -68,7 +68,10 @@ const config: Config = {
         'wipe-in-left': 'wipeInLeft 160ms ease-out both',
         'wipe-in-right': 'wipeInRight 160ms ease-out both',
         // Waitlist loading indicator — three dots staggered via animationDelay
-        'bounce-dot': 'bounceDot 1.2s ease-in-out infinite'
+        'bounce-dot': 'bounceDot 1.2s ease-in-out infinite',
+        // Archive carousel — directional slide-in for the incoming set of frames
+        'carousel-in-right': 'carouselInRight 240ms cubic-bezier(0.16, 1, 0.3, 1) both',
+        'carousel-in-left': 'carouselInLeft 240ms cubic-bezier(0.16, 1, 0.3, 1) both'
       },
       keyframes: {
         fadeUp: {
@@ -126,6 +129,14 @@ const config: Config = {
         bounceDot: {
           '0%, 60%, 100%': { transform: 'translateY(0)' },
           '30%': { transform: 'translateY(-5px)' }
+        },
+        carouselInRight: {
+          '0%': { opacity: '0', transform: 'translateX(48px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' }
+        },
+        carouselInLeft: {
+          '0%': { opacity: '0', transform: 'translateX(-48px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' }
         }
       }
     }
