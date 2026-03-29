@@ -1,41 +1,23 @@
-'use client';
-
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { useFeatureFlag } from '../lib/use-feature-flag';
 import { Frame } from './frame';
 import { Placard } from './placard';
-import { RollingHero } from './rolling-hero';
 import { RollingHeroFixedText } from './rolling-hero-fixed-text';
 
-export const HeroSection = () => {
-  const rollingHero = useFeatureFlag('ROLLING_HERO');
-  const fixedText = useFeatureFlag('ROLLING_HERO_FIXED_TEXT');
+export const HeroSection = () => (
+  <>
+    {/* Desktop (lg+): fixed-text rolling hero */}
+    <div className="hidden lg:block">
+      <RollingHeroFixedText />
+    </div>
 
-  // ROLLING_HERO_FIXED_TEXT takes precedence over ROLLING_HERO when both are on.
-  const activeVariant = fixedText ? 'fixed-text' : rollingHero ? 'rolling' : 'classic';
-
-  return (
-    <>
-      {/* Desktop (lg+): feature-flagged hero variants */}
-      {activeVariant === 'fixed-text' && (
-        <div className="hidden lg:block">
-          <RollingHeroFixedText />
-        </div>
-      )}
-      {activeVariant === 'rolling' && (
-        <div className="hidden lg:block">
-          <RollingHero />
-        </div>
-      )}
-      {/* Classic hero: always on mobile/tablet; fallback on desktop when no flag is active */}
-      <div className={activeVariant !== 'classic' ? 'lg:hidden' : undefined}>
-        <ClassicHero />
-      </div>
-    </>
-  );
-};
+    {/* Mobile / tablet: classic stacked hero */}
+    <div className="lg:hidden">
+      <ClassicHero />
+    </div>
+  </>
+);
 
 // ── Classic (original) hero ───────────────────────────────────────────────────
 
