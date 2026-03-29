@@ -126,7 +126,7 @@ const ArchivePortraitPair = ({
 const ArchiveGrid = ({ mobile }: { mobile: boolean }) => {
   const label = (
     <p
-      className={`text-[10px] uppercase tracking-[0.14em] text-[#a09a8e] dark:text-ink-faint ${mobile ? 'mb-7 px-6' : 'mb-8'}`}
+      className={`text-[13px] uppercase tracking-[0.1em] text-[#a09a8e] dark:text-ink-faint ${mobile ? 'mb-7 px-6' : 'mb-8'}`}
     >
       A glimpse into my Archive
     </p>
@@ -185,7 +185,7 @@ export default function AboutPage() {
       <div className="md:hidden">
         {/* ── Opening ────────────────────────────────────────────────── */}
         <section className="px-6 py-9">
-          <p className="mb-5 text-[10px] uppercase tracking-[0.14em] text-[#a09a8e] dark:text-ink-faint">
+          <p className="mb-5 text-[13px] uppercase tracking-[0.1em] text-[#a09a8e] dark:text-ink-faint">
             About
           </p>
           <p className="text-[22px] leading-[1.45] text-[#2b2b2b] dark:text-ink">
@@ -220,7 +220,7 @@ export default function AboutPage() {
 
         {/* ── Photographer ───────────────────────────────────────────── */}
         <section className="px-6">
-          <p className="mb-5 text-[10px] uppercase tracking-[0.14em] text-[#a09a8e] dark:text-ink-faint">
+          <p className="mb-5 text-[13px] uppercase tracking-[0.1em] text-[#a09a8e] dark:text-ink-faint">
             The Photographer: Reed McIlwain
           </p>
           <div className="space-y-4 text-sm leading-[1.75] text-[#4a4540] dark:text-ink-muted">
@@ -232,7 +232,7 @@ export default function AboutPage() {
         <div className="relative mt-7 aspect-[3/2] w-full">
           <Image
             src="/images/about/about-page-10.webp"
-            alt="Reed, Kamloops BC"
+            alt="Reed looking at previews on his camera at the Big White Winter Rally in December 2025"
             fill
             className="object-cover"
             sizes="100vw"
@@ -265,10 +265,10 @@ export default function AboutPage() {
             className="object-cover"
             sizes="100vw"
           />
-          <div className="absolute bottom-3 left-3">
+          <div className="absolute bottom-3 left-3 z-10">
             <PhotoCredit credit="Photo taken by Emma Tarasoff" />
           </div>
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center">
+          <div className="pointer-events-none absolute bottom-3 left-0 right-0 flex justify-center">
             <p className="font-mono text-[9px] text-[#2b2b2b]">Victoria, BC · Sep 2023</p>
           </div>
         </div>
@@ -282,7 +282,7 @@ export default function AboutPage() {
 
         {/* ── Why this exists ────────────────────────────────────────── */}
         <section className="px-6">
-          <p className="mb-5 text-[10px] uppercase tracking-[0.14em] text-[#a09a8e] dark:text-ink-faint">
+          <p className="mb-5 text-[13px] uppercase tracking-[0.1em] text-[#a09a8e] dark:text-ink-faint">
             Why this exists
           </p>
           <div className="space-y-4 text-sm leading-[1.75] text-[#4a4540] dark:text-ink-muted">
@@ -332,9 +332,9 @@ export default function AboutPage() {
       ═══════════════════════════════════════════════════════════════════ */}
       <div className="hidden md:block">
         {/* ── Hero: Opening + Portrait ───────────────────────────────── */}
-        <section className="grid lg:grid-cols-2">
-          <div className="flex flex-col justify-center px-20 py-20 lg:px-32 lg:py-28">
-            <p className="mb-8 text-[10px] uppercase tracking-[0.14em] text-[#a09a8e] dark:text-ink-faint">
+        <section className="grid md:grid-cols-2">
+          <div className="flex flex-col justify-center px-14 py-12 lg:px-20 lg:py-16">
+            <p className="mb-8 text-[13px] uppercase tracking-[0.1em] text-[#a09a8e] dark:text-ink-faint">
               About
             </p>
             <p className="text-[26px] leading-[1.45] text-[#2b2b2b] dark:text-ink lg:text-[30px]">
@@ -347,7 +347,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="flex items-center justify-center px-10 py-12 lg:px-12 lg:py-16">
+          <div className="flex items-center justify-center px-8 py-8 lg:px-10 lg:py-10">
             <div className="w-full max-w-xl">
               <Frame variant="gallery" mat="lg" matStyle="linen">
                 <div className="relative aspect-[3/4] w-full">
@@ -371,10 +371,39 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* ── Photographer ───────────────────────────────────────────── */}
-        <section className="px-10 lg:px-16">
-          <div className="mx-auto max-w-2xl">
-            <p className="mb-7 text-[10px] uppercase tracking-[0.14em] text-[#a09a8e] dark:text-ink-faint">
+        {/* ── Photo 10 (left) + Photographer text (right) ────────────── */}
+        <section className="grid md:grid-cols-2">
+          {/* Left — photo */}
+          <div className="flex items-center justify-center px-8 py-8 lg:px-10 lg:py-10">
+            <div className="w-full max-w-xl">
+              <Frame variant="gallery" mat="md" matStyle="linen">
+                <div className="relative aspect-[4/5] lg:aspect-[5/4] w-full">
+                  <Image
+                    src="/images/about/about-page-10.webp"
+                    alt="Reed, Big White Winter Rally"
+                    fill
+                    className="object-cover"
+                    style={{ objectPosition: '15% center' }}
+                    sizes="(min-width: 1024px) 576px, 90vw"
+                  />
+                  <div className="absolute bottom-2 left-2">
+                    <PhotoCredit
+                      credit="Photo by Angus Tsang"
+                      href="https://www.instagram.com/beef_angus/"
+                    />
+                  </div>
+                  <div className="absolute bottom-2 right-2 text-right">
+                    <p className="font-mono text-[9px] text-[#b0a898]">Big White Winter Rally</p>
+                    <p className="font-mono text-[9px] text-[#b0a898]">Dec 2025</p>
+                  </div>
+                </div>
+              </Frame>
+            </div>
+          </div>
+
+          {/* Right — text */}
+          <div className="flex flex-col justify-center px-14 py-12 lg:px-20 lg:py-16">
+            <p className="mb-7 text-[13px] uppercase tracking-[0.1em] text-[#a09a8e] dark:text-ink-faint">
               The Photographer: Reed McIlwain
             </p>
             <div className="space-y-4 text-base leading-[1.75] text-[#4a4540] dark:text-ink-muted">
@@ -383,60 +412,38 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* ── Photo 10 ───────────────────────────────────────────────── */}
-        <div className="mx-auto mt-10 max-w-2xl px-10 lg:px-16">
-          <Frame variant="gallery" mat="md" matStyle="linen">
-            <div className="relative aspect-[3/2] w-full">
-              <Image
-                src="/images/about/about-page-10.webp"
-                alt="Reed, Big White Winter Rally"
-                fill
-                className="object-cover"
-                sizes="(min-width: 1024px) 672px, 90vw"
-              />
-              <div className="absolute bottom-2 left-2">
-                <PhotoCredit
-                  credit="Photo by Angus Tsang"
-                  href="https://www.instagram.com/beef_angus/"
-                />
-              </div>
-              <div className="absolute bottom-2 right-2 text-right">
-                <p className="font-mono text-[9px] text-[#b0a898]">Big White Winter Rally</p>
-                <p className="font-mono text-[9px] text-[#b0a898]">Dec 2025</p>
-              </div>
-            </div>
-          </Frame>
-        </div>
-
-        {/* ── Where I'm from ─────────────────────────────────────────── */}
-        <section className="px-10 py-10 lg:px-16">
-          <div className="mx-auto max-w-2xl">
+        {/* ── Where I'm from text (left) + Photo 15 (right) ─────────── */}
+        <section className="grid md:grid-cols-2">
+          {/* Left — text */}
+          <div className="flex flex-col justify-center px-14 py-12 lg:px-20 lg:py-16">
             <div className="space-y-4 text-base leading-[1.75] text-[#4a4540] dark:text-ink-muted">
               <WhereImFromParas />
             </div>
           </div>
-        </section>
 
-        {/* ── Photo 15 ───────────────────────────────────────────────── */}
-        <div className="mx-auto max-w-2xl px-10 lg:px-16">
-          <Frame variant="gallery" mat="md" matStyle="linen">
-            <div className="relative aspect-[4/3] w-full">
-              <Image
-                src="/images/about/about-page-15.webp"
-                alt="Victoria, BC"
-                fill
-                className="object-cover"
-                sizes="(min-width: 1024px) 672px, 90vw"
-              />
-              <div className="absolute bottom-2 left-2">
-                <PhotoCredit credit="Photo taken by Emma Tarasoff" />
-              </div>
-              <div className="absolute bottom-2 left-0 right-0 flex justify-center">
-                <p className="font-mono text-[9px] text-[#2b2b2b]">Victoria, BC · Sep 2023</p>
-              </div>
+          {/* Right — photo */}
+          <div className="flex items-center justify-center px-8 py-8 lg:px-10 lg:py-10">
+            <div className="w-full max-w-xl">
+              <Frame variant="gallery" mat="md" matStyle="linen">
+                <div className="relative aspect-[4/3] w-full">
+                  <Image
+                    src="/images/about/about-page-15.webp"
+                    alt="Victoria, BC"
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 576px, 90vw"
+                  />
+                  <div className="absolute bottom-2 left-2">
+                    <PhotoCredit credit="Photo taken by Emma Tarasoff" />
+                  </div>
+                  <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+                    <p className="font-mono text-[9px] text-[#2b2b2b]">Victoria, BC · Sep 2023</p>
+                  </div>
+                </div>
+              </Frame>
             </div>
-          </Frame>
-        </div>
+          </div>
+        </section>
 
         <AboutDivider />
 
@@ -445,39 +452,42 @@ export default function AboutPage() {
 
         <AboutDivider />
 
-        {/* ── Why this exists ────────────────────────────────────────── */}
-        <section className="px-10 lg:px-16">
-          <div className="mx-auto max-w-2xl">
-            <p className="mb-7 text-[10px] uppercase tracking-[0.14em] text-[#a09a8e] dark:text-ink-faint">
+        {/* ── Photo 18 (left) + Why this exists text (right) ────────── */}
+        <section className="grid md:grid-cols-2">
+          {/* Left — text */}
+          <div className="flex flex-col justify-center px-14 py-12 lg:px-20 lg:py-16">
+            <p className="mb-7 text-[13px] uppercase tracking-[0.1em] text-[#a09a8e] dark:text-ink-faint">
               Why this exists
             </p>
             <div className="space-y-4 text-base leading-[1.75] text-[#4a4540] dark:text-ink-muted">
               <WhyThisExistsParas />
             </div>
           </div>
-        </section>
-
-        {/* ── Photo 18 ───────────────────────────────────────────────── */}
-        <div className="mx-auto mt-10 max-w-2xl px-10 lg:px-16">
-          <Frame variant="gallery" mat="md" matStyle="linen">
-            <div className="relative aspect-[3/2] w-full">
-              <Image
-                src="/images/about/about-page-18.webp"
-                alt=""
-                fill
-                className="object-cover"
-                sizes="(min-width: 1024px) 672px, 90vw"
-              />
-              <div className="absolute bottom-2 left-2">
-                <PhotoCredit credit="Photo taken by Carolyn Dahl" />
-              </div>
-              <div className="absolute bottom-2 right-2 text-right">
-                <p className="font-mono text-[9px] text-[#2b2b2b]">Kamloops, BC</p>
-                <p className="font-mono text-[9px] text-[#2b2b2b]">Jan 2026</p>
-              </div>
+          {/* Right — photo */}
+          <div className="flex items-center justify-center px-8 py-8 lg:px-10 lg:py-10">
+            <div className="w-full max-w-xl">
+              <Frame variant="gallery" mat="md" matStyle="linen">
+                <div className="relative aspect-[3/4] w-full">
+                  <Image
+                    src="/images/about/about-page-18.webp"
+                    alt=""
+                    fill
+                    className="object-cover"
+                    style={{ objectPosition: '75% center' }}
+                    sizes="(min-width: 1024px) 576px, 90vw"
+                  />
+                  <div className="absolute bottom-2 left-2">
+                    <PhotoCredit credit="Photo taken by Carolyn Dahl" />
+                  </div>
+                  <div className="absolute bottom-2 right-2 text-right">
+                    <p className="font-mono text-[9px] text-[#b0a898]">Kamloops, BC</p>
+                    <p className="font-mono text-[9px] text-[#b0a898]">Jan 2026</p>
+                  </div>
+                </div>
+              </Frame>
             </div>
-          </Frame>
-        </div>
+          </div>
+        </section>
 
         <AboutDivider />
 
