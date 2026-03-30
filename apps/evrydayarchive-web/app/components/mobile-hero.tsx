@@ -56,12 +56,12 @@ const STACK_IMAGES: StackImage[] = [
   {
     src: '/images/top-brand-images/pinot.webp',
     matStyle: 'deep',
-    placard: { title: 'Pinot', subtitle: 'Victoria, Mar 2026' }
+    placard: { title: 'Pinot', subtitle: 'Victoria, Feb 2026' }
   },
   {
     src: '/images/top-brand-images/urec-finishedimages-14.webp',
     matStyle: 'warm',
-    placard: { title: 'Josue', subtitle: 'UVic, Mar 2026' }
+    placard: { title: 'Josue', subtitle: 'UVic, Feb 2026' }
   },
 
   {
@@ -83,7 +83,7 @@ const STACK_IMAGES: StackImage[] = [
   {
     src: '/images/top-brand-images/urec-finishedimages-20.webp',
     matStyle: 'neutral',
-    placard: { title: 'Ruben', subtitle: 'UVic, Mar 2026' }
+    placard: { title: 'Ruben', subtitle: 'UVic, Feb 2026' }
   }
 ];
 

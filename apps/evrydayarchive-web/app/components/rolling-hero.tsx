@@ -171,7 +171,7 @@ export const BLOCK_B_ITEMS: BlockPhoto[] = [
     top: 90,
     left: 980,
     placardPosition: 'bottom-left',
-    placard: { title: 'Pinot', subtitle: 'Victoria, Mar 2026' },
+    placard: { title: 'Pinot', subtitle: 'Victoria, Feb 2026' },
     src: '/images/top-brand-images/pinot.webp'
   },
   // Lower-left portrait
@@ -182,7 +182,7 @@ export const BLOCK_B_ITEMS: BlockPhoto[] = [
     top: 430,
     left: 100,
     placardPosition: 'right-bottom',
-    placard: { title: 'Ruben', subtitle: 'UVic, Mar 2026' },
+    placard: { title: 'Ruben', subtitle: 'UVic, Feb 2026' },
     src: '/images/top-brand-images/urec-finishedimages-20.webp'
   }
 ];
@@ -218,7 +218,7 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     top: 360,
     left: 320,
     placardPosition: 'bottom-left',
-    placard: { title: 'Summer Evening', subtitle: 'Riverside Park' },
+    placard: { title: 'Pokémon Camp', subtitle: 'Victoria, Mar 2026' },
     src: '/images/top-brand-images/drews-pokemon-camp-06.webp'
   },
   // Lower-left portrait
@@ -251,7 +251,7 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     top: 400,
     left: 1020,
     placardPosition: 'bottom-center',
-    placard: { title: 'Josue', subtitle: 'UVic, Mar 2026' },
+    placard: { title: 'Josue', subtitle: 'UVic, Feb 2026' },
     src: '/images/top-brand-images/urec-finishedimages-14.webp'
   }
 ];
