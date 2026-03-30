@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
@@ -11,6 +13,31 @@ type UploadResult = {
   public_id: string;
   width: number;
   height: number;
+};
+
+type SignatureResult = {
+  signature: string;
+  timestamp: number;
+  folder: string;
+  apiKey: string;
+  cloudName: string;
+};
+
+export const generateUploadSignature = (folder: string): SignatureResult => {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const paramsToSign = `folder=${folder}&timestamp=${timestamp}`;
+  const signature = crypto
+    .createHash('sha1')
+    .update(paramsToSign + process.env.CLOUDINARY_API_SECRET)
+    .digest('hex');
+
+  return {
+    signature,
+    timestamp,
+    folder,
+    apiKey: process.env.CLOUDINARY_API_KEY!,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME!
+  };
 };
 
 export const uploadToCloudinary = (buffer: Buffer, folder: string): Promise<UploadResult> =>

@@ -29,6 +29,13 @@ export const GalleryImageAttachSchema = z.object({
   isCover: z.boolean().optional()
 });
 
+export const ConfirmUploadSchema = z.object({
+  secureUrl: z.string().url(),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  alt: z.string().min(1)
+});
+
 export const GalleryPublishSchema = z.object({
   status: GalleryStatusSchema
 });
