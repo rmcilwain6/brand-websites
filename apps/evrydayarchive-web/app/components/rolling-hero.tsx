@@ -68,7 +68,7 @@ export const BLOCK_A_ITEMS: BlockPhoto[] = [
     matStyle: 'warm',
     top: 90,
     left: 500,
-    placardPosition: 'right-top',
+    placardPosition: 'left-bottom',
     placard: { title: 'Julia & Benjamin', subtitle: 'Nanaimo, Jan 2026' },
     src: '/images/top-brand-images/julia-08.webp'
   },
@@ -79,7 +79,7 @@ export const BLOCK_A_ITEMS: BlockPhoto[] = [
     matStyle: 'neutral',
     top: 40,
     left: 250,
-    placardPosition: 'bottom-left',
+    placardPosition: 'left-bottom',
     placard: { title: 'Pokémon Camp', subtitle: 'Victoria, Mar 2026' },
     src: '/images/top-brand-images/drews-pokemon-camp-02.webp'
   },
@@ -101,7 +101,7 @@ export const BLOCK_A_ITEMS: BlockPhoto[] = [
     matStyle: 'deep',
     top: 200,
     left: 860,
-    placardPosition: 'bottom-right',
+    placardPosition: 'top-right',
     placard: { title: 'Jess & The Yota', subtitle: 'Kamloops, Jan 2026' },
     src: '/images/top-brand-images/jess&the-yota-12.webp'
   },
@@ -110,7 +110,7 @@ export const BLOCK_A_ITEMS: BlockPhoto[] = [
     aspect: '2/3',
     photoH: 300,
     matStyle: 'warm',
-    top: 400,
+    top: 340,
     left: 100,
     placardPosition: 'bottom-center',
     placard: { title: 'Valleyview Alumni Game', subtitle: 'Kamloops, Dec 2025' },
@@ -121,7 +121,7 @@ export const BLOCK_A_ITEMS: BlockPhoto[] = [
     aspect: '3/2',
     photoH: 200,
     matStyle: 'warm',
-    top: 550,
+    top: 500,
     left: 880,
     placardPosition: 'right-middle',
     placard: { title: 'Nicole', subtitle: 'Victoria, Jan 2026' },
@@ -179,8 +179,8 @@ export const BLOCK_B_ITEMS: BlockPhoto[] = [
     aspect: '2/3',
     photoH: 280,
     matStyle: 'neutral',
-    top: 450,
-    left: 380,
+    top: 430,
+    left: 100,
     placardPosition: 'right-bottom',
     placard: { title: 'Ruben', subtitle: 'UVic, Mar 2026' },
     src: '/images/top-brand-images/urec-finishedimages-20.webp'
@@ -228,7 +228,7 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     matStyle: 'deep',
     top: 430,
     left: 40,
-    placardPosition: 'bottom-right',
+    placardPosition: 'left-bottom',
     placard: { title: 'Nikki', subtitle: 'Victoria, Jan 2026' },
     src: '/images/top-brand-images/nikki&nicole-jan15-08.webp'
   },
@@ -237,7 +237,7 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     aspect: '2/3',
     photoH: 250,
     matStyle: 'warm',
-    top: 50,
+    top: 30,
     left: 1020,
     placardPosition: 'bottom-center',
     placard: { title: 'Jess & The Yota', subtitle: 'Kamloops, Jan 2026' },
@@ -248,10 +248,10 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     aspect: '2/3',
     photoH: 250,
     matStyle: 'warm',
-    top: 420,
+    top: 400,
     left: 1020,
     placardPosition: 'bottom-center',
-    placard: { title: 'Late Light', subtitle: 'Sun Peaks' },
+    placard: { title: 'Josue', subtitle: 'UVic, Mar 2026' },
     src: '/images/top-brand-images/urec-finishedimages-14.webp'
   }
 ];
