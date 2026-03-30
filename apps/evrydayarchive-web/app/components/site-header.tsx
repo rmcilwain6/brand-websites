@@ -85,7 +85,7 @@ export const SiteHeader = () => {
            * Open:   [✕ left] [Inquire — fills remaining width      ]
            * Transition: padding + flex-grow animate via transition-all.
            */}
-          <div className="flex w-full items-center justify-between md:hidden">
+          <div className="grid w-full grid-cols-3 items-center md:hidden">
             <button
               type="button"
               onClick={() => setMobileMenuOpen((o) => !o)}
@@ -97,12 +97,39 @@ export const SiteHeader = () => {
               {mobileMenuOpen ? <XIcon /> : <MenuIcon />}
             </button>
 
-            <Link
-              href="/inquire"
-              className="rounded-card bg-accent px-3 py-1.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-            >
-              Inquire
-            </Link>
+            <div className="flex justify-center">
+              <Link
+                href="/"
+                aria-label="Evryday Archive Co — home"
+                className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
+              >
+                <Image
+                  src="/logo/horizontal.svg"
+                  alt="Evryday Archive Co"
+                  width={120}
+                  height={51}
+                  priority
+                  className="dark:hidden"
+                />
+                <Image
+                  src="/logo/horizontal-dark.svg"
+                  alt="Evryday Archive Co"
+                  width={120}
+                  height={51}
+                  priority
+                  className="hidden dark:block"
+                />
+              </Link>
+            </div>
+
+            <div className="flex justify-end">
+              <Link
+                href="/inquire"
+                className="rounded-card bg-accent px-3 py-1.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                Inquire
+              </Link>
+            </div>
           </div>
 
           {/* ── Desktop layout ─────────────────────────────────────── */}
