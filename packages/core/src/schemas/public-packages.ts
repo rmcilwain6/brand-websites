@@ -39,5 +39,6 @@ export const PublicPackageSchema = z.object({
 
 export const PublicPackageListResponseSchema = z.array(PublicPackageSchema);
 
+export type PublicModifierConfig = z.infer<typeof PublicModifierConfigSchema>;
 export type PublicPackage = z.infer<typeof PublicPackageSchema>;
 export type PublicPackageModifier = z.infer<typeof PublicPackageModifierSchema>;
