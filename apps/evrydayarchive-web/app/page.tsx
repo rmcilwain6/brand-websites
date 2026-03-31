@@ -250,7 +250,7 @@ const STAGGER_OFFSETS = ['sm:ml-0', 'sm:ml-[22%]', 'sm:ml-[44%]'] as const;
 const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; index: number }) => {
   const offset = STAGGER_OFFSETS[index % STAGGER_OFFSETS.length];
   return (
-    <div className={`max-w-lg ${offset}`}>
+    <div className={`max-w-2xl ${offset}`}>
       <div aria-hidden className="mb-3 select-none font-serif text-5xl leading-none text-accent">
         &ldquo;
       </div>
