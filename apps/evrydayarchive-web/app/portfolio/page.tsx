@@ -25,25 +25,27 @@ const PortfolioPage = async () => {
     <main className="px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
         {/* Page header */}
-        <header className="mb-14">
+        <header className="mb-16">
           <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
             The archive
           </p>
-          <h1 className="text-4xl font-semibold tracking-tight text-ink sm:text-5xl">Portfolio</h1>
+          <h1 className="text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+            Current Exhibits
+          </h1>
           <p className="mt-4 max-w-md text-base leading-relaxed text-ink-muted">
-            A collection of sessions documented with intention. Browse the exhibits below.
+            Each gallery below is a collection of work from a single session. Choose one to enter.
           </p>
         </header>
 
-        {/* Gallery wall list */}
+        {/* Gallery list */}
         {galleries.length === 0 ? (
           <div className="py-20 text-center">
             <p className="text-sm text-ink-faint">No published galleries yet — check back soon.</p>
           </div>
         ) : (
-          <div className="space-y-16">
+          <div>
             {galleries.map((gallery, index) => (
-              <GalleryRow key={gallery.id} gallery={gallery} index={index} />
+              <GalleryEntry key={gallery.id} gallery={gallery} index={index} />
             ))}
           </div>
         )}
@@ -56,54 +58,93 @@ export default PortfolioPage;
 
 // ── Sub-components ─────────────────────────────────────────────────────────
 
-const GalleryRow = ({ gallery, index }: { gallery: GalleryListItem; index: number }) => {
-  // Alternate subtle rotation direction for visual rhythm
-  const rotateDeg = index % 2 === 0 ? -0.6 : 0.5;
+const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: number }) => {
+  const catalogNum = String(index + 1).padStart(2, '0');
+  // Alternate: even index → image left, odd → image right
+  const imageRight = index % 2 !== 0;
+
+  const aspectRatio =
+    gallery.coverImage?.width && gallery.coverImage?.height
+      ? `${gallery.coverImage.width} / ${gallery.coverImage.height}`
+      : '4 / 3';
 
   return (
-    <article className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-10">
-      {/* Framed cover */}
-      <div className="w-full sm:w-72 sm:flex-none">
-        <Link href={`/portfolio/${gallery.slug}`} className="group block">
-          <Frame variant="craft" rotateDeg={rotateDeg}>
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm bg-sun">
-              {gallery.coverImage ? (
-                <Image
-                  src={gallery.coverImage.src}
-                  alt={gallery.coverImage.alt}
-                  fill
-                  className="object-cover transition-transform duration-slow group-hover:scale-[1.03]"
-                  sizes="(min-width: 640px) 288px, 100vw"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                  <span className="text-xs text-ink-faint">No cover image</span>
-                </div>
-              )}
-            </div>
-          </Frame>
-        </Link>
-      </div>
+    <>
+      {/* Threshold divider — sits between entries, carries the catalog number */}
+      {index > 0 && (
+        <div className="relative flex items-center py-10">
+          <div className="flex-1 border-t border-border" />
+          <span className="mx-4 font-mono text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+            {catalogNum}
+          </span>
+          <div className="flex-1 border-t border-border" />
+        </div>
+      )}
 
-      {/* Placard + CTA */}
-      <div className="flex flex-1 flex-col justify-center gap-5">
-        <Placard
-          title={gallery.title}
-          subtitle={gallery.location ?? undefined}
-          meta={
-            gallery.imageCount > 0
-              ? `${gallery.imageCount} image${gallery.imageCount === 1 ? '' : 's'}`
-              : undefined
-          }
-        />
+      <article
+        className={`flex flex-col gap-8 sm:items-center sm:gap-12 ${imageRight ? 'sm:flex-row-reverse' : 'sm:flex-row'}`}
+      >
+        {/* Framed cover */}
+        <div className="w-full sm:w-80 sm:flex-none">
+          <Link href={`/portfolio/${gallery.slug}`} className="group block">
+            <Frame>
+              <div
+                className="relative w-full overflow-hidden rounded-sm bg-sun"
+                style={{ aspectRatio }}
+              >
+                {gallery.coverImage ? (
+                  <Image
+                    src={gallery.coverImage.src}
+                    alt={gallery.coverImage.alt}
+                    fill
+                    className="object-cover transition-transform duration-slow group-hover:scale-[1.02]"
+                    sizes="(min-width: 640px) 320px, 100vw"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <span className="text-xs text-ink-faint">No cover image</span>
+                  </div>
+                )}
+              </div>
+            </Frame>
+          </Link>
+        </div>
 
-        <Link
-          href={`/portfolio/${gallery.slug}`}
-          className="self-start rounded-card border border-border px-5 py-2.5 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-        >
-          View gallery →
-        </Link>
-      </div>
-    </article>
+        {/* Metadata + wayfinding */}
+        <div className="flex flex-1 flex-col gap-5">
+          <p className="font-mono text-xs font-medium uppercase tracking-widest text-ink-faint">
+            Gallery {catalogNum}
+          </p>
+
+          <Placard
+            title={gallery.title}
+            subtitle={gallery.location ?? undefined}
+            meta={
+              gallery.imageCount > 0
+                ? `${gallery.imageCount} image${gallery.imageCount === 1 ? '' : 's'}`
+                : undefined
+            }
+          />
+
+          {/* Directional CTA — arrow flips to match image side */}
+          <Link
+            href={`/portfolio/${gallery.slug}`}
+            className="group inline-flex items-center gap-2 self-start text-sm font-medium text-ink-muted transition-colors duration-fast hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            {imageRight && (
+              <span className="transition-transform duration-fast group-hover:-translate-x-0.5">
+                ←
+              </span>
+            )}
+            <span>Enter gallery</span>
+            {!imageRight && (
+              <span className="transition-transform duration-fast group-hover:translate-x-0.5">
+                →
+              </span>
+            )}
+          </Link>
+        </div>
+      </article>
+    </>
   );
 };
