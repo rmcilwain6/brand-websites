@@ -226,21 +226,24 @@ type Testimonial = {
 const TESTIMONIALS: Testimonial[] = [
   {
     quote:
-      "Working with Evryday Archive felt effortless. The photos captured moments I'd forgotten I wanted to remember.",
-    name: 'Sarah M.',
-    session: 'Family session'
+      "Working with Reed was honestly such a great experience. I'm not someone who usually feels comfortable in front of the camera, but he made the whole shoot feel so natural and easy from start to finish.",
+    name: 'Julia',
+    session: 'Julia & Benjamin',
+    gallerySlug: 'julia-and-benjamin'
   },
   {
     quote:
-      "I've never felt comfortable in front of a camera. These photos changed that. Natural, warm, exactly what I hoped for.",
-    name: 'James T.',
-    session: 'Portrait session'
+      "10/10 highly recommend Reed for capturing the things that you love. He made the whole experience feel natural, comfortable, fun and never awkward (coming from an awkward human). Working with him was such an amazing experience and to say I'm obsessed with how the photos turned out is an understatement.",
+    name: 'Jessica',
+    session: 'Jess & Her Toyota',
+    gallerySlug: 'jessica-and-her-toyota'
   },
   {
     quote:
-      'The process was clear from the start. No surprises, and the results were exactly what we discussed.',
-    name: 'Mara & David',
-    session: 'Couple session'
+      'Reed was amazing to work with. He is passionate, knowledgeable, and experienced, and he delivered great results for the UVic Renewable Energy Club. I would recommend him to anyone looking for personal or professional photography.',
+    name: 'Ryan',
+    session: 'UVic Renewable Energy Club',
+    gallerySlug: 'urec'
   }
 ];
 
