@@ -22,24 +22,25 @@ const PackagesPage = async () => {
       <section className="px-4 pb-16 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
           <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
-            Investment
+            Packages
           </p>
           <h1 className="mb-6 text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
-            The Curator&apos;s Notes
+            Starting points, not ceilings.
           </h1>
           <p className="mb-4 text-base leading-relaxed text-ink-muted">
-            Sessions are scoped around what you actually need — not bundled with extras that
-            don&apos;t serve you. Every package below is a starting point, not a ceiling.
+            Each package below is a baseline — a sensible default for the most common situations.
+            Adjust the session length, swap in add-ons, or strip it back. The builder is there to
+            make it yours.
           </p>
           <p className="text-base leading-relaxed text-ink-muted">
-            Don&apos;t see your situation here?{' '}
+            Nothing quite fits?{' '}
             <Link
-              href="/inquire"
+              href="/contact"
               className="font-medium text-ink underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
             >
-              Reach out anyway
-            </Link>
-            . Custom sessions are always welcome.
+              Get in touch
+            </Link>{' '}
+            and we&apos;ll figure something out.
           </p>
         </div>
       </section>
@@ -75,29 +76,21 @@ const PackagesPage = async () => {
       <section className="bg-sun px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
           <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
-            Still unsure?
+            Something else in mind?
           </p>
           <h2 className="mb-4 text-2xl font-semibold text-ink">
-            Custom situations are always welcome.
+            Don&apos;t see what you&apos;re looking for?
           </h2>
           <p className="mb-8 text-base leading-relaxed text-ink-muted">
-            If nothing above feels like the right fit, tell me what you have in mind. We&apos;ll
-            figure it out together.
+            If none of these feel right, just reach out. Odd situations, tight budgets, unusual
+            ideas — all welcome.
           </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/inquire"
-              className="rounded-card bg-accent px-6 py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-            >
-              Inquire
-            </Link>
-            <Link
-              href="/package-builder"
-              className="rounded-card border border-border px-6 py-3 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-            >
-              Build your own
-            </Link>
-          </div>
+          <Link
+            href="/contact"
+            className="rounded-card bg-accent px-6 py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            Get in touch
+          </Link>
         </div>
       </section>
     </main>
