@@ -49,11 +49,12 @@ export default async function HomePage() {
             <span className="block text-right text-accent">moments big and small.</span>
           </p>
 
-          {/* Block 2 — compact two-line block, offset inward from left */}
-          <p className="ml-8 mt-10 max-w-xs text-lg leading-relaxed text-ink-muted sm:ml-16 sm:text-xl">
-            Every click of the shutter is an intentional choice to document, remember, and{' '}
-            <span className="text-accent">leave a gift for my future self</span>.
-          </p>
+          {/* Block 2 — full width, right/left/right zigzag */}
+          <div className="mt-10 text-lg leading-snug text-ink-muted sm:text-xl">
+            <p className="pl-10 sm:pl-16">Every click of the shutter is an intentional choice</p>
+            <p>to document, remember, and</p>
+            <p className="pl-10 text-accent sm:pl-16">leave a gift for my future self.</p>
+          </div>
 
           {/* Block 3 — right-aligned closer */}
           <p className="mt-10 text-right text-lg leading-relaxed text-ink-muted sm:text-xl">
