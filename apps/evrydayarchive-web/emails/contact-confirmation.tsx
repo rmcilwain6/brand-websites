@@ -28,11 +28,13 @@ ContactConfirmation.PreviewProps = {
 
 export default ContactConfirmation;
 
+const FONT = "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
 const styles = {
   label: {
     color: tokens.inkFaint,
     fontSize: '11px',
-    fontFamily: 'Georgia, serif',
+    fontFamily: FONT,
     letterSpacing: '0.1em',
     margin: '0 0 20px',
     textTransform: 'uppercase' as const
@@ -40,7 +42,7 @@ const styles = {
   heading: {
     color: tokens.ink,
     fontSize: '24px',
-    fontFamily: 'Georgia, serif',
+    fontFamily: FONT,
     fontWeight: '400',
     margin: '0 0 20px',
     lineHeight: '1.3'
@@ -48,14 +50,14 @@ const styles = {
   body: {
     color: tokens.inkMuted,
     fontSize: '15px',
-    fontFamily: 'Georgia, serif',
+    fontFamily: FONT,
     lineHeight: '1.7',
     margin: '0 0 32px'
   },
   signature: {
     color: tokens.ink,
     fontSize: '15px',
-    fontFamily: 'Georgia, serif',
+    fontFamily: FONT,
     margin: '0'
   }
 } as const;
