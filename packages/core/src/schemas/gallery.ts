@@ -10,7 +10,9 @@ export const GalleryCreateSchema = z.object({
     .min(2)
     .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and dashes.'),
   description: z.string().optional(),
-  location: z.string().optional()
+  location: z.string().optional(),
+  order: z.number().int().min(0).optional(),
+  featured: z.boolean().optional()
 });
 
 export const GalleryUpdateSchema = GalleryCreateSchema.partial();
@@ -53,7 +55,9 @@ export const GalleryListItemSchema = z.object({
   title: z.string(),
   location: z.string().nullable(),
   coverImage: GalleryCoverImageSchema.nullable(),
-  imageCount: z.number().int().nonnegative()
+  imageCount: z.number().int().nonnegative(),
+  order: z.number().int().min(0),
+  featured: z.boolean()
 });
 
 export const GalleryListResponseSchema = z.array(GalleryListItemSchema);

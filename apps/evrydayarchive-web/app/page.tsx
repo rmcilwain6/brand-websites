@@ -31,7 +31,7 @@ export default async function HomePage() {
     // Reviews are optional; degrade gracefully
   }
 
-  const featured = galleries.slice(0, 4);
+  const featured = galleries.filter((g) => g.featured);
 
   return (
     <main>

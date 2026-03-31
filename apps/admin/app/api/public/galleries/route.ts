@@ -6,6 +6,8 @@ type GalleryWithCover = {
   slug: string;
   title: string;
   location: string | null;
+  order: number;
+  featured: boolean;
   images: Array<{
     imageAsset: {
       src: string;
@@ -19,11 +21,14 @@ type GalleryWithCover = {
   };
 };
 
-export const GET = async (): Promise<Response> => {
+export const GET = async (req: Request): Promise<Response> => {
   try {
+    const { searchParams } = new URL(req.url);
+    const featuredOnly = searchParams.get('featured') === 'true';
+
     const galleries = await prisma.gallery.findMany({
-      where: { status: 'PUBLISHED' },
-      orderBy: { publishedAt: 'desc' },
+      where: { status: 'PUBLISHED', ...(featuredOnly ? { featured: true } : {}) },
+      orderBy: { order: 'asc' },
       include: {
         images: {
           where: { isCover: true },
@@ -44,6 +49,8 @@ export const GET = async (): Promise<Response> => {
         slug: gallery.slug,
         title: gallery.title,
         location: gallery.location,
+        order: gallery.order,
+        featured: gallery.featured,
         coverImage: coverImage
           ? {
               src: coverImage.src,
