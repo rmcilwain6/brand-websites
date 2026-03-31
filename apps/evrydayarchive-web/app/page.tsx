@@ -61,7 +61,7 @@ export default async function HomePage() {
           <div className="mt-8 flex justify-end">
             <Link
               href="/about"
-              className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
             >
               Meet the photographer →
             </Link>
@@ -82,7 +82,7 @@ export default async function HomePage() {
               </div>
               <Link
                 href="/portfolio"
-                className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
+                className="inline-flex items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
               >
                 View all →
               </Link>
@@ -256,17 +256,19 @@ const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; ind
       </div>
       <blockquote>
         <p className="text-base leading-relaxed text-ink-muted">{testimonial.quote}</p>
-        <footer className="mt-4">
-          <p className="text-sm font-semibold text-ink">{testimonial.name}</p>
-          <p className="mt-0.5 text-xs text-ink-faint">{testimonial.session}</p>
+        <footer className="mt-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-ink">{testimonial.name}</p>
+            <p className="mt-0.5 text-xs text-ink-faint">{testimonial.session}</p>
+          </div>
+          <Link
+            href={testimonial.gallerySlug ? `/portfolio/${testimonial.gallerySlug}` : '/portfolio'}
+            className="inline-flex shrink-0 items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
+          >
+            View gallery →
+          </Link>
         </footer>
       </blockquote>
-      <Link
-        href={testimonial.gallerySlug ? `/portfolio/${testimonial.gallerySlug}` : '/portfolio'}
-        className="mt-4 inline-flex items-center gap-1 text-sm text-ink-faint underline-offset-4 transition-colors duration-fast hover:text-ink hover:underline"
-      >
-        View gallery →
-      </Link>
     </div>
   );
 };
