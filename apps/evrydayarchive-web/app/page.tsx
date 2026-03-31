@@ -52,7 +52,7 @@ export default async function HomePage() {
           {/* Block 2 — full width, right/left/right zigzag */}
           <div className="mt-10 text-lg leading-snug text-ink-muted sm:text-xl">
             <p className="pl-10 sm:pl-16">Every click of the shutter is an intentional choice</p>
-            <p className="pl-5 sm:pl-8">to document, remember, and</p>
+            <p className="pl-10 sm:pl-[52px]">to document, remember, and</p>
             <p className="pl-10 text-accent sm:pl-16">leave a gift for my future self.</p>
           </div>
 
