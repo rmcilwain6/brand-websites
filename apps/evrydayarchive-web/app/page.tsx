@@ -39,16 +39,46 @@ export default async function HomePage() {
       {/* Feature-flagged: ROLLING_HERO switches to the gallery wall variant */}
       <HeroSection />
 
-      {/* ── Section 2: Brand stance (text on the wall) ──────────────────── */}
+      {/* ── Section 2: Photographer philosophy ─────────────────────────── */}
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
+          {/* Block 1 — long, anchored left; orange wraps and sits right */}
           <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
-            Photography doesn&apos;t have to mean big productions and forced smiles.{' '}
-            <span className="font-medium text-ink">
-              The best images happen when life is just living.
-            </span>{' '}
-            The archive exists to document those moments — the ones worth keeping.
+            A lifetime of photography has changed how I see life, constantly filling me with a sense
+            of gratitude for
+            <span className="block text-right text-accent">moments big and small.</span>
           </p>
+
+          {/* Block 2 — full width, right/left/right zigzag */}
+          <div className="mt-10 text-lg leading-snug text-ink-muted sm:text-xl">
+            {/* Mobile: lines 1+2 flow as one paragraph to avoid a hard break mid-thought */}
+            <p className="sm:hidden">
+              Every click of the shutter is an intentional choice to document, remember, and
+            </p>
+            {/* Desktop: split into offset zigzag lines */}
+            <p className="hidden sm:block sm:pl-36">
+              Every click of the shutter is an intentional choice
+            </p>
+            <p className="hidden sm:block sm:pl-[100px]">to document, remember, and</p>
+            {/* Both: orange breaks right on mobile, offset left on desktop */}
+            <p className="text-right text-accent sm:text-left sm:pl-40">
+              leave a gift for my future self.
+            </p>
+          </div>
+
+          {/* Block 3 — right-aligned closer */}
+          <p className="mt-10 text-lg leading-relaxed text-ink-muted sm:text-xl">
+            In a life that moves this fast, I think we could all use more of that.
+          </p>
+
+          <div className="mt-8 flex justify-end">
+            <Link
+              href="/about"
+              className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink hover:underline"
+            >
+              Meet the photographer →
+            </Link>
+          </div>
         </div>
       </section>
 
