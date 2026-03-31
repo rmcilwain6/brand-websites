@@ -52,12 +52,12 @@ export default async function HomePage() {
           {/* Block 2 — full width, right/left/right zigzag */}
           <div className="mt-10 text-lg leading-snug text-ink-muted sm:text-xl">
             <p className="pl-10 sm:pl-16">Every click of the shutter is an intentional choice</p>
-            <p>to document, remember, and</p>
+            <p className="pl-5 sm:pl-8">to document, remember, and</p>
             <p className="pl-10 text-accent sm:pl-16">leave a gift for my future self.</p>
           </div>
 
           {/* Block 3 — right-aligned closer */}
-          <p className="mt-10 text-right text-lg leading-relaxed text-ink-muted sm:text-xl">
+          <p className="mt-10 text-lg leading-relaxed text-ink-muted sm:text-xl">
             In a life that moves this fast, I think we could all use more of that.
           </p>
 
