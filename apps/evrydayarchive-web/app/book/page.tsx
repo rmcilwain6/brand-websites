@@ -1,6 +1,12 @@
 import Link from 'next/link';
 
-import { fetchPublicPackages, type PublicPackage, type PublicPackageModifier } from '@repo/core';
+import {
+  fetchPublicPackages,
+  type IncrementerConfig,
+  type PublicPackage,
+  type PublicPackageModifier,
+  type SliderConfig
+} from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
 import { BookingForm } from './booking-form';
@@ -8,7 +14,12 @@ import { BookingForm } from './booking-form';
 export const dynamic = 'force-dynamic';
 
 type Props = {
-  searchParams: Promise<{ package?: string; modifiers?: string }>;
+  searchParams: Promise<{
+    package?: string;
+    modifiers?: string;
+    modifierValues?: string;
+    from?: string;
+  }>;
 };
 
 const formatPrice = (cents: number): string =>
@@ -18,8 +29,32 @@ const formatPrice = (cents: number): string =>
     maximumFractionDigits: 0
   }).format(cents / 100);
 
+// ── Price helpers ─────────────────────────────────────────────────────────────
+
+const computeModifierDelta = (m: PublicPackageModifier, values: Record<string, number>): number => {
+  if (m.type === 'SLIDER') {
+    const cfg = m.config as SliderConfig | null;
+    if (!cfg) return 0;
+    const value = values[m.id] ?? cfg.defaultValue;
+    const steps = Math.round((value - cfg.defaultValue) / cfg.step);
+    return steps * cfg.pricePerStep;
+  }
+  if (m.type === 'INCREMENTER') {
+    const cfg = m.config as IncrementerConfig | null;
+    if (!cfg) return 0;
+    const count = values[m.id] ?? cfg.defaultValue;
+    return (count - cfg.defaultValue) * cfg.pricePerUnit;
+  }
+  return m.priceDeltaCents ?? 0;
+};
+
 export default async function BookPage({ searchParams }: Props) {
-  const { package: packageSlug, modifiers: modifiersParam } = await searchParams;
+  const {
+    package: packageSlug,
+    modifiers: modifiersParam,
+    modifierValues: modifierValuesParam,
+    from
+  } = await searchParams;
   const { ADMIN_API_BASE_URL } = getServerEnv();
 
   let packages: PublicPackage[] = [];
@@ -32,23 +67,52 @@ export default async function BookPage({ searchParams }: Props) {
   // Resolve package by slug
   const pkg = packageSlug ? packages.find((p) => p.slug === packageSlug) : undefined;
 
-  // Resolve selected modifier IDs from the comma-separated query param
+  // Parse selected modifier IDs (CHECKBOX / TOGGLE)
   const selectedModifierIds = modifiersParam ? modifiersParam.split(',').filter(Boolean) : [];
 
-  // Keep required modifiers always, and optional ones only if explicitly selected
+  // Parse slider / incrementer values from "id:value,id:value,..." format
+  const modifierValues: Record<string, number> = {};
+  if (modifierValuesParam) {
+    for (const pair of modifierValuesParam.split(',')) {
+      const colonIdx = pair.indexOf(':');
+      if (colonIdx > 0) {
+        const id = pair.slice(0, colonIdx);
+        const val = parseInt(pair.slice(colonIdx + 1), 10);
+        if (!isNaN(val)) modifierValues[id] = val;
+      }
+    }
+  }
+
+  // Resolved modifiers for display: required, explicitly selected, or slider/incrementer
+  // with a non-zero delta (i.e. moved off their default).
   const resolvedModifiers: PublicPackageModifier[] = pkg
-    ? pkg.modifiers.filter((m) => m.isRequired || selectedModifierIds.includes(m.id))
+    ? pkg.modifiers.filter((m) => {
+        if (m.isRequired) return true;
+        if (selectedModifierIds.includes(m.id)) return true;
+        if (m.type === 'SLIDER' || m.type === 'INCREMENTER') {
+          return computeModifierDelta(m, modifierValues) !== 0;
+        }
+        return false;
+      })
     : [];
 
-  // Compute estimated total
+  // Total: base + correct delta for every modifier type
   const estimatedTotalCents =
     pkg != null
       ? (pkg.basePriceCents ?? 0) +
-        resolvedModifiers.reduce((sum, m) => sum + (m.priceDeltaCents ?? 0), 0)
+        pkg.modifiers.reduce((sum, m) => {
+          if (m.isRequired) return sum + computeModifierDelta(m, modifierValues);
+          if (selectedModifierIds.includes(m.id))
+            return sum + computeModifierDelta(m, modifierValues);
+          if (m.type === 'SLIDER' || m.type === 'INCREMENTER')
+            return sum + computeModifierDelta(m, modifierValues);
+          return sum;
+        }, 0)
       : undefined;
 
-  const backHref = pkg ? `/package-builder?package=${pkg.slug}` : '/packages';
-  const backLabel = pkg ? '← Back to builder' : '← Back to packages';
+  const backHref =
+    from === 'packages' || !pkg ? '/packages' : `/package-builder?package=${pkg.slug}`;
+  const backLabel = from === 'packages' || !pkg ? '← Back to packages' : '← Back to builder';
 
   return (
     <main className="px-4 py-16 sm:px-6 lg:px-8">
@@ -84,6 +148,7 @@ export default async function BookPage({ searchParams }: Props) {
             <BookingForm
               pkg={pkg ?? null}
               resolvedModifiers={resolvedModifiers}
+              modifierValues={modifierValues}
               estimatedTotalCents={estimatedTotalCents}
             />
           </div>
@@ -94,6 +159,7 @@ export default async function BookPage({ searchParams }: Props) {
               <SummaryPanel
                 pkg={pkg}
                 resolvedModifiers={resolvedModifiers}
+                modifierValues={modifierValues}
                 estimatedTotalCents={estimatedTotalCents}
               />
               <div className="mt-6 px-1">
@@ -118,10 +184,35 @@ export default async function BookPage({ searchParams }: Props) {
 type SummaryPanelProps = {
   pkg: PublicPackage;
   resolvedModifiers: PublicPackageModifier[];
+  modifierValues: Record<string, number>;
   estimatedTotalCents: number | undefined;
 };
 
-const SummaryPanel = ({ pkg, resolvedModifiers, estimatedTotalCents }: SummaryPanelProps) => (
+const modifierDisplayValue = (
+  m: PublicPackageModifier,
+  values: Record<string, number>
+): string | null => {
+  if (m.type === 'SLIDER') {
+    const cfg = m.config as SliderConfig | null;
+    if (!cfg) return null;
+    const v = values[m.id] ?? cfg.defaultValue;
+    return `${v}${cfg.unit}`;
+  }
+  if (m.type === 'INCREMENTER') {
+    const cfg = m.config as IncrementerConfig | null;
+    if (!cfg) return null;
+    const v = values[m.id] ?? cfg.defaultValue;
+    return `${v}${cfg.unit ? ` ${cfg.unit}` : ''}`;
+  }
+  return null;
+};
+
+const SummaryPanel = ({
+  pkg,
+  resolvedModifiers,
+  modifierValues,
+  estimatedTotalCents
+}: SummaryPanelProps) => (
   <div className="rounded-card border border-border bg-sun px-6 py-6 shadow-warm-sm">
     <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-faint">
       Your selection
@@ -144,19 +235,27 @@ const SummaryPanel = ({ pkg, resolvedModifiers, estimatedTotalCents }: SummaryPa
     {/* Selected modifiers */}
     {resolvedModifiers.length > 0 && (
       <ul className="mb-4 space-y-2 border-b border-border pb-4">
-        {resolvedModifiers.map((m) => (
-          <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
-            <span className="text-ink-muted">
-              {m.name}
-              {m.isRequired && <span className="ml-1 text-xs text-ink-faint">(included)</span>}
-            </span>
-            {m.priceDeltaCents != null && !m.isRequired && (
-              <span className="flex-none text-xs tabular-nums text-ink-faint">
-                +{formatPrice(m.priceDeltaCents)}
+        {resolvedModifiers.map((m) => {
+          const delta = computeModifierDelta(m, modifierValues);
+          const displayVal = modifierDisplayValue(m, modifierValues);
+          return (
+            <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
+              <span className="text-ink-muted">
+                {m.name}
+                {displayVal && <span className="ml-1 text-xs text-ink-faint">({displayVal})</span>}
+                {m.isRequired && !displayVal && (
+                  <span className="ml-1 text-xs text-ink-faint">(included)</span>
+                )}
               </span>
-            )}
-          </li>
-        ))}
+              {!m.isRequired && delta !== 0 && (
+                <span className="flex-none text-xs tabular-nums text-ink-faint">
+                  {delta > 0 ? '+' : '−'}
+                  {formatPrice(Math.abs(delta))}
+                </span>
+              )}
+            </li>
+          );
+        })}
       </ul>
     )}
 
