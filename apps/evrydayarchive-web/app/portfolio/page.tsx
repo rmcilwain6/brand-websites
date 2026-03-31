@@ -70,16 +70,14 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
 
   return (
     <>
-      {/* Threshold divider — sits between entries, carries the catalog number */}
-      {index > 0 && (
-        <div className="relative flex items-center py-10">
-          <div className="flex-1 border-t border-border" />
-          <span className="mx-4 font-mono text-[10px] font-medium uppercase tracking-widest text-ink-faint">
-            {catalogNum}
-          </span>
-          <div className="flex-1 border-t border-border" />
-        </div>
-      )}
+      {/* Threshold divider — sits before every entry, carries the catalog number */}
+      <div className="relative flex items-center py-10">
+        <div className="flex-1 border-t border-border" />
+        <span className="mx-4 font-mono text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+          {catalogNum}
+        </span>
+        <div className="flex-1 border-t border-border" />
+      </div>
 
       <article
         className={`flex flex-col gap-8 sm:items-center sm:gap-12 ${imageRight ? 'sm:flex-row-reverse' : 'sm:flex-row'}`}
@@ -111,8 +109,12 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
         </div>
 
         {/* Metadata + wayfinding */}
-        <div className="flex flex-1 flex-col gap-5">
-          <p className="font-mono text-xs font-medium uppercase tracking-widest text-ink-faint">
+        <div
+          className={`flex flex-1 flex-col gap-5 ${imageRight ? 'sm:items-end' : 'sm:items-start'}`}
+        >
+          <p
+            className={`font-mono text-xs font-medium uppercase tracking-widest text-ink-faint ${imageRight ? 'sm:text-right' : ''}`}
+          >
             Gallery {catalogNum}
           </p>
 
@@ -124,12 +126,13 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
                 ? `${gallery.imageCount} image${gallery.imageCount === 1 ? '' : 's'}`
                 : undefined
             }
+            className="self-start"
           />
 
           {/* Directional CTA — arrow flips to match image side */}
           <Link
             href={`/portfolio/${gallery.slug}`}
-            className="group inline-flex items-center gap-2 self-start text-sm font-medium text-ink-muted transition-colors duration-fast hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="group inline-flex items-center gap-2 text-sm font-medium text-ink-muted transition-colors duration-fast hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             {imageRight && (
               <span className="transition-transform duration-fast group-hover:-translate-x-0.5">
