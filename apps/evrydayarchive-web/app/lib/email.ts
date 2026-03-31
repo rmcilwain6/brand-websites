@@ -47,7 +47,7 @@ export const sendContactNotification = async ({
     from: FROM,
     to: NOTIFICATION_EMAIL,
     replyTo: email,
-    subject: `New message from ${name}`,
+    subject: `Got your message, ${name} \u2014 I'll be in touch`,
     html
   });
 };

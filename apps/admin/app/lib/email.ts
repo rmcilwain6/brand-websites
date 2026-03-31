@@ -51,7 +51,7 @@ export const sendBookingNotification = async (data: BookingEmailData) => {
     from: FROM,
     to: NOTIFICATION_EMAIL,
     replyTo: data.email,
-    subject: `New booking request \u2014 ${data.packageName ?? 'no package'} \u2014 ${data.name}`,
+    subject: `Booking request received, ${data.name} \u2014 I'll be in touch soon`,
     html
   });
 };
