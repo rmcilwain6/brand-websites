@@ -14,7 +14,6 @@ type GalleryReview = {
   clientName: string;
   quote: string;
   sessionType: string | null;
-  image: { src: string; alt: string; width: number | null; height: number | null } | null;
 };
 
 export const dynamic = 'force-dynamic';
