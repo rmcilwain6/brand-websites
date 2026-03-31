@@ -5,7 +5,6 @@ import { fetchPublicGalleries, type GalleryListItem } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
 import { Frame } from '../components/frame';
-import { Placard } from '../components/placard';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,9 +57,11 @@ export default PortfolioPage;
 
 // ── Sub-components ─────────────────────────────────────────────────────────
 
+const SECTION_H = 520; // px — fixed desktop section height
+
 const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: number }) => {
   const catalogNum = String(index + 1).padStart(2, '0');
-  // Alternate: even index → image left, odd → image right
+  // Even index → image left, odd → image right
   const imageRight = index % 2 !== 0;
 
   const aspectRatio =
@@ -81,22 +82,23 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
 
       <article
         className={`flex flex-col gap-8 sm:gap-12 ${imageRight ? 'sm:flex-row-reverse' : 'sm:flex-row'}`}
+        style={{ ['--section-h' as string]: `${SECTION_H}px` }}
       >
-        {/* Framed cover — sits at the ~1/3 mark on desktop */}
-        <div className="w-full sm:w-1/3 sm:flex-none">
-          <Link href={`/portfolio/${gallery.slug}`} className="group block">
-            <Frame>
-              <div
-                className="relative w-full overflow-hidden rounded-sm bg-sun"
-                style={{ aspectRatio }}
-              >
+        {/* Framed cover — fixed height on desktop, aspect ratio drives width (capped at 50%) */}
+        <div
+          className="w-full flex-none sm:h-[520px] sm:w-auto sm:max-w-[50%]"
+          style={{ aspectRatio }}
+        >
+          <Link href={`/portfolio/${gallery.slug}`} className="group block h-full">
+            <Frame className="h-full">
+              <div className="relative h-full w-full overflow-hidden rounded-sm bg-sun">
                 {gallery.coverImage ? (
                   <Image
                     src={gallery.coverImage.src}
                     alt={gallery.coverImage.alt}
                     fill
                     className="object-cover transition-transform duration-slow group-hover:scale-[1.02]"
-                    sizes="(min-width: 640px) 33vw, 100vw"
+                    sizes="(min-width: 640px) 50vw, 100vw"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
@@ -108,46 +110,29 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
           </Link>
         </div>
 
-        {/* Metadata + wayfinding */}
-        <div
-          className={`flex flex-1 flex-col items-start gap-5 sm:gap-0 sm:justify-between ${imageRight ? 'sm:items-end' : ''}`}
-        >
-          {/* Top group: gallery number + placard */}
-          <div className={`flex flex-col gap-4 ${imageRight ? 'sm:items-end' : 'items-start'}`}>
-            <p
-              className={`font-mono text-xs font-medium uppercase tracking-widest text-ink-faint ${imageRight ? 'sm:text-right' : ''}`}
-            >
-              Gallery {catalogNum}
-            </p>
-
-            <Placard
-              title={gallery.title}
-              subtitle={gallery.location ?? undefined}
-              meta={
-                gallery.imageCount > 0
-                  ? `${gallery.imageCount} image${gallery.imageCount === 1 ? '' : 's'}`
-                  : undefined
-              }
-              className={imageRight ? 'sm:text-right' : ''}
-            />
+        {/* Wall text + CTA */}
+        <div className="flex flex-1 flex-col items-start justify-between gap-8 sm:h-[520px] sm:gap-0 sm:py-10">
+          {/* Gallery announcement — sits on the wall like a title card */}
+          <div>
+            {gallery.location && (
+              <p className="mb-3 font-mono text-xs font-medium uppercase tracking-widest text-ink-faint">
+                {gallery.location}
+              </p>
+            )}
+            <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+              {gallery.title}
+            </h2>
           </div>
 
-          {/* Directional CTA — pinned to bottom on desktop, arrow flips to match image side */}
+          {/* Enter gallery CTA — opposite bottom corner from image */}
           <Link
             href={`/portfolio/${gallery.slug}`}
-            className="group inline-flex items-center gap-2 text-sm font-medium text-ink-muted transition-colors duration-fast hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className={`group inline-flex items-center gap-3 font-mono text-sm font-semibold uppercase tracking-widest text-ink transition-opacity duration-fast hover:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${imageRight ? 'sm:self-start' : 'sm:self-end'}`}
           >
-            {imageRight && (
-              <span className="transition-transform duration-fast group-hover:-translate-x-0.5">
-                ←
-              </span>
-            )}
-            <span>Enter gallery</span>
-            {!imageRight && (
-              <span className="transition-transform duration-fast group-hover:translate-x-0.5">
-                →
-              </span>
-            )}
+            <span>Enter Gallery</span>
+            <span className="text-lg text-accent transition-transform duration-fast group-hover:translate-x-1">
+              →
+            </span>
           </Link>
         </div>
       </article>
