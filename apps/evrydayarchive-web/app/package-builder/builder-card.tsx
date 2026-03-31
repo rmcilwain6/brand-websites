@@ -478,28 +478,38 @@ type ToggleControlProps = {
 };
 
 const ToggleControl = ({ altSelected, defaultLabel, altLabel, onChange }: ToggleControlProps) => (
-  <div className="flex overflow-hidden rounded-sm border border-border text-xs font-medium">
-    <button
-      type="button"
-      onClick={() => onChange(false)}
+  <button
+    type="button"
+    role="switch"
+    aria-checked={altSelected}
+    onClick={() => onChange(!altSelected)}
+    className="relative grid h-8 min-w-[96px] grid-cols-2 items-center overflow-hidden rounded-full border border-border bg-canvas text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+  >
+    {/* Sliding accent pill */}
+    <span
+      aria-hidden="true"
       className={[
-        'px-3 py-1.5 transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
-        !altSelected ? 'bg-ink text-canvas' : 'bg-canvas text-ink-muted hover:text-ink'
+        'pointer-events-none absolute inset-y-0.5 rounded-full bg-accent transition-[left,right] duration-200 ease-in-out',
+        altSelected ? 'left-[calc(50%+2px)] right-0.5' : 'left-0.5 right-[calc(50%+2px)]'
+      ].join(' ')}
+    />
+    <span
+      className={[
+        'relative z-10 px-3 text-center transition-colors duration-200',
+        !altSelected ? 'text-white' : 'text-ink-muted'
       ].join(' ')}
     >
       {defaultLabel}
-    </button>
-    <button
-      type="button"
-      onClick={() => onChange(true)}
+    </span>
+    <span
       className={[
-        'border-l border-border px-3 py-1.5 transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
-        altSelected ? 'bg-ink text-canvas' : 'bg-canvas text-ink-muted hover:text-ink'
+        'relative z-10 px-3 text-center transition-colors duration-200',
+        altSelected ? 'text-white' : 'text-ink-muted'
       ].join(' ')}
     >
       {altLabel}
-    </button>
-  </div>
+    </span>
+  </button>
 );
 
 // ── SliderControl ─────────────────────────────────────────────────────────────
