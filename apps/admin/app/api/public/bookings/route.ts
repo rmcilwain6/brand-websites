@@ -1,6 +1,8 @@
 import { BookingFormSchema, jsonError, jsonOk, parseJson } from '@repo/core';
 import { prisma } from '@repo/db';
 
+import { sendBookingConfirmation, sendBookingNotification } from '../../../lib/email';
+
 // TODO: Rate limiting — add per-IP limits when infrastructure supports it.
 
 export const POST = async (req: Request): Promise<Response> => {
@@ -60,30 +62,24 @@ export const POST = async (req: Request): Promise<Response> => {
     return jsonError({ code: 'INTERNAL', message: 'Failed to save booking request.' });
   }
 
-  // ── Notification ──────────────────────────────────────────────────────────
-  // TODO: Wire up an email provider (e.g. Resend, Postmark) when selected.
-  //
-  // Send to: your notification email address
-  // Subject: `New booking request — ${packageName ?? 'no package'} — ${name}`
-  // Body should include:
-  //   - name, email, phone
-  //   - packageName, modifierIds, estimatedTotalCents
-  //   - preferredDate, preferredTime
-  //   - notes
-  //   - admin link: /inquiries/${inquiry.id} (once that page exists)
-  //
-  console.info('[bookings] New booking request — follow up required', {
-    inquiryId: inquiry.id,
+  // ── Emails ────────────────────────────────────────────────────────────────
+  const emailData = {
     name,
     email,
-    phone: phone ?? null,
-    packageName: packageName ?? null,
+    phone: phone ?? undefined,
     preferredDate,
-    preferredTime: preferredTime ?? null,
-    modifierIds,
-    estimatedTotalCents: estimatedTotalCents ?? null,
-    notes: notes ?? null
-  });
+    preferredTime: preferredTime ?? undefined,
+    packageName: packageName ?? undefined,
+    estimatedTotalCents: estimatedTotalCents ?? undefined,
+    notes: notes ?? undefined,
+    inquiryId: inquiry.id
+  };
+
+  Promise.all([sendBookingConfirmation(emailData), sendBookingNotification(emailData)]).catch(
+    (err) => {
+      console.error('[bookings] Email send failed', { inquiryId: inquiry.id, err });
+    }
+  );
 
   return jsonOk({ inquiryId: inquiry.id });
 };

@@ -45,7 +45,7 @@ export const ContactForm = () => {
       <div className="rounded-card border border-border bg-canvas px-8 py-12 text-center">
         <p className="mb-2 text-lg font-semibold text-ink">Message received.</p>
         <p className="text-base leading-relaxed text-ink-muted">
-          I&apos;ll get back to you within a day or two. Thanks for reaching out.
+          I&apos;ll be in touch soon. Thanks for reaching out.
         </p>
       </div>
     );
