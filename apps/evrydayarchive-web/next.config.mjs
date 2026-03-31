@@ -11,9 +11,14 @@ const nextConfig = {
   experimental: {
     outputFileTracingRoot: path.join(__dirname, '../../')
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     if (isServer) {
       config.plugins = [...config.plugins, new PrismaPlugin()];
+    }
+    if (dev) {
+      // Stable path-based module IDs prevent "Cannot find module './643.js'"
+      // errors during HMR when webpack recompiles and chunk IDs shift.
+      config.optimization.moduleIds = 'named';
     }
     return config;
   },
