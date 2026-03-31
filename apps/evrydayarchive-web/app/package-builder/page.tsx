@@ -69,7 +69,7 @@ const PackageBuilderPage = async ({ searchParams }: Props) => {
         </nav>
       )}
 
-      <BuilderCard pkg={pkg} />
+      <BuilderCard key={pkg.id} pkg={pkg} />
     </main>
   );
 };

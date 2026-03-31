@@ -57,20 +57,60 @@ const itemPriceDelta = (item: BuilderItem): number => {
   switch (control.type) {
     case 'checkbox':
       return control.checked ? (priceDeltaCents ?? 0) : 0;
-
     case 'toggle':
       return control.altSelected ? (priceDeltaCents ?? 0) : 0;
-
     case 'slider': {
       const cfg = config as SliderConfig;
       return (control.value - cfg.defaultValue) * cfg.pricePerStep;
     }
-
     case 'incrementer': {
       const cfg = config as IncrementerConfig;
       return (control.count - cfg.defaultValue) * cfg.pricePerUnit;
     }
   }
+};
+
+// ── Cross-modifier constraints ────────────────────────────────────────────────
+// If any "location" modifier is active, the first time-unit SLIDER must be >= 90 min.
+
+const LOCATION_MIN_MINUTES = 90;
+
+const isLocationActive = (items: BuilderItem[]): boolean =>
+  items.some((item) => {
+    if (!item.name.toLowerCase().includes('location')) return false;
+    const { control } = item;
+    if (control.type === 'checkbox') return control.checked;
+    if (control.type === 'toggle') return control.altSelected;
+    return false;
+  });
+
+const isTimeSlider = (item: BuilderItem): boolean => {
+  if (item.control.type !== 'slider') return false;
+  const cfg = item.config as SliderConfig;
+  return (
+    cfg?.unit?.toLowerCase().includes('min') ||
+    item.name.toLowerCase().includes('duration') ||
+    item.name.toLowerCase().includes('time')
+  );
+};
+
+const applyConstraints = (items: BuilderItem[]): BuilderItem[] => {
+  if (!isLocationActive(items)) return items;
+  return items.map((item) => {
+    if (!isTimeSlider(item)) return item;
+    const slider = item.control as SliderState;
+    if (slider.value < LOCATION_MIN_MINUTES) {
+      return { ...item, control: { type: 'slider', value: LOCATION_MIN_MINUTES } };
+    }
+    return item;
+  });
+};
+
+const getSliderEffectiveMin = (item: BuilderItem, items: BuilderItem[]): number => {
+  const cfg = item.config as SliderConfig;
+  const base = cfg?.min ?? 0;
+  if (!isTimeSlider(item)) return base;
+  return isLocationActive(items) ? Math.max(base, LOCATION_MIN_MINUTES) : base;
 };
 
 // ── Conversion from API modifier → BuilderItem ───────────────────────────────
@@ -111,11 +151,12 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
   const [items, setItems] = useState<BuilderItem[]>(() => pkg.modifiers.map(modifierToItem));
 
   const updateControl = useCallback((id: string, next: Partial<ControlState>) => {
-    setItems((prev) =>
-      prev.map((item) =>
+    setItems((prev) => {
+      const updated = prev.map((item) =>
         item.id === id ? { ...item, control: { ...item.control, ...next } as ControlState } : item
-      )
-    );
+      );
+      return applyConstraints(updated);
+    });
   }, []);
 
   const total = useMemo(
@@ -135,7 +176,6 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
         return false;
       })
       .map((item) => item.id);
-
     if (selectedIds.length > 0) params.set('modifiers', selectedIds.join(','));
 
     const modifierValues: Record<string, number> = {};
@@ -157,57 +197,118 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
   }, [items, pkg.slug]);
 
   return (
-    <div className="mx-auto w-full max-w-xl rounded-card border border-border bg-canvas shadow-warm-sm">
-      {/* ── Package header ─────────────────────────────────────────── */}
-      <div className="border-b border-border px-7 py-8">
-        <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
-          Package builder
-        </p>
-        <h1 className="text-2xl font-semibold leading-snug text-ink">{pkg.name}</h1>
-        {pkg.description && (
-          <p className="mt-2 text-sm leading-relaxed text-ink-muted">{pkg.description}</p>
-        )}
+    <div className="mx-auto w-full max-w-3xl">
+      <div className="flex items-start gap-6">
+        {/* ── Builder card ─────────────────────────────────────────── */}
+        <div className="min-w-0 flex-1 rounded-card border border-border bg-canvas shadow-warm-sm">
+          {/* Header */}
+          <div className="border-b border-border px-7 py-8">
+            <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
+              Package builder
+            </p>
+            <h1 className="text-2xl font-semibold leading-snug text-ink">{pkg.name}</h1>
+            {pkg.description && (
+              <p className="mt-2 text-sm leading-relaxed text-ink-muted">{pkg.description}</p>
+            )}
+            {pkg.basePriceCents != null && (
+              <p className="mt-4 text-sm text-ink-faint">
+                Base price:{' '}
+                <span className="font-semibold text-ink">{formatPrice(pkg.basePriceCents)}</span>
+              </p>
+            )}
+          </div>
+
+          {/* Modifier rows */}
+          {items.length > 0 && (
+            <div className="divide-y divide-border">
+              {items.map((item) => (
+                <ModifierRow key={item.id} item={item} allItems={items} onChange={updateControl} />
+              ))}
+            </div>
+          )}
+
+          {/* Total + CTA */}
+          <div className="border-t border-border px-7 py-6">
+            <div className="mb-5 flex items-baseline justify-between">
+              <span className="text-sm font-medium text-ink-muted">Estimated total</span>
+              <span className="text-2xl font-semibold text-ink">{formatPrice(total)}</span>
+            </div>
+            <p className="mb-5 text-xs leading-relaxed text-ink-faint">
+              Prices are estimates. Final scope and pricing is confirmed after we talk through the
+              details.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Link
+                href={`/book${queryString}`}
+                className="block rounded-card bg-accent px-6 py-3 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                Proceed to booking
+              </Link>
+              <Link
+                href="/packages"
+                className="block rounded-card border border-border px-6 py-3 text-center text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                View all packages
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Sticky price widget (desktop only) ───────────────────── */}
+        <aside className="sticky top-6 hidden w-52 shrink-0 lg:block">
+          <PriceWidget pkg={pkg} items={items} total={total} />
+        </aside>
+      </div>
+    </div>
+  );
+};
+
+// ── PriceWidget ───────────────────────────────────────────────────────────────
+
+type PriceWidgetProps = {
+  pkg: PublicPackage;
+  items: BuilderItem[];
+  total: number;
+};
+
+const PriceWidget = ({ pkg, items, total }: PriceWidgetProps) => {
+  const activeLines = useMemo(() => {
+    return items
+      .map((item) => ({ name: item.name, delta: itemPriceDelta(item) }))
+      .filter((line) => line.delta !== 0);
+  }, [items]);
+
+  return (
+    <div className="rounded-card border border-border bg-canvas p-5 shadow-warm-sm">
+      <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-faint">Summary</p>
+
+      <div className="space-y-2.5 text-sm">
         {pkg.basePriceCents != null && (
-          <p className="mt-4 text-sm text-ink-faint">
-            Base price:{' '}
-            <span className="font-semibold text-ink">{formatPrice(pkg.basePriceCents)}</span>
-          </p>
+          <div className="flex items-baseline justify-between gap-2">
+            <span className="truncate text-ink-muted">{pkg.name}</span>
+            <span className="shrink-0 tabular-nums text-ink">
+              {formatPrice(pkg.basePriceCents)}
+            </span>
+          </div>
         )}
+        {activeLines.map((line) => (
+          <div key={line.name} className="flex items-baseline justify-between gap-2">
+            <span className="truncate text-ink-muted">{line.name}</span>
+            <span
+              className={[
+                'shrink-0 tabular-nums',
+                line.delta > 0 ? 'text-ink' : 'text-ink-muted'
+              ].join(' ')}
+            >
+              {formatDelta(line.delta)}
+            </span>
+          </div>
+        ))}
       </div>
 
-      {/* ── Modifier rows ───────────────────────────────────────────── */}
-      {items.length > 0 && (
-        <div className="divide-y divide-border">
-          {items.map((item) => (
-            <ModifierRow key={item.id} item={item} onChange={updateControl} />
-          ))}
-        </div>
-      )}
-
-      {/* ── Total + CTA ────────────────────────────────────────────── */}
-      <div className="border-t border-border px-7 py-6">
-        <div className="mb-5 flex items-baseline justify-between">
-          <span className="text-sm font-medium text-ink-muted">Estimated total</span>
-          <span className="text-2xl font-semibold text-ink">{formatPrice(total)}</span>
-        </div>
-        <p className="mb-5 text-xs leading-relaxed text-ink-faint">
-          Prices are estimates. Final scope and pricing is confirmed after we talk through the
-          details.
-        </p>
-        <div className="flex flex-col gap-3">
-          <Link
-            href={`/book${queryString}`}
-            className="block rounded-card bg-accent px-6 py-3 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-          >
-            Proceed to booking
-          </Link>
-          <Link
-            href="/packages"
-            className="block rounded-card border border-border px-6 py-3 text-center text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-          >
-            View all packages
-          </Link>
-        </div>
+      <div className="mt-4 flex items-baseline justify-between border-t border-border pt-4">
+        <span className="text-xs text-ink-faint">Total</span>
+        <span className="text-xl font-semibold tabular-nums text-ink">{formatPrice(total)}</span>
       </div>
     </div>
   );
@@ -217,53 +318,49 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
 
 type ModifierRowProps = {
   item: BuilderItem;
+  allItems: BuilderItem[];
   onChange: (id: string, next: Partial<ControlState>) => void;
 };
 
-const ModifierRow = ({ item, onChange }: ModifierRowProps) => {
+const ModifierRow = ({ item, allItems, onChange }: ModifierRowProps) => {
   const delta = itemPriceDelta(item);
   const isLocked = item.isRequired;
 
   const priceLabel = (() => {
     if (isLocked) return 'Included';
     if (item.isIncluded && item.modifierType === 'CHECKBOX') {
-      const { control } = item;
-      if (control.type === 'checkbox' && !control.checked) return formatDelta(delta);
-      return 'Included';
+      const ctrl = item.control as CheckboxState;
+      return ctrl.checked ? 'Included' : formatDelta(delta);
     }
     return formatDelta(delta);
   })();
 
   return (
     <div className="flex items-start gap-4 px-7 py-5">
-      {/* Label */}
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium leading-snug text-ink">{item.name}</p>
         {item.description && (
           <p className="mt-0.5 text-xs leading-relaxed text-ink-faint">{item.description}</p>
         )}
       </div>
-
-      {/* Control + price */}
       <div className="flex flex-none flex-col items-end gap-1.5">
-        <Control item={item} onChange={onChange} />
+        <Control item={item} allItems={allItems} onChange={onChange} />
         <span className="text-xs font-medium text-ink-muted tabular-nums">{priceLabel}</span>
       </div>
     </div>
   );
 };
 
-// ── Control renderers ─────────────────────────────────────────────────────────
+// ── Control dispatcher ────────────────────────────────────────────────────────
 
 type ControlProps = {
   item: BuilderItem;
+  allItems: BuilderItem[];
   onChange: (id: string, next: Partial<ControlState>) => void;
 };
 
-const Control = ({ item, onChange }: ControlProps) => {
-  if (item.isRequired) {
-    return <LockedCheckmark />;
-  }
+const Control = ({ item, allItems, onChange }: ControlProps) => {
+  if (item.isRequired) return <LockedCheckmark />;
 
   const { control } = item;
 
@@ -291,10 +388,11 @@ const Control = ({ item, onChange }: ControlProps) => {
 
   if (control.type === 'slider') {
     const cfg = item.config as SliderConfig;
+    const effectiveMin = getSliderEffectiveMin(item, allItems);
     return (
       <SliderControl
         value={control.value}
-        min={cfg?.min ?? 0}
+        min={effectiveMin}
         max={cfg?.max ?? 100}
         step={cfg?.step ?? 1}
         unit={cfg?.unit ?? ''}
@@ -415,21 +513,11 @@ type SliderControlProps = {
 };
 
 const SliderControl = ({ value, min, max, step, unit, onChange }: SliderControlProps) => (
-  <div className="flex w-40 flex-col gap-1.5">
-    <div className="flex items-center justify-between text-xs text-ink-faint">
-      <span>
-        {min}
-        {unit}
-      </span>
-      <span className="font-semibold text-ink">
-        {value}
-        {unit}
-      </span>
-      <span>
-        {max}
-        {unit}
-      </span>
-    </div>
+  <div className="flex w-40 flex-col items-center gap-1.5">
+    <span className="text-sm font-semibold tabular-nums text-ink">
+      {value}
+      {unit}
+    </span>
     <input
       type="range"
       min={min}
