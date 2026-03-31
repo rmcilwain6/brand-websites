@@ -5,7 +5,7 @@ import { BookingConfirmation } from '../../emails/booking-confirmation';
 import { BookingNotification } from '../../emails/booking-notification';
 import { getEmailEnv } from './env';
 
-const FROM = 'Evryday Archive <reed@evrydayarchive.co>';
+const FROM = 'Reed from Evryday Archive Co <reed@evrydayarchive.co>';
 
 let resend: Resend | null = null;
 

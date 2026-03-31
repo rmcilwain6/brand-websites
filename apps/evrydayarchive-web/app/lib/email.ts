@@ -5,7 +5,7 @@ import { ContactConfirmation } from '../../emails/contact-confirmation';
 import { ContactNotification } from '../../emails/contact-notification';
 import { getEmailEnv } from './env';
 
-const FROM = 'Evryday Archive <reed@evrydayarchive.co>';
+const FROM = 'Reed from Evryday Archive Co <reed@evrydayarchive.co>';
 
 let resend: Resend | null = null;
 
