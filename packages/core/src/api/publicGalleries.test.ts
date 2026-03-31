@@ -11,7 +11,7 @@ const galleryListResponse = [
     coverImage: { src: 'https://example.com/cover.jpg', alt: 'Cover', height: 1, width: 1 },
     imageCount: 12,
     order: 1,
-    featured: false 
+    featured: false
   }
 ];
 
@@ -53,7 +53,7 @@ describe('public gallery API helpers', () => {
     );
 
     const result = await fetchPublicGalleries('https://api.example.test');
-    console.info(result)
+    console.info(result);
 
     expect(result).toEqual(galleryListResponse);
     expect(fetchMock).toHaveBeenCalledWith(
