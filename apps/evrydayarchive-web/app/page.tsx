@@ -51,8 +51,16 @@ export default async function HomePage() {
 
           {/* Block 2 — full width, right/left/right zigzag */}
           <div className="mt-10 text-lg leading-snug text-ink-muted sm:text-xl">
-            <p className="pl-0 sm:pl-36">Every click of the shutter is an intentional choice</p>
-            <p className="sm:pl-[100px]">to document, remember, and</p>
+            {/* Mobile: lines 1+2 flow as one paragraph to avoid a hard break mid-thought */}
+            <p className="sm:hidden">
+              Every click of the shutter is an intentional choice to document, remember, and
+            </p>
+            {/* Desktop: split into offset zigzag lines */}
+            <p className="hidden sm:block sm:pl-36">
+              Every click of the shutter is an intentional choice
+            </p>
+            <p className="hidden sm:block sm:pl-[100px]">to document, remember, and</p>
+            {/* Both: orange breaks right on mobile, offset left on desktop */}
             <p className="text-right text-accent sm:text-left sm:pl-40">
               leave a gift for my future self.
             </p>
