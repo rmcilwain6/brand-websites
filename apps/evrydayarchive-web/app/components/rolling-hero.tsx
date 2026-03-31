@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from './img';
 
 import { type MatStyle, type PlacardPosition, Frame } from './frame';
 

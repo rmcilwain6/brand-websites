@@ -29,6 +29,8 @@ type Gallery = {
   description: string | null;
   location: string | null;
   status: GalleryStatus;
+  order: number;
+  featured: boolean;
   images: GalleryImage[];
 };
 
@@ -65,7 +67,9 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
         title: galleryState.title,
         slug: galleryState.slug,
         description: galleryState.description || undefined,
-        location: galleryState.location || undefined
+        location: galleryState.location || undefined,
+        order: galleryState.order,
+        featured: galleryState.featured
       })
     });
 
@@ -324,6 +328,27 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
               onChange={(e) => setGalleryState((prev) => ({ ...prev, location: e.target.value }))}
               className="rounded-md border border-slate-200 px-3 py-2 text-sm"
             />
+          </label>
+          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+            Display order
+            <input
+              type="number"
+              min={0}
+              value={galleryState.order}
+              onChange={(e) =>
+                setGalleryState((prev) => ({ ...prev, order: parseInt(e.target.value, 10) || 0 }))
+              }
+              className="w-24 rounded-md border border-slate-200 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="flex items-center gap-3 text-sm font-medium text-slate-700">
+            <input
+              type="checkbox"
+              checked={galleryState.featured}
+              onChange={(e) => setGalleryState((prev) => ({ ...prev, featured: e.target.checked }))}
+              className="h-4 w-4 rounded border-slate-300"
+            />
+            Featured on home page
           </label>
           <button
             type="submit"

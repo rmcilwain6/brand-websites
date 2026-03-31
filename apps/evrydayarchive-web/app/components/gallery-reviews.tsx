@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from './img';
 
 type GalleryReview = {
   id: string;
