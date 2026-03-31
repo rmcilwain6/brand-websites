@@ -61,9 +61,11 @@ const PackagesPage = async () => {
             </div>
           ) : (
             <div className="space-y-10">
-              {packages.map((pkg) => (
-                <PackageCard key={pkg.id} pkg={pkg} />
-              ))}
+              {[...packages]
+                .sort((a, b) => a.sortOrder - b.sortOrder)
+                .map((pkg) => (
+                  <PackageCard key={pkg.id} pkg={pkg} />
+                ))}
             </div>
           )}
         </div>
