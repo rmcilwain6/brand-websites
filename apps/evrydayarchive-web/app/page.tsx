@@ -261,14 +261,12 @@ const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; ind
           <p className="mt-0.5 text-xs text-ink-faint">{testimonial.session}</p>
         </footer>
       </blockquote>
-      {testimonial.gallerySlug && (
-        <Link
-          href={`/portfolio/${testimonial.gallerySlug}`}
-          className="mt-4 inline-flex items-center gap-1 text-sm text-ink-faint underline-offset-4 transition-colors duration-fast hover:text-ink hover:underline"
-        >
-          View gallery →
-        </Link>
-      )}
+      <Link
+        href={testimonial.gallerySlug ? `/portfolio/${testimonial.gallerySlug}` : '/portfolio'}
+        className="mt-4 inline-flex items-center gap-1 text-sm text-ink-faint underline-offset-4 transition-colors duration-fast hover:text-ink hover:underline"
+      >
+        View gallery →
+      </Link>
     </div>
   );
 };
