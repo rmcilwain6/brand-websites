@@ -155,16 +155,16 @@ const PackageCard = ({ pkg }: { pkg: PublicPackage }) => {
       {/* CTAs */}
       <div className="flex flex-wrap gap-3">
         <Link
-          href={`/inquire?package=${pkg.slug}`}
+          href={`/book?package=${pkg.slug}`}
           className="rounded-card bg-accent px-5 py-2.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
         >
-          Inquire about this
+          Book this package
         </Link>
         <Link
           href={`/package-builder?package=${pkg.slug}`}
           className="rounded-card border border-border px-5 py-2.5 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
         >
-          Open in builder
+          Customize package
         </Link>
       </div>
     </article>
