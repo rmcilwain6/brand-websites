@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import Image from 'next/image';
+import Image from './img';
 import Link from 'next/link';
 
 import { HERO_TEXT_VARIANTS } from '../lib/hero-copy';
