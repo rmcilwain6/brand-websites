@@ -8,8 +8,10 @@ const galleryListResponse = [
     slug: 'fall-highlights',
     title: 'Fall Highlights',
     location: 'Austin, TX',
-    coverImage: { src: 'https://example.com/cover.jpg', alt: 'Cover' },
-    imageCount: 12
+    coverImage: { src: 'https://example.com/cover.jpg', alt: 'Cover', height: 1, width: 1 },
+    imageCount: 12,
+    order: 1,
+    featured: false 
   }
 ];
 
@@ -51,6 +53,7 @@ describe('public gallery API helpers', () => {
     );
 
     const result = await fetchPublicGalleries('https://api.example.test');
+    console.info(result)
 
     expect(result).toEqual(galleryListResponse);
     expect(fetchMock).toHaveBeenCalledWith(
