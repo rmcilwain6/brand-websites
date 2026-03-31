@@ -77,16 +77,24 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
       </div>
 
       <article
-        className={`flex flex-col gap-8 sm:gap-12 ${imageRight ? 'sm:flex-row-reverse' : 'sm:flex-row'}`}
+        className={`flex flex-col gap-6 sm:gap-12 ${imageRight ? 'sm:flex-row-reverse' : 'sm:flex-row'}`}
       >
+        {/* ── Mobile: gallery title/location — hidden on desktop ─────────── */}
+        <div className="sm:hidden">
+          {gallery.location && (
+            <p className="mb-3 font-mono text-xs font-medium uppercase tracking-widest text-ink-faint">
+              {gallery.location}
+            </p>
+          )}
+          <h2 className="text-3xl font-semibold tracking-tight text-ink">{gallery.title}</h2>
+        </div>
+
         {/*
-         * Framed cover — on desktop: max-height is 65vh minus the Frame's mat (2rem
-         * top+bottom), max-width is 45vw. Since width and height are both `auto`,
-         * the browser maintains aspect ratio and applies whichever constraint binds first.
-         * Portrait images fill close to the full section height; landscape images are
-         * narrower and self-center vertically in the bay.
+         * Framed cover.
+         * Mobile: capped at max-w-sm and centered so it doesn't flood the screen.
+         * Desktop: max-height 65vh, max-width 35vw — aspect ratio preserved natively.
          */}
-        <div className="w-full flex-none sm:w-auto sm:self-center">
+        <div className="mx-auto w-full max-w-sm flex-none sm:mx-0 sm:w-auto sm:max-w-none sm:self-center">
           <Link href={`/portfolio/${gallery.slug}`} className="group block">
             <Frame>
               <div className="overflow-hidden rounded-sm bg-sun">
@@ -97,7 +105,7 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
                     width={imgW}
                     height={imgH}
                     className="block h-auto w-full sm:h-auto sm:w-auto sm:max-h-[calc(65vh-2rem)] sm:max-w-[35vw] transition-transform duration-slow group-hover:scale-[1.02]"
-                    sizes="(min-width: 640px) 45vw, 100vw"
+                    sizes="(min-width: 640px) 35vw, min(384px, 100vw)"
                   />
                 ) : (
                   <div className="flex aspect-[4/3] w-full items-center justify-center sm:aspect-auto sm:h-[calc(65vh-2rem)] sm:w-64">
@@ -109,15 +117,27 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
           </Link>
         </div>
 
+        {/* ── Mobile: centered CTA, always → — hidden on desktop ─────────── */}
+        <div className="flex justify-center sm:hidden">
+          <Link
+            href={`/portfolio/${gallery.slug}`}
+            className="group inline-flex items-center gap-3 font-mono text-sm font-semibold uppercase tracking-widest text-ink transition-opacity duration-fast hover:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            <span>Enter Gallery</span>
+            <span className="text-lg text-accent transition-transform duration-fast group-hover:translate-x-1">
+              →
+            </span>
+          </Link>
+        </div>
+
         {/*
-         * Wall text + CTA.
-         * sm:h-[65vh] defines the section height — the text column always fills the
-         * full bay so the CTA pins to the bottom regardless of image height.
+         * Desktop: wall text column — hidden on mobile.
+         * sm:h-[65vh] defines the bay height; justify-between pins the CTA to the bottom.
+         * Text and CTA align in the direction of the image (offset 64px from image edge).
          */}
         <div
-          className={`flex flex-1 flex-col justify-between gap-8 sm:h-[65vh] sm:gap-0 sm:py-10 ${imageRight ? 'items-start sm:items-end sm:pr-16' : 'items-start sm:pl-16'}`}
+          className={`hidden sm:flex flex-1 flex-col justify-between sm:h-[65vh] sm:py-10 ${imageRight ? 'sm:items-end sm:pr-16' : 'sm:pl-16'}`}
         >
-          {/* Gallery announcement — sits on the wall */}
           <div className={imageRight ? 'sm:text-right' : ''}>
             {gallery.location && (
               <p className="mb-3 font-mono text-xs font-medium uppercase tracking-widest text-ink-faint">
@@ -129,10 +149,7 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
             </h2>
           </div>
 
-          {/*
-           * Enter gallery CTA — opposite bottom corner from the image.
-           * Arrow faces outward (away from image) to draw the eye to the edge.
-           */}
+          {/* Arrow faces outward (away from image) to draw the eye to the edge */}
           <Link
             href={`/portfolio/${gallery.slug}`}
             className={`group inline-flex items-center gap-3 font-mono text-sm font-semibold uppercase tracking-widest text-ink transition-opacity duration-fast hover:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${imageRight ? 'sm:self-start' : 'sm:self-end'}`}
