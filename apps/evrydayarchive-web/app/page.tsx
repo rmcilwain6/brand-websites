@@ -41,15 +41,26 @@ export default async function HomePage() {
 
       {/* ── Section 2: Photographer philosophy ─────────────────────────── */}
       <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[600px]">
+        <div className="mx-auto max-w-2xl">
+          {/* Block 1 — long, anchored left; orange wraps and sits right */}
           <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
             A lifetime of photography has changed how I see life, constantly filling me with a sense
-            of gratitude for <span className="text-accent">moments big and small</span>. Every click
-            of the shutter is an intentional choice to document, remember, and{' '}
-            <span className="text-accent">leave a gift for my future self</span>. In a life that
-            moves this fast, I think we could all use more of that.
+            of gratitude for
+            <span className="block text-right text-accent">moments big and small.</span>
           </p>
-          <div className="mt-6 flex justify-end">
+
+          {/* Block 2 — compact two-line block, offset inward from left */}
+          <p className="ml-8 mt-10 max-w-xs text-lg leading-relaxed text-ink-muted sm:ml-16 sm:text-xl">
+            Every click of the shutter is an intentional choice to document, remember, and{' '}
+            <span className="text-accent">leave a gift for my future self</span>.
+          </p>
+
+          {/* Block 3 — right-aligned closer */}
+          <p className="mt-10 text-right text-lg leading-relaxed text-ink-muted sm:text-xl">
+            In a life that moves this fast, I think we could all use more of that.
+          </p>
+
+          <div className="mt-8 flex justify-end">
             <Link
               href="/about"
               className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink hover:underline"
