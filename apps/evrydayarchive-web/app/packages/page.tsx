@@ -113,63 +113,79 @@ const formatPrice = (cents: number): string =>
     maximumFractionDigits: 0
   }).format(cents / 100);
 
-const PackageCard = ({ pkg }: { pkg: PublicPackage }) => (
-  <article className="rounded-card border border-border bg-canvas p-8 shadow-warm-sm">
-    {/* Header */}
-    <header className="mb-6">
-      <h2 className="text-2xl font-semibold leading-snug text-ink">{pkg.name}</h2>
-      {pkg.description && (
-        <p className="mt-2 text-base leading-relaxed text-ink-muted">{pkg.description}</p>
-      )}
-      {pkg.basePriceCents != null && (
-        <p className="mt-3 text-sm font-medium text-ink-faint">
-          Starting at <span className="text-ink">{formatPrice(pkg.basePriceCents)}</span>
-        </p>
-      )}
-    </header>
+const PackageCard = ({ pkg }: { pkg: PublicPackage }) => {
+  const hasOptionalModifiers = pkg.modifiers.some((m) => !m.isRequired);
 
-    {/* Modifiers */}
-    {pkg.modifiers.length > 0 && (
-      <div className="mb-6 border-t border-border pt-5">
-        <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
-          Add-ons available
-        </p>
-        <ul className="space-y-2">
-          {pkg.modifiers.map((m) => (
-            <li key={m.id} className="flex items-baseline justify-between gap-4 text-sm">
-              <span className="text-ink-muted">
-                {m.name}
-                {m.isRequired && <span className="ml-2 text-xs text-ink-faint">(included)</span>}
-                {m.description && (
-                  <span className="ml-1 text-xs text-ink-faint">— {m.description}</span>
-                )}
+  return (
+    <article className="rounded-card border border-border bg-canvas p-8 shadow-warm-sm">
+      {/* Header */}
+      <header className="mb-6">
+        <h2 className="text-2xl font-semibold leading-snug text-ink">{pkg.name}</h2>
+        {pkg.description && (
+          <p className="mt-2 text-base leading-relaxed text-ink-muted">{pkg.description}</p>
+        )}
+        {pkg.basePriceCents != null && (
+          <div className="mt-3 flex flex-wrap items-center gap-2.5">
+            <p className="text-sm font-medium text-ink-faint">
+              Base price <span className="text-ink">{formatPrice(pkg.basePriceCents)}</span>
+            </p>
+            {hasOptionalModifiers && (
+              <span className="rounded-full border border-border px-2.5 py-0.5 text-xs text-ink-faint">
+                Adjustable
               </span>
-              {m.priceDeltaCents != null && !m.isRequired && (
-                <span className="flex-none text-xs text-ink-faint">
-                  {m.priceDeltaCents >= 0 ? '+' : ''}
-                  {formatPrice(m.priceDeltaCents)}
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
+            )}
+          </div>
+        )}
+      </header>
 
-    {/* CTAs */}
-    <div className="flex flex-wrap gap-3">
-      <Link
-        href={`/inquire?package=${pkg.slug}`}
-        className="rounded-card bg-accent px-5 py-2.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-      >
-        Inquire about this
-      </Link>
-      <Link
-        href={`/package-builder?package=${pkg.slug}`}
-        className="rounded-card border border-border px-5 py-2.5 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-      >
-        Open in builder
-      </Link>
-    </div>
-  </article>
+      {/* Deliverables */}
+      {pkg.deliverables.length > 0 && (
+        <div className="mb-6 border-t border-border pt-5">
+          <ul className="space-y-2">
+            {pkg.deliverables.map((item) => (
+              <li key={item} className="flex items-start gap-2.5 text-sm text-ink-muted">
+                <CheckIcon />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* CTAs */}
+      <div className="flex flex-wrap gap-3">
+        <Link
+          href={`/inquire?package=${pkg.slug}`}
+          className="rounded-card bg-accent px-5 py-2.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          Inquire about this
+        </Link>
+        <Link
+          href={`/package-builder?package=${pkg.slug}`}
+          className="rounded-card border border-border px-5 py-2.5 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          Open in builder
+        </Link>
+      </div>
+    </article>
+  );
+};
+
+const CheckIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    aria-hidden="true"
+    className="mt-0.5 shrink-0 text-accent"
+  >
+    <path
+      d="M2.5 7l3 3 6-6"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
 );
