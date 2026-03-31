@@ -8,10 +8,13 @@
     "build": "next build",
     "lint": "next lint",
     "typecheck": "tsc --noEmit --incremental false",
-    "test": "vitest run --config ../../vitest.config.ts"
+    "test": "vitest run --config ../../vitest.config.ts",
+    "email:preview": "email dev --dir emails --port 3003"
   },
   "dependencies": {
     "@prisma/nextjs-monorepo-workaround-plugin": "^7.5.0",
+    "@react-email/components": "^1.0.10",
+    "@react-email/render": "^2.0.4",
     "@repo/core": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/ui": "workspace:*",
@@ -21,5 +24,8 @@
     "react-dom": "18.3.1",
     "resend": "^6.10.0",
     "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "react-email": "^5.2.10"
   }
 }
