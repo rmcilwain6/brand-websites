@@ -157,7 +157,7 @@ const PackageCard = ({ pkg }: { pkg: PublicPackage }) => {
       {/* CTAs */}
       <div className="flex flex-wrap gap-3">
         <Link
-          href={`/book?package=${pkg.slug}`}
+          href={`/book?package=${pkg.slug}&from=packages`}
           className="rounded-card bg-accent px-5 py-2.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
         >
           Book this package

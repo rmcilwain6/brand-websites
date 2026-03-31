@@ -14,7 +14,12 @@ import { BookingForm } from './booking-form';
 export const dynamic = 'force-dynamic';
 
 type Props = {
-  searchParams: Promise<{ package?: string; modifiers?: string; modifierValues?: string }>;
+  searchParams: Promise<{
+    package?: string;
+    modifiers?: string;
+    modifierValues?: string;
+    from?: string;
+  }>;
 };
 
 const formatPrice = (cents: number): string =>
@@ -47,7 +52,8 @@ export default async function BookPage({ searchParams }: Props) {
   const {
     package: packageSlug,
     modifiers: modifiersParam,
-    modifierValues: modifierValuesParam
+    modifierValues: modifierValuesParam,
+    from
   } = await searchParams;
   const { ADMIN_API_BASE_URL } = getServerEnv();
 
@@ -104,8 +110,9 @@ export default async function BookPage({ searchParams }: Props) {
         }, 0)
       : undefined;
 
-  const backHref = pkg ? `/package-builder?package=${pkg.slug}` : '/packages';
-  const backLabel = pkg ? '← Back to builder' : '← Back to packages';
+  const backHref =
+    from === 'packages' || !pkg ? '/packages' : `/package-builder?package=${pkg.slug}`;
+  const backLabel = from === 'packages' || !pkg ? '← Back to packages' : '← Back to builder';
 
   return (
     <main className="px-4 py-16 sm:px-6 lg:px-8">
