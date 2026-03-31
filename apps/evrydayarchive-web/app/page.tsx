@@ -1,34 +1,21 @@
 import Image from './components/img';
 import Link from 'next/link';
 
-import {
-  fetchPublicGalleries,
-  fetchPublicReviews,
-  type GalleryListItem,
-  type PublicReview
-} from '@repo/core';
+import { fetchPublicGalleries, type GalleryListItem } from '@repo/core';
 
 import { getServerEnv } from './lib/env';
 import { HeroSection } from './components/hero-section';
 import { Frame } from './components/frame';
 import { Placard } from './components/placard';
-import { FilingCabinet } from './components/filing-cabinet';
 
 export default async function HomePage() {
   const { ADMIN_API_BASE_URL } = getServerEnv();
   let galleries: GalleryListItem[] = [];
-  let reviews: PublicReview[] = [];
 
   try {
     galleries = await fetchPublicGalleries(ADMIN_API_BASE_URL, { next: { revalidate: 60 } });
   } catch {
     // Featured galleries are optional; degrade gracefully
-  }
-
-  try {
-    reviews = await fetchPublicReviews(ADMIN_API_BASE_URL, { next: { revalidate: 60 } });
-  } catch {
-    // Reviews are optional; degrade gracefully
   }
 
   const featured = galleries.filter((g) => g.featured);
@@ -74,7 +61,7 @@ export default async function HomePage() {
           <div className="mt-8 flex justify-end">
             <Link
               href="/about"
-              className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
             >
               Meet the photographer →
             </Link>
@@ -95,7 +82,7 @@ export default async function HomePage() {
               </div>
               <Link
                 href="/portfolio"
-                className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
+                className="inline-flex items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
               >
                 View all →
               </Link>
@@ -112,36 +99,22 @@ export default async function HomePage() {
       )}
 
       {/* ── Section 4: Social proof ──────────────────────────────────────── */}
-      {(reviews.length > 0 || FALLBACK_TESTIMONIALS.length > 0) && (
-        <section className="px-4 py-20 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-5xl">
-            <div className="mb-10">
-              <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
-                What people say
-              </p>
-              <h2 className="text-2xl font-semibold text-ink">Reviews</h2>
-            </div>
-
-            {reviews.length > 0 ? (
-              <FilingCabinet reviews={reviews} />
-            ) : (
-              <div className="space-y-12 max-w-3xl">
-                {FALLBACK_TESTIMONIALS.map((t, i) => (
-                  <blockquote key={i}>
-                    <p className="text-base leading-relaxed text-ink-muted">
-                      &ldquo;{t.quote}&rdquo;
-                    </p>
-                    <footer className="mt-3 text-sm">
-                      <span className="font-medium text-ink">{t.name}</span>
-                      <span className="text-ink-faint"> · {t.session}</span>
-                    </footer>
-                  </blockquote>
-                ))}
-              </div>
-            )}
+      <section className="px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-16">
+            <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
+              What people say
+            </p>
+            <h2 className="text-2xl font-semibold text-ink">Testimonials</h2>
           </div>
-        </section>
-      )}
+
+          <div className="space-y-16">
+            {TESTIMONIALS.map((t, i) => (
+              <TestimonialCard key={i} testimonial={t} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── Section 5: Pricing philosophy ───────────────────────────────── */}
       <section className="bg-sun px-4 py-20 sm:px-6 lg:px-8">
@@ -242,23 +215,63 @@ const GalleryCard = ({ gallery }: { gallery: GalleryListItem }) => {
 
 // ── Static content ──────────────────────────────────────────────────────────
 
-const FALLBACK_TESTIMONIALS = [
+type Testimonial = {
+  quote: string;
+  name: string;
+  session: string;
+  gallerySlug?: string;
+};
+
+// Handpicked snippets — swap in real quotes before launch.
+const TESTIMONIALS: Testimonial[] = [
   {
     quote:
-      "Working with Evryday Archive felt effortless. The photos captured moments I'd forgotten I wanted to remember.",
-    name: 'Sarah M.',
-    session: 'Family session'
+      "Working with Reed was honestly such a great experience. I'm not someone who usually feels comfortable in front of the camera, but he made the whole shoot feel so natural and easy from start to finish.",
+    name: 'Julia',
+    session: 'Julia & Benjamin',
+    gallerySlug: 'julia-and-benjamin'
   },
   {
     quote:
-      "I've never felt comfortable in front of a camera. These photos changed that. Natural, warm, exactly what I hoped for.",
-    name: 'James T.',
-    session: 'Portrait session'
+      "10/10 highly recommend Reed for capturing the things that you love. He made the whole experience feel natural, comfortable, fun and never awkward (coming from an awkward human). Working with him was such an amazing experience and to say I'm obsessed with how the photos turned out is an understatement.",
+    name: 'Jessica',
+    session: 'Jess & Her Toyota',
+    gallerySlug: 'jessica-and-her-toyota'
   },
   {
     quote:
-      'The process was clear from the start. No surprises, and the results were exactly what we discussed.',
-    name: 'Mara & David',
-    session: 'Couple session'
+      'Reed was amazing to work with. He is passionate, knowledgeable, and experienced, and he delivered great results for the UVic Renewable Energy Club. I would recommend him to anyone looking for personal or professional photography.',
+    name: 'Ryan',
+    session: 'UVic Renewable Energy Club',
+    gallerySlug: 'urec'
   }
 ];
+
+// Cascading left offsets — desktop only, mobile stays flush.
+const STAGGER_OFFSETS = ['sm:ml-0', 'sm:ml-[22%]', 'sm:ml-[44%]'] as const;
+
+const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; index: number }) => {
+  const offset = STAGGER_OFFSETS[index % STAGGER_OFFSETS.length];
+  return (
+    <div className={`max-w-2xl ${offset}`}>
+      <div aria-hidden className="mb-3 select-none font-serif text-5xl leading-none text-accent">
+        &ldquo;
+      </div>
+      <blockquote>
+        <p className="text-base leading-relaxed text-ink-muted">{testimonial.quote}</p>
+        <footer className="mt-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-ink">{testimonial.name}</p>
+            <p className="mt-0.5 text-xs text-ink-faint">{testimonial.session}</p>
+          </div>
+          <Link
+            href={testimonial.gallerySlug ? `/portfolio/${testimonial.gallerySlug}` : '/portfolio'}
+            className="inline-flex shrink-0 items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
+          >
+            View gallery →
+          </Link>
+        </footer>
+      </blockquote>
+    </div>
+  );
+};
