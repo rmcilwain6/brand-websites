@@ -251,7 +251,7 @@ const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; ind
   const offset = STAGGER_OFFSETS[index % STAGGER_OFFSETS.length];
   return (
     <div className={`max-w-lg ${offset}`}>
-      <div aria-hidden className="mb-3 select-none font-serif text-5xl leading-none text-ink-faint">
+      <div aria-hidden className="mb-3 select-none font-serif text-5xl leading-none text-accent">
         &ldquo;
       </div>
       <blockquote>
