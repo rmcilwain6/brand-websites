@@ -24,7 +24,7 @@ const PortfolioPage = async () => {
     <main className="px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
         {/* Page header */}
-        <header className="mb-16">
+        <header className="mb-8">
           <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
             The archive
           </p>
@@ -68,7 +68,7 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
   return (
     <>
       {/* Threshold divider — sits before every entry */}
-      <div className="relative flex items-center py-10">
+      <div className={`relative flex items-center ${index === 0 ? 'py-4' : 'py-10'}`}>
         <div className="flex-1 border-t border-border" />
         <span className="mx-4 font-mono text-base font-semibold tracking-widest text-accent">
           {catalogNum}
@@ -96,7 +96,7 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
                     alt={gallery.coverImage.alt}
                     width={imgW}
                     height={imgH}
-                    className="block h-auto w-full sm:h-auto sm:w-auto sm:max-h-[calc(65vh-2rem)] sm:max-w-[45vw] transition-transform duration-slow group-hover:scale-[1.02]"
+                    className="block h-auto w-full sm:h-auto sm:w-auto sm:max-h-[calc(65vh-2rem)] sm:max-w-[35vw] transition-transform duration-slow group-hover:scale-[1.02]"
                     sizes="(min-width: 640px) 45vw, 100vw"
                   />
                 ) : (
@@ -114,9 +114,11 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
          * sm:h-[65vh] defines the section height — the text column always fills the
          * full bay so the CTA pins to the bottom regardless of image height.
          */}
-        <div className="flex flex-1 flex-col items-start justify-between gap-8 sm:h-[65vh] sm:gap-0 sm:py-10">
+        <div
+          className={`flex flex-1 flex-col justify-between gap-8 sm:h-[65vh] sm:gap-0 sm:py-10 ${imageRight ? 'items-start sm:items-end sm:pr-16' : 'items-start sm:pl-16'}`}
+        >
           {/* Gallery announcement — sits on the wall */}
-          <div>
+          <div className={imageRight ? 'sm:text-right' : ''}>
             {gallery.location && (
               <p className="mb-3 font-mono text-xs font-medium uppercase tracking-widest text-ink-faint">
                 {gallery.location}
