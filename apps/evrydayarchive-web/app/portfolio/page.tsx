@@ -73,17 +73,17 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
       {/* Threshold divider — sits before every entry, carries the catalog number */}
       <div className="relative flex items-center py-10">
         <div className="flex-1 border-t border-border" />
-        <span className="mx-4 font-mono text-[10px] font-medium uppercase tracking-widest text-ink-faint">
+        <span className="mx-4 font-mono text-base font-semibold tracking-widest text-accent">
           {catalogNum}
         </span>
         <div className="flex-1 border-t border-border" />
       </div>
 
       <article
-        className={`flex flex-col gap-8 sm:items-center sm:gap-12 ${imageRight ? 'sm:flex-row-reverse' : 'sm:flex-row'}`}
+        className={`flex flex-col gap-8 sm:gap-12 ${imageRight ? 'sm:flex-row-reverse' : 'sm:flex-row'}`}
       >
-        {/* Framed cover */}
-        <div className="w-full sm:w-80 sm:flex-none">
+        {/* Framed cover — sits at the ~1/3 mark on desktop */}
+        <div className="w-full sm:w-1/3 sm:flex-none">
           <Link href={`/portfolio/${gallery.slug}`} className="group block">
             <Frame>
               <div
@@ -96,7 +96,7 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
                     alt={gallery.coverImage.alt}
                     fill
                     className="object-cover transition-transform duration-slow group-hover:scale-[1.02]"
-                    sizes="(min-width: 640px) 320px, 100vw"
+                    sizes="(min-width: 640px) 33vw, 100vw"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
@@ -110,26 +110,29 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
 
         {/* Metadata + wayfinding */}
         <div
-          className={`flex flex-1 flex-col gap-5 ${imageRight ? 'sm:items-end' : 'sm:items-start'}`}
+          className={`flex flex-1 flex-col items-start gap-5 sm:gap-0 sm:justify-between ${imageRight ? 'sm:items-end' : ''}`}
         >
-          <p
-            className={`font-mono text-xs font-medium uppercase tracking-widest text-ink-faint ${imageRight ? 'sm:text-right' : ''}`}
-          >
-            Gallery {catalogNum}
-          </p>
+          {/* Top group: gallery number + placard */}
+          <div className={`flex flex-col gap-4 ${imageRight ? 'sm:items-end' : 'items-start'}`}>
+            <p
+              className={`font-mono text-xs font-medium uppercase tracking-widest text-ink-faint ${imageRight ? 'sm:text-right' : ''}`}
+            >
+              Gallery {catalogNum}
+            </p>
 
-          <Placard
-            title={gallery.title}
-            subtitle={gallery.location ?? undefined}
-            meta={
-              gallery.imageCount > 0
-                ? `${gallery.imageCount} image${gallery.imageCount === 1 ? '' : 's'}`
-                : undefined
-            }
-            className="self-start"
-          />
+            <Placard
+              title={gallery.title}
+              subtitle={gallery.location ?? undefined}
+              meta={
+                gallery.imageCount > 0
+                  ? `${gallery.imageCount} image${gallery.imageCount === 1 ? '' : 's'}`
+                  : undefined
+              }
+              className={imageRight ? 'sm:text-right' : ''}
+            />
+          </div>
 
-          {/* Directional CTA — arrow flips to match image side */}
+          {/* Directional CTA — pinned to bottom on desktop, arrow flips to match image side */}
           <Link
             href={`/portfolio/${gallery.slug}`}
             className="group inline-flex items-center gap-2 text-sm font-medium text-ink-muted transition-colors duration-fast hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
