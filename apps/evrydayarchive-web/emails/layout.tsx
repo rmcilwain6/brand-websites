@@ -60,18 +60,21 @@ export const EmailLayout = ({ preview, children }: Props) => (
     <Preview>{preview}</Preview>
     <Body style={{ ...styles.body, fontFamily: FONT_STACK }}>
       <Container style={styles.container}>
-        {/* Header */}
+        {/* Header — centered stacked lockup */}
         <Section style={styles.header}>
-          <Link href={SITE_URL}>
+          <Link href={SITE_URL} style={styles.logoLink}>
             <Img
-              src={`${SITE_URL}/logo/horizontal.svg`}
+              src={`${SITE_URL}/logo/stacked.svg`}
               alt="Evryday Archive"
-              width={160}
-              height={28}
+              width={200}
+              height={153}
               style={styles.logo}
             />
           </Link>
         </Section>
+
+        {/* Divider */}
+        <Section style={styles.divider} />
 
         {/* Content */}
         <Section style={{ ...styles.content, fontFamily: FONT_STACK }}>{children}</Section>
@@ -107,11 +110,19 @@ const styles = {
     margin: '0 auto'
   },
   header: {
-    borderBottom: `1px solid ${tokens.border}`,
-    padding: '24px 40px'
+    padding: '40px 40px 32px',
+    textAlign: 'center' as const
+  },
+  logoLink: {
+    display: 'inline-block'
   },
   logo: {
-    display: 'block'
+    display: 'block',
+    margin: '0 auto'
+  },
+  divider: {
+    borderTop: `1px solid ${tokens.border}`,
+    margin: '0 40px'
   },
   content: {
     padding: '40px 40px 32px'
@@ -123,7 +134,8 @@ const styles = {
   footerText: {
     color: tokens.inkFaint,
     fontSize: '12px',
-    margin: '0'
+    margin: '0',
+    textAlign: 'center' as const
   },
   footerLink: {
     color: tokens.inkFaint,
