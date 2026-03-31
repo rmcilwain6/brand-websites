@@ -61,7 +61,8 @@ const itemPriceDelta = (item: BuilderItem): number => {
       return control.altSelected ? (priceDeltaCents ?? 0) : 0;
     case 'slider': {
       const cfg = config as SliderConfig;
-      return (control.value - cfg.defaultValue) * cfg.pricePerStep;
+      const steps = Math.round((control.value - cfg.defaultValue) / cfg.step);
+      return steps * cfg.pricePerStep;
     }
     case 'incrementer': {
       const cfg = config as IncrementerConfig;
