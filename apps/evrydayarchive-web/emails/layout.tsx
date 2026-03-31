@@ -66,15 +66,12 @@ export const EmailLayout = ({ preview, children }: Props) => (
             <Img
               src={`${SITE_URL}/logo/stacked.svg`}
               alt="Evryday Archive"
-              width={200}
-              height={153}
+              width={120}
+              height={92}
               style={styles.logo}
             />
           </Link>
         </Section>
-
-        {/* Divider */}
-        <Section style={styles.divider} />
 
         {/* Content */}
         <Section style={{ ...styles.content, fontFamily: FONT_STACK }}>{children}</Section>
@@ -119,10 +116,6 @@ const styles = {
   logo: {
     display: 'block',
     margin: '0 auto'
-  },
-  divider: {
-    borderTop: `1px solid ${tokens.border}`,
-    margin: '0 40px'
   },
   content: {
     padding: '40px 40px 32px'
