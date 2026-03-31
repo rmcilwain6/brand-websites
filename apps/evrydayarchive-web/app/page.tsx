@@ -39,38 +39,17 @@ export default async function HomePage() {
       {/* Feature-flagged: ROLLING_HERO switches to the gallery wall variant */}
       <HeroSection />
 
-      {/* ── Section 2: Brand stance (text on the wall) ──────────────────── */}
+      {/* ── Section 2: Photographer philosophy ─────────────────────────── */}
       <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl">
-          <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
-            Photography doesn&apos;t have to mean big productions and forced smiles.{' '}
-            <span className="font-medium text-ink">
-              The best images happen when life is just living.
-            </span>{' '}
-            The archive exists to document those moments — the ones worth keeping.
-          </p>
-          <div className="mt-6 flex justify-end">
-            <Link
-              href="/about"
-              className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink"
-            >
-              Learn more →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Section 3: Photographer philosophy ─────────────────────────── */}
-      <section className="px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[600px]">
-          <p className="text-base leading-relaxed text-ink-muted">
+          <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
             A lifetime of photography has changed how I see life, constantly filling me with a sense
             of gratitude for <span className="text-accent">moments big and small</span>. Every click
             of the shutter is an intentional choice to document, remember, and{' '}
             <span className="text-accent">leave a gift for my future self</span>. In a life that
             moves this fast, I think we could all use more of that.
           </p>
-          <div className="mt-6">
+          <div className="mt-6 flex justify-end">
             <Link
               href="/about"
               className="text-sm text-ink-muted transition-colors duration-fast hover:text-ink hover:underline"
@@ -81,7 +60,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Section 4: Featured galleries carousel ───────────────────────── */}
+      {/* ── Section 3: Featured galleries carousel ───────────────────────── */}
       {featured.length > 0 && (
         <section className="py-16">
           <div className="mx-auto max-w-7xl">
@@ -110,7 +89,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── Section 5: Social proof ──────────────────────────────────────── */}
+      {/* ── Section 4: Social proof ──────────────────────────────────────── */}
       {(reviews.length > 0 || FALLBACK_TESTIMONIALS.length > 0) && (
         <section className="px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-5xl">
@@ -142,7 +121,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── Section 6: Pricing philosophy ───────────────────────────────── */}
+      {/* ── Section 5: Pricing philosophy ───────────────────────────────── */}
       <section className="bg-sun px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
           <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
@@ -171,7 +150,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Section 7: Where we operate ─────────────────────────────────── */}
+      {/* ── Section 6: Where we operate ─────────────────────────────────── */}
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
           <Placard
@@ -182,7 +161,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Section 8: Final CTA ─────────────────────────────────────────── */}
+      {/* ── Section 7: Final CTA ─────────────────────────────────────────── */}
       <section className="px-4 py-24 text-center sm:px-6 lg:px-8">
         <div className="mx-auto max-w-xl">
           <h2 className="mb-4 text-3xl font-semibold leading-tight text-ink sm:text-4xl">
