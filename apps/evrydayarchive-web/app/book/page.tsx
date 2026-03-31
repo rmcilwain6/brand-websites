@@ -72,8 +72,8 @@ export default async function BookPage({ searchParams }: Props) {
             Let&apos;s make it happen.
           </h1>
           <p className="mt-4 text-base leading-relaxed text-ink-muted">
-            Fill in the details below and I&apos;ll get back to you within 48 hours to confirm
-            availability and talk through the rest.
+            Fill in the details below and I&apos;ll be in touch to confirm availability and talk
+            through the details.
           </p>
         </header>
 
@@ -101,8 +101,8 @@ export default async function BookPage({ searchParams }: Props) {
                   What happens next
                 </p>
                 <p className="text-sm leading-relaxed text-ink-muted">
-                  Once you submit, I&apos;ll review your request and reach out within 48 hours to
-                  confirm the date and sort out any details.
+                  Once you submit, I&apos;ll review your request and be in touch to confirm the date
+                  and sort out any details.
                 </p>
               </div>
             </aside>

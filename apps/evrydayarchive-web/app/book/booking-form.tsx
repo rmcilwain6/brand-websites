@@ -363,7 +363,7 @@ export const BookingForm = ({ pkg, resolvedModifiers, estimatedTotalCents }: Pro
           {status === 'submitting' ? 'Sending…' : 'Send request'}
         </button>
         <p className="text-xs leading-relaxed text-ink-faint">
-          No commitment. I&apos;ll be in touch within 48 hours.
+          No commitment. I&apos;ll be in touch soon.
         </p>
       </div>
     </form>
@@ -382,8 +382,8 @@ const ConfirmationPanel = ({ name }: { name: string }) => {
       </p>
       <h2 className="mb-4 text-2xl font-semibold text-ink">You&apos;re all set, {firstName}.</h2>
       <p className="mx-auto mb-10 max-w-sm text-base leading-relaxed text-ink-muted">
-        I&apos;ve got your request. Expect to hear from me within 48 hours to confirm the date and
-        go over any details.
+        I&apos;ve got your request. I&apos;ll be in touch to confirm the date and go over any
+        details.
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">
         <Link
