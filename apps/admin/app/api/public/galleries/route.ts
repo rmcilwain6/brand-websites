@@ -10,6 +10,8 @@ type GalleryWithCover = {
     imageAsset: {
       src: string;
       alt: string | null;
+      width: number | null;
+      height: number | null;
     };
   }>;
   _count: {
@@ -45,7 +47,9 @@ export const GET = async (): Promise<Response> => {
         coverImage: coverImage
           ? {
               src: coverImage.src,
-              alt: coverImage.alt
+              alt: coverImage.alt ?? '',
+              width: coverImage.width,
+              height: coverImage.height
             }
           : null,
         imageCount: gallery._count.images

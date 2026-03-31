@@ -42,7 +42,9 @@ export const GalleryPublishSchema = z.object({
 
 export const GalleryCoverImageSchema = z.object({
   src: z.string().url(),
-  alt: z.string().min(1)
+  alt: z.string().min(1),
+  width: z.number().int().positive().nullable(),
+  height: z.number().int().positive().nullable()
 });
 
 export const GalleryListItemSchema = z.object({
