@@ -11,17 +11,23 @@ const nextConfig = {
   experimental: {
     outputFileTracingRoot: path.join(__dirname, '../../')
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     if (isServer) {
       config.plugins = [...config.plugins, new PrismaPlugin()];
     }
+    if (dev) {
+      // Stable path-based module IDs prevent "Cannot find module './643.js'"
+      // errors during HMR when webpack recompiles and chunk IDs shift.
+      config.optimization.moduleIds = 'named';
+    }
     return config;
   },
+  async redirects() {
+    return [{ source: '/inquire', destination: '/packages', permanent: false }];
+  },
   images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: '**' },
-      { protocol: 'http', hostname: '**' }
-    ]
+    loader: 'custom',
+    loaderFile: './app/lib/cloudinary-loader.ts'
   }
 };
 

@@ -1,7 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -12,6 +12,12 @@ import { SiteFooter } from './components/site-footer';
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-plus-jakarta',
+  display: 'swap'
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
   display: 'swap'
 });
 
@@ -46,7 +52,11 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
      * attribute mismatch that occurs when the inline FOUC-prevention script
      * adds `.dark` before hydration.
      */
-    <html lang="en" suppressHydrationWarning className={plusJakartaSans.variable}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${plusJakartaSans.variable} ${jetBrainsMono.variable}`}
+    >
       <head>
         {/*
          * Inline script runs synchronously before first paint.
@@ -63,7 +73,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       <body>
         <ThemeProvider>
           {!isComingSoon && <SiteHeader />}
-          {children}
+          {/* pb-16 on mobile reserves space for the fixed bottom nav bar */}
+          <div className="pb-16 md:pb-0">{children}</div>
           {!isComingSoon && <SiteFooter />}
         </ThemeProvider>
         <Analytics />

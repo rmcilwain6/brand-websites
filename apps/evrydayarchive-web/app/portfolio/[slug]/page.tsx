@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from '../../components/img';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -14,7 +14,6 @@ type GalleryReview = {
   clientName: string;
   quote: string;
   sessionType: string | null;
-  image: { src: string; alt: string; width: number | null; height: number | null } | null;
 };
 
 export const dynamic = 'force-dynamic';
@@ -90,10 +89,7 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
           <div className="columns-1 gap-8 sm:columns-2">
             {gallery.images.map((image, index) => (
               <figure key={image.id} className="mb-8 break-inside-avoid">
-                <Frame
-                  variant="craft"
-                  rotateDeg={index % 3 === 0 ? -0.4 : index % 3 === 1 ? 0 : 0.4}
-                >
+                <Frame>
                   <div
                     className="relative w-full overflow-hidden rounded-sm bg-sun"
                     style={{

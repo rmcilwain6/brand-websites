@@ -3,7 +3,12 @@
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 
-import type { PublicPackage, PublicPackageModifier } from '@repo/core';
+import type {
+  IncrementerConfig,
+  PublicPackage,
+  PublicPackageModifier,
+  SliderConfig
+} from '@repo/core';
 
 import { DatePicker } from './date-picker';
 import { TimePicker } from './time-picker';
@@ -13,7 +18,26 @@ import { TimePicker } from './time-picker';
 type Props = {
   pkg: PublicPackage | null;
   resolvedModifiers: PublicPackageModifier[];
+  modifierValues: Record<string, number>;
   estimatedTotalCents: number | undefined;
+};
+
+const modifierDisplayValue = (
+  m: PublicPackageModifier,
+  values: Record<string, number>
+): string | null => {
+  if (m.type === 'SLIDER') {
+    const cfg = m.config as SliderConfig | null;
+    if (!cfg) return null;
+    return `${values[m.id] ?? cfg.defaultValue}${cfg.unit}`;
+  }
+  if (m.type === 'INCREMENTER') {
+    const cfg = m.config as IncrementerConfig | null;
+    if (!cfg) return null;
+    const v = values[m.id] ?? cfg.defaultValue;
+    return `${v}${cfg.unit ? ` ${cfg.unit}` : ''}`;
+  }
+  return null;
 };
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
@@ -60,7 +84,12 @@ const FieldError = ({ id, message }: { id: string; message: string | undefined }
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export const BookingForm = ({ pkg, resolvedModifiers, estimatedTotalCents }: Props) => {
+export const BookingForm = ({
+  pkg,
+  resolvedModifiers,
+  modifierValues,
+  estimatedTotalCents
+}: Props) => {
   const [status, setStatus] = useState<FormStatus>('idle');
   const [serverError, setServerError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -141,6 +170,7 @@ export const BookingForm = ({ pkg, resolvedModifiers, estimatedTotalCents }: Pro
       packageId: pkg?.id,
       packageName: pkg?.name,
       modifierIds: resolvedModifiers.filter((m) => !m.isRequired).map((m) => m.id),
+      modifierValues: Object.keys(modifierValues).length > 0 ? modifierValues : undefined,
       estimatedTotalCents
     };
 
@@ -182,21 +212,27 @@ export const BookingForm = ({ pkg, resolvedModifiers, estimatedTotalCents }: Pro
           <p className="text-base font-semibold text-ink">{pkg.name}</p>
           {resolvedModifiers.length > 0 && (
             <ul className="mt-2 space-y-1">
-              {resolvedModifiers.map((m) => (
-                <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
-                  <span className="text-ink-muted">
-                    {m.name}
-                    {m.isRequired && (
-                      <span className="ml-1 text-xs text-ink-faint">(included)</span>
-                    )}
-                  </span>
-                  {m.priceDeltaCents != null && !m.isRequired && (
-                    <span className="flex-none text-xs tabular-nums text-ink-faint">
-                      +{formatPrice(m.priceDeltaCents)}
+              {resolvedModifiers.map((m) => {
+                const displayVal = modifierDisplayValue(m, modifierValues);
+                return (
+                  <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
+                    <span className="text-ink-muted">
+                      {m.name}
+                      {displayVal && (
+                        <span className="ml-1 text-xs text-ink-faint">({displayVal})</span>
+                      )}
+                      {m.isRequired && !displayVal && (
+                        <span className="ml-1 text-xs text-ink-faint">(included)</span>
+                      )}
                     </span>
-                  )}
-                </li>
-              ))}
+                    {m.priceDeltaCents != null && !m.isRequired && (
+                      <span className="flex-none text-xs tabular-nums text-ink-faint">
+                        +{formatPrice(m.priceDeltaCents)}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
           {estimatedTotalCents != null && (
@@ -363,7 +399,7 @@ export const BookingForm = ({ pkg, resolvedModifiers, estimatedTotalCents }: Pro
           {status === 'submitting' ? 'Sending…' : 'Send request'}
         </button>
         <p className="text-xs leading-relaxed text-ink-faint">
-          No commitment. I&apos;ll be in touch within 48 hours.
+          No commitment. I&apos;ll be in touch soon.
         </p>
       </div>
     </form>
@@ -382,8 +418,8 @@ const ConfirmationPanel = ({ name }: { name: string }) => {
       </p>
       <h2 className="mb-4 text-2xl font-semibold text-ink">You&apos;re all set, {firstName}.</h2>
       <p className="mx-auto mb-10 max-w-sm text-base leading-relaxed text-ink-muted">
-        I&apos;ve got your request. Expect to hear from me within 48 hours to confirm the date and
-        go over any details.
+        I&apos;ve got your request. I&apos;ll be in touch to confirm the date and go over any
+        details.
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">
         <Link

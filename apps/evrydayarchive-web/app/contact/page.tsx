@@ -14,7 +14,7 @@ const ContactPage = () => {
           </h1>
           <p className="mt-5 max-w-lg text-base leading-relaxed text-ink-muted">
             No pressure, no formal brief. Just tell me what&apos;s on your mind and I&apos;ll get
-            back to you within a day or two.
+            back to you when I can.
           </p>
         </header>
 
@@ -33,7 +33,7 @@ const ContactPage = () => {
               </p>
               <ul className="space-y-3 text-sm leading-relaxed text-ink-muted">
                 <li>I read every message personally.</li>
-                <li>I&apos;ll reply within a day or two to discuss your idea.</li>
+                <li>I&apos;ll reply as soon as I can to discuss your idea.</li>
                 <li>
                   No commitment needed — if it feels like a good fit, we&apos;ll take it from there.
                 </li>

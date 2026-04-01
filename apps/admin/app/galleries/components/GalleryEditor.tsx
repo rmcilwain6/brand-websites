@@ -29,6 +29,8 @@ type Gallery = {
   description: string | null;
   location: string | null;
   status: GalleryStatus;
+  order: number;
+  featured: boolean;
   images: GalleryImage[];
 };
 
@@ -65,7 +67,9 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
         title: galleryState.title,
         slug: galleryState.slug,
         description: galleryState.description || undefined,
-        location: galleryState.location || undefined
+        location: galleryState.location || undefined,
+        order: galleryState.order,
+        featured: galleryState.featured
       })
     });
 
@@ -136,38 +140,95 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
     setError(null);
     setMessage(null);
 
+    // Fetch a signed upload signature from the server once for the batch.
+    let sigData: {
+      signature: string;
+      timestamp: number;
+      folder: string;
+      apiKey: string;
+      cloudName: string;
+    };
+    try {
+      const sigRes = await fetch(`/api/galleries/${gallery.id}/images/signature`);
+      const sigPayload = await sigRes.json();
+      if (!sigPayload.ok)
+        throw new Error(sigPayload.error?.message ?? 'Failed to get upload signature.');
+      sigData = sigPayload.data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to get upload signature.');
+      setUploading(false);
+      return;
+    }
+
     for (const item of pending) {
       setQueue((prev) =>
         prev.map((q) => (q.localId === item.localId ? { ...q, status: 'uploading' } : q))
       );
 
-      const formData = new FormData();
-      formData.append('file', item.file);
-      formData.append('alt', item.alt);
+      try {
+        // Step 1: Upload directly from the browser to Cloudinary (bypasses Vercel payload limit).
+        const cloudinaryForm = new FormData();
+        cloudinaryForm.append('file', item.file);
+        cloudinaryForm.append('api_key', sigData.apiKey);
+        cloudinaryForm.append('timestamp', String(sigData.timestamp));
+        cloudinaryForm.append('signature', sigData.signature);
+        cloudinaryForm.append('folder', sigData.folder);
 
-      const response = await fetch(`/api/galleries/${gallery.id}/images/upload`, {
-        method: 'POST',
-        body: formData
-      });
-
-      const payload = await response.json();
-
-      if (!payload.ok) {
-        setQueue((prev) =>
-          prev.map((q) =>
-            q.localId === item.localId
-              ? { ...q, status: 'error', errorMsg: payload.error?.message ?? 'Upload failed.' }
-              : q
-          )
+        const cloudinaryRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`,
+          { method: 'POST', body: cloudinaryForm }
         );
-      } else {
+
+        if (!cloudinaryRes.ok) {
+          const errData = await cloudinaryRes.json().catch(() => ({}));
+          throw new Error(
+            (errData as { error?: { message?: string } }).error?.message ??
+              'Cloudinary upload failed.'
+          );
+        }
+
+        const cloudinaryData = (await cloudinaryRes.json()) as {
+          secure_url: string;
+          width: number;
+          height: number;
+        };
+
+        // Step 2: Save the Cloudinary result to the database.
+        const confirmRes = await fetch(`/api/galleries/${gallery.id}/images/confirm`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            secureUrl: cloudinaryData.secure_url,
+            width: cloudinaryData.width,
+            height: cloudinaryData.height,
+            alt: item.alt
+          })
+        });
+
+        const confirmPayload = await confirmRes.json();
+        if (!confirmPayload.ok) {
+          throw new Error(confirmPayload.error?.message ?? 'Failed to save image.');
+        }
+
         setQueue((prev) =>
           prev.map((q) => (q.localId === item.localId ? { ...q, status: 'done' } : q))
         );
         setGalleryState((prev) => ({
           ...prev,
-          images: [...prev.images, payload.data].sort((a, b) => a.order - b.order)
+          images: [...prev.images, confirmPayload.data].sort((a, b) => a.order - b.order)
         }));
+      } catch (err) {
+        setQueue((prev) =>
+          prev.map((q) =>
+            q.localId === item.localId
+              ? {
+                  ...q,
+                  status: 'error',
+                  errorMsg: err instanceof Error ? err.message : 'Upload failed.'
+                }
+              : q
+          )
+        );
       }
     }
 
@@ -267,6 +328,27 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
               onChange={(e) => setGalleryState((prev) => ({ ...prev, location: e.target.value }))}
               className="rounded-md border border-slate-200 px-3 py-2 text-sm"
             />
+          </label>
+          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+            Display order
+            <input
+              type="number"
+              min={0}
+              value={galleryState.order}
+              onChange={(e) =>
+                setGalleryState((prev) => ({ ...prev, order: parseInt(e.target.value, 10) || 0 }))
+              }
+              className="w-24 rounded-md border border-slate-200 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="flex items-center gap-3 text-sm font-medium text-slate-700">
+            <input
+              type="checkbox"
+              checked={galleryState.featured}
+              onChange={(e) => setGalleryState((prev) => ({ ...prev, featured: e.target.checked }))}
+              className="h-4 w-4 rounded border-slate-300"
+            />
+            Featured on home page
           </label>
           <button
             type="submit"
