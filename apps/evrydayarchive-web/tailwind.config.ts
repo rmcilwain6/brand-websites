@@ -71,7 +71,9 @@ const config: Config = {
         'bounce-dot': 'bounceDot 1.2s ease-in-out infinite',
         // Archive carousel — directional slide-in for the incoming set of frames
         'carousel-in-right': 'carouselInRight 240ms cubic-bezier(0.16, 1, 0.3, 1) both',
-        'carousel-in-left': 'carouselInLeft 240ms cubic-bezier(0.16, 1, 0.3, 1) both'
+        'carousel-in-left': 'carouselInLeft 240ms cubic-bezier(0.16, 1, 0.3, 1) both',
+        // Navigation shutter — expands and fades when the shutter clicks shut
+        'shutter-click': 'shutterClick 250ms ease-out both'
       },
       keyframes: {
         fadeUp: {
@@ -137,6 +139,10 @@ const config: Config = {
         carouselInLeft: {
           '0%': { opacity: '0', transform: 'translateX(-48px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' }
+        },
+        shutterClick: {
+          '0%': { opacity: '1', transform: 'scale(1)' },
+          '100%': { opacity: '0', transform: 'scale(1.5)' }
         }
       }
     }

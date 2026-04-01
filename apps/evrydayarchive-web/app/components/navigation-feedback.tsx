@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
+const SHUTTER_RADIUS = 11;
+const SHUTTER_CIRCUMFERENCE = 2 * Math.PI * SHUTTER_RADIUS;
+
 type NavState = 'idle' | 'loading' | 'complete';
 
 /**
@@ -24,6 +27,7 @@ export const NavigationFeedback = () => {
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [barWidth, setBarWidth] = useState('0%');
   const [barOpacity, setBarOpacity] = useState(1);
+  const [strokeOffset, setStrokeOffset] = useState(SHUTTER_CIRCUMFERENCE);
   const prevPathname = useRef(pathname);
   const navStateRef = useRef<NavState>('idle');
   const fadeTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -70,12 +74,16 @@ export const NavigationFeedback = () => {
     return () => document.removeEventListener('mousemove', handleMouseMove);
   }, [navState]);
 
-  // Trigger the bar's CSS transition after it mounts at 0%
+  // Trigger bar + shutter CSS transitions after mounting at their start values
   useEffect(() => {
     if (navState !== 'loading') return;
     setBarWidth('0%');
+    setStrokeOffset(SHUTTER_CIRCUMFERENCE);
     const raf = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setBarWidth('75%'));
+      requestAnimationFrame(() => {
+        setBarWidth('75%');
+        setStrokeOffset(0);
+      });
     });
     return () => cancelAnimationFrame(raf);
   }, [navState]);
@@ -93,6 +101,7 @@ export const NavigationFeedback = () => {
     prevPathname.current = pathname;
     setNav('complete');
     setBarWidth('100%');
+    setStrokeOffset(0);
 
     clearTimeout(fadeTimer.current);
     clearTimeout(resetTimer.current);
@@ -124,14 +133,46 @@ export const NavigationFeedback = () => {
         />
       </div>
 
-      {/* Desktop: cursor-following indicator, visible only while loading */}
-      {navState === 'loading' && (
+      {/* Desktop: shutter cursor indicator */}
+      {(navState === 'loading' || navState === 'complete') && (
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed z-50 hidden md:block"
+          className={[
+            'pointer-events-none fixed z-50 hidden md:block',
+            navState === 'complete' ? 'animate-shutter-click' : ''
+          ].join(' ')}
           style={{ left: cursorPos.x + 14, top: cursorPos.y + 14 }}
         >
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            {/* Faint ring — the open lens */}
+            <circle
+              cx="14"
+              cy="14"
+              r={SHUTTER_RADIUS}
+              stroke="#F06F42"
+              strokeWidth="1.5"
+              opacity="0.25"
+            />
+            {/* Closing arc — draws clockwise as the shutter closes */}
+            <circle
+              cx="14"
+              cy="14"
+              r={SHUTTER_RADIUS}
+              stroke="#F06F42"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              fill="none"
+              strokeDasharray={SHUTTER_CIRCUMFERENCE}
+              strokeDashoffset={strokeOffset}
+              transform="rotate(-90 14 14)"
+              style={{
+                transition:
+                  navState === 'complete'
+                    ? `stroke-dashoffset 80ms ease-in`
+                    : `stroke-dashoffset 2500ms cubic-bezier(0.05, 0.6, 0.2, 1)`
+              }}
+            />
+          </svg>
         </div>
       )}
     </>
