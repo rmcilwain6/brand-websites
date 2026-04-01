@@ -19,9 +19,11 @@ type LoaderProps = {
 export default function cloudinaryLoader({ src, width, quality }: LoaderProps): string {
   const q = quality ?? 85;
 
-  // Local static assets — already optimized at source, serve directly
+  // Local static assets — already optimized at source, serve directly.
+  // Append ?w= so Next.js sees the width param being used (suppresses loader warning),
+  // while static file serving ignores the query string entirely.
   if (src.startsWith('/')) {
-    return src;
+    return `${src}?w=${width}`;
   }
 
   // Cloudinary URLs — inject transformation parameters
