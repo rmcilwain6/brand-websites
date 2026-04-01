@@ -2,7 +2,7 @@
 
 import Image from './img';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 import { cn } from '../lib/cn';
 import { ThemeToggle } from './theme-toggle';
@@ -31,13 +31,7 @@ type MobileMenuProps = {
  */
 export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
   const pathname = usePathname();
-  const router = useRouter();
   const allLinks: NavLink[] = [{ href: '/', label: 'Home' }, ...links];
-
-  const handleNavClick = (href: string) => {
-    onClose();
-    router.push(href);
-  };
 
   return (
     <div
@@ -89,10 +83,10 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
           const catalogNum = String(i + 1).padStart(2, '0');
           const staggerDelay = `${80 + i * 70}ms`;
           return (
-            <button
+            <Link
               key={link.href}
-              type="button"
-              onClick={() => handleNavClick(link.href)}
+              href={link.href}
+              onClick={onClose}
               style={isOpen ? { animationDelay: staggerDelay } : undefined}
               className={cn(
                 // active: fires on touchstart — instant tactile press feedback
@@ -117,7 +111,7 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
               >
                 {link.label}
               </span>
-            </button>
+            </Link>
           );
         })}
 
