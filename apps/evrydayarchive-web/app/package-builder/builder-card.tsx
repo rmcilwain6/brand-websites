@@ -478,38 +478,73 @@ type ToggleControlProps = {
 };
 
 const ToggleControl = ({ altSelected, defaultLabel, altLabel, onChange }: ToggleControlProps) => (
-  <button
-    type="button"
-    role="switch"
-    aria-checked={altSelected}
-    onClick={() => onChange(!altSelected)}
-    className="relative grid h-8 min-w-[96px] grid-cols-2 items-center overflow-hidden rounded-full border border-border bg-canvas text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-  >
-    {/* Sliding accent pill */}
-    <span
-      aria-hidden="true"
-      className={[
-        'pointer-events-none absolute inset-y-0.5 rounded-full bg-accent transition-[left,right] duration-200 ease-in-out',
-        altSelected ? 'left-[calc(50%+2px)] right-0.5' : 'left-0.5 right-[calc(50%+2px)]'
-      ].join(' ')}
-    />
-    <span
-      className={[
-        'relative z-10 px-3 text-center transition-colors duration-200',
-        !altSelected ? 'text-white' : 'text-ink-muted'
-      ].join(' ')}
+  <>
+    {/* Mobile: vertical stacked pill */}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={altSelected}
+      onClick={() => onChange(!altSelected)}
+      className="relative flex w-24 flex-col overflow-hidden rounded-xl border border-border bg-canvas text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent sm:hidden"
     >
-      {defaultLabel}
-    </span>
-    <span
-      className={[
-        'relative z-10 px-3 text-center transition-colors duration-200',
-        altSelected ? 'text-white' : 'text-ink-muted'
-      ].join(' ')}
+      <span
+        aria-hidden="true"
+        className={[
+          'pointer-events-none absolute inset-x-0.5 rounded-lg bg-accent transition-[top,bottom] duration-200 ease-in-out',
+          altSelected ? 'top-[calc(50%+2px)] bottom-0.5' : 'top-0.5 bottom-[calc(50%+2px)]'
+        ].join(' ')}
+      />
+      <span
+        className={[
+          'relative z-10 py-2.5 text-center transition-colors duration-200',
+          !altSelected ? 'text-white' : 'text-ink-muted'
+        ].join(' ')}
+      >
+        {defaultLabel}
+      </span>
+      <span
+        className={[
+          'relative z-10 py-2.5 text-center transition-colors duration-200',
+          altSelected ? 'text-white' : 'text-ink-muted'
+        ].join(' ')}
+      >
+        {altLabel}
+      </span>
+    </button>
+
+    {/* sm+: horizontal pill */}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={altSelected}
+      onClick={() => onChange(!altSelected)}
+      className="relative hidden h-8 min-w-[96px] grid-cols-2 items-center overflow-hidden rounded-full border border-border bg-canvas text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent sm:grid"
     >
-      {altLabel}
-    </span>
-  </button>
+      <span
+        aria-hidden="true"
+        className={[
+          'pointer-events-none absolute inset-y-0.5 rounded-full bg-accent transition-[left,right] duration-200 ease-in-out',
+          altSelected ? 'left-[calc(50%+2px)] right-0.5' : 'left-0.5 right-[calc(50%+2px)]'
+        ].join(' ')}
+      />
+      <span
+        className={[
+          'relative z-10 px-3 text-center transition-colors duration-200',
+          !altSelected ? 'text-white' : 'text-ink-muted'
+        ].join(' ')}
+      >
+        {defaultLabel}
+      </span>
+      <span
+        className={[
+          'relative z-10 px-3 text-center transition-colors duration-200',
+          altSelected ? 'text-white' : 'text-ink-muted'
+        ].join(' ')}
+      >
+        {altLabel}
+      </span>
+    </button>
+  </>
 );
 
 // ── SliderControl ─────────────────────────────────────────────────────────────
