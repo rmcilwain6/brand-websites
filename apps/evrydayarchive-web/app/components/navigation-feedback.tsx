@@ -25,6 +25,14 @@ export const NavigationFeedback = () => {
   const [barWidth, setBarWidth] = useState('0%');
   const [barOpacity, setBarOpacity] = useState(1);
   const prevPathname = useRef(pathname);
+  const navStateRef = useRef<NavState>('idle');
+  const fadeTimer = useRef<ReturnType<typeof setTimeout>>();
+  const resetTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  const setNav = (state: NavState) => {
+    navStateRef.current = state;
+    setNavState(state);
+  };
 
   // Detect click on internal links → start loading
   useEffect(() => {
@@ -43,8 +51,8 @@ export const NavigationFeedback = () => {
       if (href === pathname) return;
 
       setCursorPos({ x: e.clientX, y: e.clientY });
-      setNavState('loading');
       setBarOpacity(1);
+      setNav('loading');
     };
 
     document.addEventListener('click', handleClick);
@@ -71,26 +79,30 @@ export const NavigationFeedback = () => {
     return () => cancelAnimationFrame(raf);
   }, [navState]);
 
-  // Pathname changed → navigation complete
+  // Pathname changed → complete. Uses a ref for navState so this effect only
+  // depends on pathname — preventing the cleanup from cancelling the fade timers
+  // when navState changes from 'loading' to 'complete'.
   useEffect(() => {
-    if (navState === 'loading' && pathname !== prevPathname.current) {
-      // Cursor indicator disappears immediately
-      setNavState('complete');
-      // Progress bar snaps to 100% then fades
-      setBarWidth('100%');
-      const t1 = setTimeout(() => setBarOpacity(0), 200);
-      const t2 = setTimeout(() => {
-        setNavState('idle');
-        setBarWidth('0%');
-        setBarOpacity(1);
-      }, 550);
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
+    if (navStateRef.current !== 'loading') {
+      prevPathname.current = pathname;
+      return;
     }
+    if (pathname === prevPathname.current) return;
+
     prevPathname.current = pathname;
-  }, [pathname, navState]);
+    setNav('complete');
+    setBarWidth('100%');
+
+    clearTimeout(fadeTimer.current);
+    clearTimeout(resetTimer.current);
+
+    fadeTimer.current = setTimeout(() => setBarOpacity(0), 200);
+    resetTimer.current = setTimeout(() => {
+      setNav('idle');
+      setBarWidth('0%');
+      setBarOpacity(1);
+    }, 550);
+  }, [pathname]);
 
   if (navState === 'idle') return null;
 
