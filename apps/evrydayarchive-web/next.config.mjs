@@ -22,6 +22,9 @@ const nextConfig = {
     }
     return config;
   },
+  async redirects() {
+    return [{ source: '/inquire', destination: '/packages', permanent: false }];
+  },
   images: {
     loader: 'custom',
     loaderFile: './app/lib/cloudinary-loader.ts'
