@@ -3,9 +3,15 @@ import { type NextRequest, NextResponse } from 'next/server';
 const COMING_SOON = process.env.NEXT_PUBLIC_COMING_SOON === 'true';
 
 export function middleware(request: NextRequest) {
-  if (!COMING_SOON) return NextResponse.next();
-
   const { pathname } = request.nextUrl;
+
+  // When coming-soon mode is off, redirect the coming-soon page to home
+  if (!COMING_SOON) {
+    if (pathname === '/coming-soon') {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+    return NextResponse.next();
+  }
 
   // Pass through the coming-soon page, API routes, and any static file (has a file extension)
   if (pathname === '/coming-soon' || pathname.startsWith('/api/') || /\.\w+$/.test(pathname)) {
