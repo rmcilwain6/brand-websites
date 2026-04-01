@@ -12,8 +12,8 @@ type NavState = 'idle' | 'loading' | 'complete';
  * the fixed bottom nav. Fills to ~75% while loading (indeterminate feel), then
  * snaps to 100% and fades out when the new page lands.
  *
- * Desktop (md+): a small spinner that appears near where the user clicked and
- * disappears once navigation completes.
+ * Desktop (md+): a small indicator that follows the cursor and disappears
+ * the instant the new page lands.
  *
  * Navigation start is detected by listening for clicks on internal <a> tags.
  * Navigation end is detected by a change in usePathname().
@@ -51,6 +51,16 @@ export const NavigationFeedback = () => {
     return () => document.removeEventListener('click', handleClick);
   }, [pathname]);
 
+  // Track cursor continuously while loading so the indicator follows the mouse
+  useEffect(() => {
+    if (navState !== 'loading') return;
+    const handleMouseMove = (e: MouseEvent) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => document.removeEventListener('mousemove', handleMouseMove);
+  }, [navState]);
+
   // Trigger the bar's CSS transition after it mounts at 0%
   useEffect(() => {
     if (navState !== 'loading') return;
@@ -64,11 +74,11 @@ export const NavigationFeedback = () => {
   // Pathname changed → navigation complete
   useEffect(() => {
     if (navState === 'loading' && pathname !== prevPathname.current) {
+      // Cursor indicator disappears immediately
       setNavState('complete');
+      // Progress bar snaps to 100% then fades
       setBarWidth('100%');
-      // Fade out after the bar fills
       const t1 = setTimeout(() => setBarOpacity(0), 200);
-      // Reset fully after fade
       const t2 = setTimeout(() => {
         setNavState('idle');
         setBarWidth('0%');
@@ -101,14 +111,16 @@ export const NavigationFeedback = () => {
         />
       </div>
 
-      {/* Desktop: spinner near click position */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed z-50 hidden md:block"
-        style={{ left: cursorPos.x + 14, top: cursorPos.y + 14 }}
-      >
-        <div className="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
-      </div>
+      {/* Desktop: cursor-following indicator, visible only while loading */}
+      {navState === 'loading' && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed z-50 hidden md:block"
+          style={{ left: cursorPos.x + 14, top: cursorPos.y + 14 }}
+        >
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+        </div>
+      )}
     </>
   );
 };
