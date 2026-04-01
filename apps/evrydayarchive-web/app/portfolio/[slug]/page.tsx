@@ -102,7 +102,7 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
                       alt={image.alt}
                       fill
                       className="object-cover"
-                      sizes="(min-width: 640px) 50vw, 100vw"
+                      sizes="(min-width: 1024px) 512px, (min-width: 640px) 50vw, 100vw"
                       loading={index < 2 ? 'eager' : 'lazy'}
                     />
                   </div>

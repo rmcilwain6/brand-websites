@@ -27,7 +27,11 @@ const nextConfig = {
   },
   images: {
     loader: 'custom',
-    loaderFile: './app/lib/cloudinary-loader.ts'
+    loaderFile: './app/lib/cloudinary-loader.ts',
+    // Gallery images max out at ~512px (50% of max-w-5xl). 1200 as ceiling
+    // covers 2× retina on the widest slot; removes wasteful 1920/2048/3840 entries.
+    deviceSizes: [640, 828, 1080, 1200],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384]
   }
 };
 
