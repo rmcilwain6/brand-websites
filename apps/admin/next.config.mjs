@@ -18,10 +18,8 @@ const nextConfig = {
     return config;
   },
   images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: '**' },
-      { protocol: 'http', hostname: '**' }
-    ]
+    loader: 'custom',
+    loaderFile: './app/lib/cloudinary-loader.ts'
   }
 };
 
