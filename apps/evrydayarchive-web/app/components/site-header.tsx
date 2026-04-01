@@ -74,7 +74,9 @@ export const SiteHeader = () => {
       <header
         className={cn(
           // Mobile: fixed bottom bar, always h-16, no collapse.
-          'fixed bottom-0 z-40 w-full h-16 border-t border-border bg-canvas',
+          // will-change-transform promotes to its own GPU layer, preventing
+          // content bleed-through during scroll on certain mobile browsers.
+          'fixed bottom-0 z-40 w-full h-16 border-t border-border bg-canvas will-change-transform',
           // Desktop: sticky top bar.
           'md:sticky md:top-0 md:bottom-auto md:h-16 md:border-t-0 md:border-b md:overflow-hidden'
         )}

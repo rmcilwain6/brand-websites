@@ -8,6 +8,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ThemeProvider } from './providers/theme-provider';
 import { SiteHeader } from './components/site-header';
 import { SiteFooter } from './components/site-footer';
+import { NavigationFeedback } from './components/navigation-feedback';
+import { PageFade } from './components/page-fade';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -73,8 +75,11 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       <body>
         <ThemeProvider>
           {!isComingSoon && <SiteHeader />}
+          <NavigationFeedback />
           {/* pb-16 on mobile reserves space for the fixed bottom nav bar */}
-          <div className="pb-16 md:pb-0">{children}</div>
+          <div className="pb-16 md:pb-0">
+            <PageFade>{children}</PageFade>
+          </div>
           {!isComingSoon && <SiteFooter />}
         </ThemeProvider>
         <Analytics />
