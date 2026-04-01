@@ -6,7 +6,6 @@ import { fetchPublicGalleries, type GalleryListItem } from '@repo/core';
 import { getServerEnv } from './lib/env';
 import { HeroSection } from './components/hero-section';
 import { Frame } from './components/frame';
-import { Placard } from './components/placard';
 
 export default async function HomePage() {
   const { ADMIN_API_BASE_URL } = getServerEnv();
@@ -120,13 +119,12 @@ export default async function HomePage() {
       <section className="bg-sun px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
           <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
-            Investment
+            Pricing
           </p>
-          <h2 className="mb-6 text-2xl font-semibold text-ink">Straightforward pricing</h2>
+          <h2 className="mb-6 text-2xl font-semibold text-ink">A starting point for everyone</h2>
           <p className="mb-8 text-base leading-relaxed text-ink-muted">
-            Photography shouldn&apos;t require a negotiation. Sessions are scoped clearly — you know
-            exactly what&apos;s included before any commitment. If you&apos;re not sure which option
-            fits, reach out anyway.
+            Pricing is transparent and adjustable. Pick a package that&apos;s close, or use the
+            builder to make it yours.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
@@ -145,18 +143,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Section 6: Where we operate ─────────────────────────────────── */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl">
-          <Placard
-            title="Kamloops & British Columbia"
-            subtitle="Available for local and travel sessions across Canada"
-            meta="Where we work"
-          />
-        </div>
-      </section>
-
-      {/* ── Section 7: Final CTA ─────────────────────────────────────────── */}
+      {/* ── Section 6: Final CTA ─────────────────────────────────────────── */}
       <section className="px-4 py-24 text-center sm:px-6 lg:px-8">
         <div className="mx-auto max-w-xl">
           <h2 className="mb-4 text-3xl font-semibold leading-tight text-ink sm:text-4xl">
