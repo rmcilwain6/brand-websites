@@ -48,7 +48,8 @@ export const NavigationFeedback = () => {
         href.startsWith('tel:')
       )
         return;
-      if (href === pathname) return;
+      // Ignore same-page navigations (query param changes only)
+      if (href.split('?')[0] === pathname) return;
 
       setCursorPos({ x: e.clientX, y: e.clientY });
       setBarOpacity(1);
