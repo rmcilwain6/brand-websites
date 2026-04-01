@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { cn } from '../lib/cn';
+import { ThemeToggle } from './theme-toggle';
 
 type NavLink = { href: string; label: string };
 
@@ -119,6 +120,8 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
             </button>
           );
         })}
+
+        <ThemeToggle />
       </nav>
     </div>
   );
