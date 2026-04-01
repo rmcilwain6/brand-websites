@@ -496,7 +496,7 @@ const ToggleControl = ({ altSelected, defaultLabel, altLabel, onChange }: Toggle
       />
       <span
         className={[
-          'relative z-10 py-2.5 text-center transition-colors duration-200',
+          'relative z-10 px-3 py-3 text-center transition-colors duration-200',
           !altSelected ? 'text-white' : 'text-ink-muted'
         ].join(' ')}
       >
@@ -504,7 +504,7 @@ const ToggleControl = ({ altSelected, defaultLabel, altLabel, onChange }: Toggle
       </span>
       <span
         className={[
-          'relative z-10 py-2.5 text-center transition-colors duration-200',
+          'relative z-10 px-3 py-3 text-center transition-colors duration-200',
           altSelected ? 'text-white' : 'text-ink-muted'
         ].join(' ')}
       >
