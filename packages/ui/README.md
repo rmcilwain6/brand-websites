@@ -14,17 +14,17 @@ import { Button } from '@repo/ui';
 <Button variant="primary" size="md" onClick={...}>Book a session</Button>
 ```
 
-| Prop | Type | Default |
-|---|---|---|
+| Prop      | Type                                  | Default     |
+| --------- | ------------------------------------- | ----------- |
 | `variant` | `"primary" \| "secondary" \| "ghost"` | `"primary"` |
-| `size` | `"sm" \| "md" \| "lg"` | `"md"` |
+| `size`    | `"sm" \| "md" \| "lg"`                | `"md"`      |
 
 ### `Card`
 
 ```tsx
 import { Card } from '@repo/ui';
 
-<Card>...</Card>
+<Card>...</Card>;
 ```
 
 A surface container with the warm shadow and border styling from the design system. Accepts standard HTML div props.

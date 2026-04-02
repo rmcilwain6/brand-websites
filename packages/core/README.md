@@ -12,15 +12,15 @@ Zod schemas for all domain entities. Import the schema and its inferred type tog
 import { GalleryDetailSchema, type GalleryDetail } from '@repo/core';
 ```
 
-| Schema | Entity |
-|---|---|
-| `GalleryListResponseSchema`, `GalleryListItem` | Gallery index list |
-| `GalleryDetailSchema`, `GalleryDetail` | Single gallery with images and reviews |
-| `PublicPackageSchema`, `PublicPackage` | Package with modifiers |
-| `InquirySchema` | Inquiry form submission |
-| `BookingRequestSchema` | Booking request submission |
-| `WaitlistEntrySchema` | Waitlist email capture |
-| `ReviewSchema` | Client review/testimonial |
+| Schema                                         | Entity                                 |
+| ---------------------------------------------- | -------------------------------------- |
+| `GalleryListResponseSchema`, `GalleryListItem` | Gallery index list                     |
+| `GalleryDetailSchema`, `GalleryDetail`         | Single gallery with images and reviews |
+| `PublicPackageSchema`, `PublicPackage`         | Package with modifiers                 |
+| `InquirySchema`                                | Inquiry form submission                |
+| `BookingRequestSchema`                         | Booking request submission             |
+| `WaitlistEntrySchema`                          | Waitlist email capture                 |
+| `ReviewSchema`                                 | Client review/testimonial              |
 
 ---
 
@@ -32,7 +32,7 @@ Typed fetch wrappers for the admin's public API endpoints. Used server-side in t
 import { fetchPublicGalleries, fetchPublicGalleryDetail, fetchPublicPackages } from '@repo/core';
 
 const galleries = await fetchPublicGalleries(ADMIN_API_BASE_URL, { next: { revalidate: 60 } });
-const gallery  = await fetchPublicGalleryDetail(ADMIN_API_BASE_URL, slug);
+const gallery = await fetchPublicGalleryDetail(ADMIN_API_BASE_URL, slug);
 const packages = await fetchPublicPackages(ADMIN_API_BASE_URL);
 ```
 

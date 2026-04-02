@@ -86,11 +86,11 @@ pnpm --filter admin dev              # admin only (port 3001)
 
 ## Deployment & hosting
 
-| App                  | Host              | Domain                    |
-| -------------------- | ----------------- | ------------------------- |
-| `evrydayarchive-web` | Vercel            | `evrydayarchive.co`       |
+| App                  | Host                      | Domain                    |
+| -------------------- | ------------------------- | ------------------------- |
+| `evrydayarchive-web` | Vercel                    | `evrydayarchive.co`       |
 | `admin`              | Vercel (not yet deployed) | `admin.evrydayarchive.co` |
-| Database             | Neon (PostgreSQL) | shared across envs        |
+| Database             | Neon (PostgreSQL)         | shared across envs        |
 
 **`evrydayarchive-web` on Vercel** is configured via `vercel.json` at the repo root. It runs `pnpm --filter @repo/db generate && cd apps/evrydayarchive-web && next build` so Prisma client generation happens before the Next.js build.
 

@@ -19,13 +19,13 @@ pnpm --filter admin dev   # runs on port 3001
 
 ### Environment variables
 
-| Variable | Purpose |
-|---|---|
-| `ADMIN_API_BASE_URL` | Base URL of the admin app — galleries and packages are fetched from here |
-| `DATABASE_URL` | Neon PostgreSQL connection string — used for waitlist writes only |
-| `NEXT_PUBLIC_COMING_SOON` | Set `"true"` to redirect all routes to `/coming-soon` |
-| `RESEND_API_KEY` | Resend API key — required when email notifications are wired up |
-| `NOTIFICATION_EMAIL` | Address to receive booking/inquiry notifications |
+| Variable                  | Purpose                                                                  |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `ADMIN_API_BASE_URL`      | Base URL of the admin app — galleries and packages are fetched from here |
+| `DATABASE_URL`            | Neon PostgreSQL connection string — used for waitlist writes only        |
+| `NEXT_PUBLIC_COMING_SOON` | Set `"true"` to redirect all routes to `/coming-soon`                    |
+| `RESEND_API_KEY`          | Resend API key — required when email notifications are wired up          |
+| `NOTIFICATION_EMAIL`      | Address to receive booking/inquiry notifications                         |
 
 ---
 
@@ -39,20 +39,20 @@ To turn it off, remove the var (or set it to anything other than `"true"`). Requ
 
 ## Route map
 
-| Route | Status | Notes |
-|---|---|---|
-| `/` | Live | Hero, brand intro, testimonials, location, CTA |
-| `/portfolio` | Live | Gallery index — fetches live from admin API |
-| `/portfolio/[slug]` | Live | Gallery detail — image grid, reviews |
-| `/packages` | Live | Package list — fetches live from admin API |
-| `/package-builder` | Partial | Modifier toggle UI exists; pricing calculation not wired |
-| `/inquire` | Partial | Questionnaire UI complete; recommendation logic is a stub — see `app/inquire/recommendation.ts` and `requirements/guided-questionaire.md` |
-| `/book` | Partial | Date/time picker UI styled; backend (`BookingRequest` submission) not wired |
-| `/process` | Live | Process steps page |
-| `/faq` | Live | FAQ accordion |
-| `/contact` | Live | Contact form |
-| `/about` | Live | About page with archive carousel |
-| `/coming-soon` | Live | Waitlist capture — only active when `NEXT_PUBLIC_COMING_SOON=true` |
+| Route               | Status  | Notes                                                                                                                                     |
+| ------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                 | Live    | Hero, brand intro, testimonials, location, CTA                                                                                            |
+| `/portfolio`        | Live    | Gallery index — fetches live from admin API                                                                                               |
+| `/portfolio/[slug]` | Live    | Gallery detail — image grid, reviews                                                                                                      |
+| `/packages`         | Live    | Package list — fetches live from admin API                                                                                                |
+| `/package-builder`  | Partial | Modifier toggle UI exists; pricing calculation not wired                                                                                  |
+| `/inquire`          | Partial | Questionnaire UI complete; recommendation logic is a stub — see `app/inquire/recommendation.ts` and `requirements/guided-questionaire.md` |
+| `/book`             | Partial | Date/time picker UI styled; backend (`BookingRequest` submission) not wired                                                               |
+| `/process`          | Live    | Process steps page                                                                                                                        |
+| `/faq`              | Live    | FAQ accordion                                                                                                                             |
+| `/contact`          | Live    | Contact form                                                                                                                              |
+| `/about`            | Live    | About page with archive carousel                                                                                                          |
+| `/coming-soon`      | Live    | Waitlist capture — only active when `NEXT_PUBLIC_COMING_SOON=true`                                                                        |
 
 ---
 
@@ -60,14 +60,14 @@ To turn it off, remove the var (or set it to anything other than `"true"`). Requ
 
 Design tokens are defined in `app/globals.css` as CSS custom properties and consumed via Tailwind.
 
-| Token | Light | Dark | Used for |
-|---|---|---|---|
-| `canvas` | `#f7f4ef` | `#1b1a19` | Page background |
-| `surface` | `#ffffff` | `#262423` | Cards, panels |
-| `sun` | `#f3ede2` | `#252321` | Warm accent surfaces |
-| `ink` | `#000000` | `#ffffff` | Primary text |
-| `ink-muted` | `#2b2b2b` | `#faf6ef` | Secondary text |
-| `accent` | `#f06f42` | same | Orange — CTAs, highlights |
+| Token       | Light     | Dark      | Used for                  |
+| ----------- | --------- | --------- | ------------------------- |
+| `canvas`    | `#f7f4ef` | `#1b1a19` | Page background           |
+| `surface`   | `#ffffff` | `#262423` | Cards, panels             |
+| `sun`       | `#f3ede2` | `#252321` | Warm accent surfaces      |
+| `ink`       | `#000000` | `#ffffff` | Primary text              |
+| `ink-muted` | `#2b2b2b` | `#faf6ef` | Secondary text            |
+| `accent`    | `#f06f42` | same      | Orange — CTAs, highlights |
 
 Dark mode is applied via the `.dark` class on `<html>`, toggled by `ThemeProvider`. A FOUC-prevention script in the root layout reads `localStorage` and applies the class before first paint.
 
