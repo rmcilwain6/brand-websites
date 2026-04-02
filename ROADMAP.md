@@ -174,14 +174,14 @@ Use this file as the **single source of truth for current project status and nex
 ## 6) Prioritized backlog (ordered by impact)
 
 1. **`/book` backend + email flow** — highest broken-link impact; many CTAs point here.
-3. **Admin booking requests + inquiries management UI** — needed to act on submissions.
-4. **Package Builder pricing logic + inquiry submission** — completes the conversion flow.
-5. **`/inquire` recommendation logic** — currently a stub; needs to surface real packages.
-6. **Email notifications provider** (Resend/Postmark/SES) — required for booking/inquiry emails.
-7. **Admin availability slots UI** — needed for `/book` to show available dates.
-8. **Mobile scroll-snap gallery viewer** (spec §9).
-9. **Home page featured galleries** wired to real data.
-10. **E2E smoke tests** for critical paths.
+2. **Admin booking requests + inquiries management UI** — needed to act on submissions.
+3. **Package Builder pricing logic + inquiry submission** — completes the conversion flow.
+4. **`/inquire` recommendation logic** — currently a stub; needs to surface real packages.
+5. **Email notifications provider** (Resend/Postmark/SES) — required for booking/inquiry emails.
+6. **Admin availability slots UI** — needed for `/book` to show available dates.
+7. **Mobile scroll-snap gallery viewer** (spec §9).
+8. **Home page featured galleries** wired to real data.
+9. **E2E smoke tests** for critical paths.
 
 ---
 

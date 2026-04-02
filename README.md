@@ -86,11 +86,11 @@ pnpm --filter admin dev              # admin only (port 3001)
 
 ## Deployment & hosting
 
-| App                  | Host                      | Domain                    |
-| -------------------- | ------------------------- | ------------------------- |
-| `evrydayarchive-web` | Vercel                    | `evrydayarchive.co`       |
-| `admin`              | Vercel                    | `admin.evrydayarchive.co` |
-| Database             | Neon (PostgreSQL)         | shared across envs        |
+| App                  | Host              | Domain                    |
+| -------------------- | ----------------- | ------------------------- |
+| `evrydayarchive-web` | Vercel            | `evrydayarchive.co`       |
+| `admin`              | Vercel            | `admin.evrydayarchive.co` |
+| Database             | Neon (PostgreSQL) | shared across envs        |
 
 Both apps are deployed as separate Vercel projects, each configured via the Vercel dashboard (build commands, env vars, domains). There is no `vercel.json` in the repo — all deployment config lives in the Vercel UI.
 
