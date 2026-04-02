@@ -45,6 +45,21 @@ export const metadata: Metadata = {
   }
 };
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Evryday Archive Co',
+  founder: {
+    '@type': 'Person',
+    name: 'Reed McIlwain'
+  },
+  description:
+    'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
+  url: 'https://evrydayarchive.co',
+  areaServed: ['Kamloops, BC', 'Vancouver Island, BC'],
+  sameAs: ['https://www.instagram.com/evrydayarchive.co/']
+};
+
 const isComingSoon = process.env.NEXT_PUBLIC_COMING_SOON === 'true';
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
@@ -70,6 +85,10 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('ea-theme');document.documentElement.classList.add('no-transition');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`
           }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body>

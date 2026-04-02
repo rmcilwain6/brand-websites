@@ -1,6 +1,7 @@
 import Image from '../../components/img';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 
 import { PublicApiError, fetchPublicGalleryDetail, type GalleryDetail } from '@repo/core';
 
@@ -17,6 +18,37 @@ type GalleryReview = {
 };
 
 export const dynamic = 'force-dynamic';
+
+export const generateMetadata = async ({
+  params
+}: {
+  params: { slug: string };
+}): Promise<Metadata> => {
+  const { ADMIN_API_BASE_URL } = getServerEnv();
+
+  try {
+    const gallery = await fetchPublicGalleryDetail(ADMIN_API_BASE_URL, params.slug, {
+      next: { revalidate: 60 }
+    });
+
+    const title = `${gallery.title} | Evryday Archive Co`;
+    const description =
+      gallery.description ?? 'A photography gallery by Reed McIlwain — Evryday Archive Co.';
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url: `https://evrydayarchive.co/portfolio/${params.slug}`,
+        type: 'website'
+      }
+    };
+  } catch {
+    return {};
+  }
+};
 
 const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
   const { ADMIN_API_BASE_URL } = getServerEnv();
