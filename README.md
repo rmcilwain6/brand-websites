@@ -6,9 +6,9 @@ Multi-site Next.js workspace powered by pnpm workspaces and Turborepo.
 
 ```
 apps/
-├── evrydayarchive-web   public photography site (Q1 primary)
-├── admin                admin CMS (Q1 primary)
-└── reed-web             placeholder — out of scope for Q1
+├── evrydayarchive-web   public photography site
+├── admin                admin CMS
+└── reed-web             placeholder — out of scope
 packages/
 ├── core                 shared types, Zod schemas, API helpers
 ├── db                   Prisma schema, client, and migrations
@@ -89,7 +89,7 @@ pnpm --filter admin dev              # admin only (port 3001)
 | App                  | Host              | Domain                    |
 | -------------------- | ----------------- | ------------------------- |
 | `evrydayarchive-web` | Vercel            | `evrydayarchive.co`       |
-| `admin`              | Vercel (planned)  | `admin.evrydayarchive.co` |
+| `admin`              | Vercel (not yet deployed) | `admin.evrydayarchive.co` |
 | Database             | Neon (PostgreSQL) | shared across envs        |
 
 **`evrydayarchive-web` on Vercel** is configured via `vercel.json` at the repo root. It runs `pnpm --filter @repo/db generate && cd apps/evrydayarchive-web && next build` so Prisma client generation happens before the Next.js build.
@@ -141,6 +141,7 @@ Always run these in order before committing (also enforced by CI):
 pnpm format       # Prettier — must run at workspace root
 pnpm lint         # ESLint
 pnpm typecheck    # TypeScript
+pnpm build        # Next.js production build — catches config/bundler errors
 ```
 
 Scope to a single app if only touching one:
