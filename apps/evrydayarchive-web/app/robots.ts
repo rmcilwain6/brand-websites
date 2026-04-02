@@ -6,6 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/'
     },
-    host: 'https://evrydayarchive.co'
+    host: 'https://evrydayarchive.co',
+    sitemap: 'https://evrydayarchive.co/sitemap.xml'
   };
 }

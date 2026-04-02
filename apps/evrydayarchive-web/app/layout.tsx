@@ -35,14 +35,68 @@ export const metadata: Metadata = {
     description:
       'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
     locale: 'en_CA',
-    siteName: 'Evryday Archive Co'
+    siteName: 'Evryday Archive Co',
+    images: [{ url: '/logo/og-image.jpg', width: 1200, height: 630 }]
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Evryday Archive Co | Reed McIlwain, Photographer',
     description:
-      'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.'
+      'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
+    images: ['/logo/og-image.jpg']
   }
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Evryday Archive Co',
+  founder: {
+    '@type': 'Person',
+    name: 'Reed McIlwain'
+  },
+  description:
+    'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
+  url: 'https://evrydayarchive.co',
+  areaServed: [
+    {
+      '@type': 'City',
+      name: 'Kamloops',
+      containedInPlace: {
+        '@type': 'State',
+        name: 'British Columbia',
+        containedInPlace: { '@type': 'Country', name: 'Canada' }
+      }
+    },
+    {
+      '@type': 'City',
+      name: 'Vancouver',
+      containedInPlace: {
+        '@type': 'State',
+        name: 'British Columbia',
+        containedInPlace: { '@type': 'Country', name: 'Canada' }
+      }
+    },
+    {
+      '@type': 'City',
+      name: 'Victoria',
+      containedInPlace: {
+        '@type': 'State',
+        name: 'British Columbia',
+        containedInPlace: { '@type': 'Country', name: 'Canada' }
+      }
+    },
+    {
+      '@type': 'City',
+      name: 'Nanaimo',
+      containedInPlace: {
+        '@type': 'State',
+        name: 'British Columbia',
+        containedInPlace: { '@type': 'Country', name: 'Canada' }
+      }
+    }
+  ],
+  sameAs: ['https://www.instagram.com/evrydayarchive.co/']
 };
 
 const isComingSoon = process.env.NEXT_PUBLIC_COMING_SOON === 'true';
@@ -70,6 +124,10 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('ea-theme');document.documentElement.classList.add('no-transition');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`
           }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body>
