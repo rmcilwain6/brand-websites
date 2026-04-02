@@ -1,6 +1,6 @@
 # admin
 
-Internal CMS for Evryday Archive Co. Manages galleries, packages, reviews, and (eventually) bookings and availability. Built with Next.js 14 (App Router). Planned deployment at `admin.evrydayarchive.co`.
+Internal CMS for Evryday Archive Co. Manages galleries, packages, reviews, and (eventually) bookings and availability. Built with Next.js 14 (App Router). Deployed at `admin.evrydayarchive.co`.
 
 ---
 
