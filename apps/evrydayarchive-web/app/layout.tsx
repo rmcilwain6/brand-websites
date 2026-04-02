@@ -56,7 +56,44 @@ const jsonLd = {
   description:
     'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
   url: 'https://evrydayarchive.co',
-  areaServed: ['Kamloops, BC', 'Vancouver Island, BC'],
+  areaServed: [
+    {
+      '@type': 'City',
+      name: 'Kamloops',
+      containedInPlace: {
+        '@type': 'State',
+        name: 'British Columbia',
+        containedInPlace: { '@type': 'Country', name: 'Canada' }
+      }
+    },
+    {
+      '@type': 'City',
+      name: 'Vancouver',
+      containedInPlace: {
+        '@type': 'State',
+        name: 'British Columbia',
+        containedInPlace: { '@type': 'Country', name: 'Canada' }
+      }
+    },
+    {
+      '@type': 'City',
+      name: 'Victoria',
+      containedInPlace: {
+        '@type': 'State',
+        name: 'British Columbia',
+        containedInPlace: { '@type': 'Country', name: 'Canada' }
+      }
+    },
+    {
+      '@type': 'City',
+      name: 'Nanaimo',
+      containedInPlace: {
+        '@type': 'State',
+        name: 'British Columbia',
+        containedInPlace: { '@type': 'Country', name: 'Canada' }
+      }
+    }
+  ],
   sameAs: ['https://www.instagram.com/evrydayarchive.co/']
 };
 
