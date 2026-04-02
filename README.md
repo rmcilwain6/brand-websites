@@ -6,9 +6,9 @@ Multi-site Next.js workspace powered by pnpm workspaces and Turborepo.
 
 ```
 apps/
-├── evrydayarchive-web   public photography site (Q1 primary)
-├── admin                admin CMS (Q1 primary)
-└── reed-web             placeholder — out of scope for Q1
+├── evrydayarchive-web   public photography site
+├── admin                admin CMS
+└── reed-web             placeholder — out of scope
 packages/
 ├── core                 shared types, Zod schemas, API helpers
 ├── db                   Prisma schema, client, and migrations
@@ -89,12 +89,12 @@ pnpm --filter admin dev              # admin only (port 3001)
 | App                  | Host              | Domain                    |
 | -------------------- | ----------------- | ------------------------- |
 | `evrydayarchive-web` | Vercel            | `evrydayarchive.co`       |
-| `admin`              | Vercel (planned)  | `admin.evrydayarchive.co` |
+| `admin`              | Vercel            | `admin.evrydayarchive.co` |
 | Database             | Neon (PostgreSQL) | shared across envs        |
 
-**`evrydayarchive-web` on Vercel** is configured via `vercel.json` at the repo root. It runs `pnpm --filter @repo/db generate && cd apps/evrydayarchive-web && next build` so Prisma client generation happens before the Next.js build.
+Both apps are deployed as separate Vercel projects, each configured via the Vercel dashboard (build commands, env vars, domains). There is no `vercel.json` in the repo — all deployment config lives in the Vercel UI.
 
-**`admin` is not yet deployed.** When it is, it will live at `admin.evrydayarchive.co` as a separate Vercel project pointing at the same Neon database. The public site reads gallery and package data from the admin's public API endpoints, so `ADMIN_API_BASE_URL` in production should point to the deployed admin URL.
+The public site's `ADMIN_API_BASE_URL` is set in its Vercel project env vars and points to `admin.evrydayarchive.co`.
 
 **Coming-soon mode** is controlled by `NEXT_PUBLIC_COMING_SOON=true` in the public app's environment. When enabled, middleware redirects all routes to `/coming-soon` except `/api/*`. The coming-soon page includes a waitlist email capture form.
 
@@ -141,6 +141,7 @@ Always run these in order before committing (also enforced by CI):
 pnpm format       # Prettier — must run at workspace root
 pnpm lint         # ESLint
 pnpm typecheck    # TypeScript
+pnpm build        # Next.js production build — catches config/bundler errors
 ```
 
 Scope to a single app if only touching one:

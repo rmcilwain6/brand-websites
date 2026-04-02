@@ -30,7 +30,7 @@ Use this file as the **single source of truth for current project status and nex
 ## 3) Hosting decisions (captured)
 
 - `evrydayarchive-web` → Vercel, domain: `evrydayarchive.co`
-- `admin` → Vercel (not yet deployed), planned domain: `admin.evrydayarchive.co`
+- `admin` → Vercel, domain: `admin.evrydayarchive.co`
 - Database → Neon PostgreSQL (live, shared across local dev and production)
 - Public site reads gallery/package data from the admin API (`ADMIN_API_BASE_URL`)
 - Public site also writes directly to the DB for waitlist entries (`DATABASE_URL`)
@@ -46,8 +46,8 @@ Use this file as the **single source of truth for current project status and nex
 - ✅ CI pipeline (GitHub Actions): install, Prisma generate, typecheck, lint, format check, build, tests
 - ✅ PR checklist template
 - ✅ Testing strategy documented in README
-- ✅ Vercel deployment config for `evrydayarchive-web` (`vercel.json` at repo root)
-- ⬜ Admin not yet deployed to `admin.evrydayarchive.co`
+- ✅ Vercel deployment for `evrydayarchive-web` (configured via Vercel project settings)
+- ✅ Admin deployed to `admin.evrydayarchive.co`
 - ⬜ Issue templates (`.github/ISSUE_TEMPLATE/*`) — not added
 - ⬜ `CODEOWNERS` — not added
 
@@ -66,7 +66,7 @@ Use this file as the **single source of truth for current project status and nex
 - ⬜ Availability slots management UI
 - ⬜ Booking requests management UI (view/respond to incoming booking requests)
 - ⬜ Inquiries management UI (view/respond to inquiry submissions)
-- ⬜ Admin app deployed to `admin.evrydayarchive.co`
+- ✅ Admin deployed to `admin.evrydayarchive.co`
 
 ### Public site (`apps/evrydayarchive-web`)
 
@@ -163,8 +163,8 @@ Use this file as the **single source of truth for current project status and nex
 
 ### Phase 3 — Operational readiness
 
-- [x] Vercel deployment config for `evrydayarchive-web`
-- [ ] Admin deployed to `admin.evrydayarchive.co`
+- [x] Vercel deployment for `evrydayarchive-web`
+- [x] Admin deployed to `admin.evrydayarchive.co`
 - [ ] Branch protections configured to match CI gates
 - [ ] Error handling and logging guidelines
 - [ ] E2E smoke tests (login, gallery publish, public portfolio render)
@@ -173,16 +173,15 @@ Use this file as the **single source of truth for current project status and nex
 
 ## 6) Prioritized backlog (ordered by impact)
 
-1. **Deploy admin to `admin.evrydayarchive.co`** — unblocks real content management in production.
-2. **`/book` backend + email flow** — highest broken-link impact; many CTAs point here.
-3. **Admin booking requests + inquiries management UI** — needed to act on submissions.
-4. **Package Builder pricing logic + inquiry submission** — completes the conversion flow.
-5. **`/inquire` recommendation logic** — currently a stub; needs to surface real packages.
-6. **Email notifications provider** (Resend/Postmark/SES) — required for booking/inquiry emails.
-7. **Admin availability slots UI** — needed for `/book` to show available dates.
-8. **Mobile scroll-snap gallery viewer** (spec §9).
-9. **Home page featured galleries** wired to real data.
-10. **E2E smoke tests** for critical paths.
+1. **`/book` backend + email flow** — highest broken-link impact; many CTAs point here.
+2. **Admin booking requests + inquiries management UI** — needed to act on submissions.
+3. **Package Builder pricing logic + inquiry submission** — completes the conversion flow.
+4. **`/inquire` recommendation logic** — currently a stub; needs to surface real packages.
+5. **Email notifications provider** (Resend/Postmark/SES) — required for booking/inquiry emails.
+6. **Admin availability slots UI** — needed for `/book` to show available dates.
+7. **Mobile scroll-snap gallery viewer** (spec §9).
+8. **Home page featured galleries** wired to real data.
+9. **E2E smoke tests** for critical paths.
 
 ---
 
