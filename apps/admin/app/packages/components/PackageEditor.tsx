@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import type { ModifierType, SliderConfig, ToggleConfig, IncrementerConfig } from '@repo/core';
+import { useToast } from '../../components/Toaster';
 
 const statusOptions = ['DRAFT', 'ACTIVE', 'ARCHIVED'] as const;
 type PackageStatus = (typeof statusOptions)[number];
@@ -436,8 +437,7 @@ const ModifierFormFields = ({
 
 const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
   const [pkg, setPkg] = useState(initialPkg);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { addToast } = useToast();
 
   const [detailsForm, setDetailsForm] = useState({
     name: initialPkg.name,
@@ -457,16 +457,10 @@ const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
   const [editForm, setEditForm] = useState<ModifierFormState>(emptyModifierForm);
   const [editErrors, setEditErrors] = useState<ModifierFormErrors>({});
 
-  const setFeedback = (msg: string | null, err: string | null = null) => {
-    setMessage(msg);
-    setError(err);
-  };
-
   // ── Package details ─────────────────────────────────────────────────────────
 
   const updateDetails = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setFeedback(null);
 
     const response = await fetch(`/api/packages/${pkg.id}`, {
       method: 'PUT',
@@ -492,19 +486,17 @@ const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
     const payload = await response.json();
 
     if (!payload.ok) {
-      setFeedback(null, payload.error?.message ?? 'Unable to update package.');
+      addToast(payload.error?.message ?? 'Unable to update package.', 'error');
       return;
     }
 
     setPkg((prev) => ({ ...prev, ...payload.data }));
-    setFeedback('Package details updated.');
+    addToast('Package details updated.', 'success');
   };
 
   // ── Status ──────────────────────────────────────────────────────────────────
 
   const updateStatus = async () => {
-    setFeedback(null);
-
     const response = await fetch(`/api/packages/${pkg.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -514,19 +506,18 @@ const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
     const payload = await response.json();
 
     if (!payload.ok) {
-      setFeedback(null, payload.error?.message ?? 'Unable to update status.');
+      addToast(payload.error?.message ?? 'Unable to update status.', 'error');
       return;
     }
 
     setPkg((prev) => ({ ...prev, status: payload.data.status }));
-    setFeedback('Status updated.');
+    addToast('Status updated.', 'success');
   };
 
   // ── Add modifier ────────────────────────────────────────────────────────────
 
   const addModifier = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setFeedback(null);
 
     const errors = validateModifierForm(addForm);
     if (Object.keys(errors).length > 0) {
@@ -544,13 +535,13 @@ const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
     const payload = await response.json();
 
     if (!payload.ok) {
-      setFeedback(null, payload.error?.message ?? 'Unable to add modifier.');
+      addToast(payload.error?.message ?? 'Unable to add modifier.', 'error');
       return;
     }
 
     setPkg((prev) => ({ ...prev, modifiers: [...prev.modifiers, payload.data] }));
     setAddForm(emptyModifierForm());
-    setFeedback('Modifier added.');
+    addToast('Modifier added.', 'success');
   };
 
   // ── Edit modifier ───────────────────────────────────────────────────────────
@@ -568,8 +559,6 @@ const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
   };
 
   const saveEdit = async (modifierId: string) => {
-    setFeedback(null);
-
     const errors = validateModifierForm(editForm);
     if (Object.keys(errors).length > 0) {
       setEditErrors(errors);
@@ -586,7 +575,7 @@ const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
     const payload = await response.json();
 
     if (!payload.ok) {
-      setFeedback(null, payload.error?.message ?? 'Unable to update modifier.');
+      addToast(payload.error?.message ?? 'Unable to update modifier.', 'error');
       return;
     }
 
@@ -595,14 +584,12 @@ const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
       modifiers: prev.modifiers.map((m) => (m.id === modifierId ? payload.data : m))
     }));
     setEditingId(null);
-    setFeedback('Modifier updated.');
+    addToast('Modifier updated.', 'success');
   };
 
   // ── Remove modifier ─────────────────────────────────────────────────────────
 
   const removeModifier = async (modifierId: string) => {
-    setFeedback(null);
-
     const response = await fetch(`/api/packages/${pkg.id}/modifiers/${modifierId}`, {
       method: 'DELETE'
     });
@@ -610,7 +597,7 @@ const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
     const payload = await response.json();
 
     if (!payload.ok) {
-      setFeedback(null, payload.error?.message ?? 'Unable to remove modifier.');
+      addToast(payload.error?.message ?? 'Unable to remove modifier.', 'error');
       return;
     }
 
@@ -618,7 +605,7 @@ const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
       ...prev,
       modifiers: prev.modifiers.filter((m) => m.id !== modifierId)
     }));
-    setFeedback('Modifier removed.');
+    addToast('Modifier removed.', 'success');
   };
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -878,18 +865,6 @@ const PackageEditor = ({ pkg: initialPkg }: PackageEditorProps) => {
           </form>
         </div>
       </section>
-
-      {(message || error) && (
-        <div
-          className={`rounded-md border px-4 py-2 text-sm ${
-            error
-              ? 'border-rose-200 bg-rose-50 text-rose-700'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-          }`}
-        >
-          {error ?? message}
-        </div>
-      )}
     </div>
   );
 };
