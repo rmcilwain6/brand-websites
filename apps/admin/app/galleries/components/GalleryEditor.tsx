@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useRef, useState } from 'react';
+import { useToast } from '../../components/Toaster';
 
 const statusOptions = ['DRAFT', 'PUBLISHED', 'ARCHIVED'] as const;
 type GalleryStatus = (typeof statusOptions)[number];
@@ -47,8 +48,7 @@ const stripExtension = (filename: string) => filename.replace(/\.[^/.]+$/, '');
 
 const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
   const [galleryState, setGalleryState] = useState(gallery);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { addToast } = useToast();
   const [queue, setQueue] = useState<UploadItem[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -57,8 +57,6 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
 
   const updateGallery = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
-    setMessage(null);
 
     const response = await fetch(`/api/galleries/${gallery.id}`, {
       method: 'PUT',
@@ -75,20 +73,17 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
 
     const payload = await response.json();
     if (!payload.ok) {
-      setError(payload.error?.message ?? 'Unable to update gallery.');
+      addToast(payload.error?.message ?? 'Unable to update gallery.', 'error');
       return;
     }
 
     setGalleryState((prev) => ({ ...prev, ...payload.data }));
-    setMessage('Gallery details updated.');
+    addToast('Gallery details updated.', 'success');
   };
 
   // ── Status ───────────────────────────────────────────────────────────────────
 
   const updateStatus = async () => {
-    setError(null);
-    setMessage(null);
-
     const response = await fetch(`/api/galleries/${gallery.id}/publish`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -97,12 +92,12 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
 
     const payload = await response.json();
     if (!payload.ok) {
-      setError(payload.error?.message ?? 'Unable to update status.');
+      addToast(payload.error?.message ?? 'Unable to update status.', 'error');
       return;
     }
 
     setGalleryState((prev) => ({ ...prev, status: payload.data.status }));
-    setMessage('Status updated.');
+    addToast('Status updated.', 'success');
   };
 
   // ── Upload queue ─────────────────────────────────────────────────────────────
@@ -137,8 +132,6 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
     if (pending.length === 0) return;
 
     setUploading(true);
-    setError(null);
-    setMessage(null);
 
     // Fetch a signed upload signature from the server once for the batch.
     let sigData: {
@@ -155,7 +148,7 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
         throw new Error(sigPayload.error?.message ?? 'Failed to get upload signature.');
       sigData = sigPayload.data;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to get upload signature.');
+      addToast(err instanceof Error ? err.message : 'Failed to get upload signature.', 'error');
       setUploading(false);
       return;
     }
@@ -233,22 +226,19 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
     }
 
     setUploading(false);
-    setMessage('Upload complete.');
+    addToast('Upload complete.', 'success');
   };
 
   // ── Cover image ───────────────────────────────────────────────────────────────
 
   const setCoverImage = async (galleryImageId: string) => {
-    setError(null);
-    setMessage(null);
-
     const response = await fetch(`/api/galleries/${gallery.id}/images/${galleryImageId}`, {
       method: 'PATCH'
     });
 
     const payload = await response.json();
     if (!payload.ok) {
-      setError(payload.error?.message ?? 'Unable to set cover image.');
+      addToast(payload.error?.message ?? 'Unable to set cover image.', 'error');
       return;
     }
 
@@ -256,22 +246,19 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
       ...prev,
       images: prev.images.map((img) => ({ ...img, isCover: img.id === galleryImageId }))
     }));
-    setMessage('Cover image updated.');
+    addToast('Cover image updated.', 'success');
   };
 
   // ── Remove image ─────────────────────────────────────────────────────────────
 
   const removeGalleryImage = async (galleryImageId: string) => {
-    setError(null);
-    setMessage(null);
-
     const response = await fetch(`/api/galleries/${gallery.id}/images/${galleryImageId}`, {
       method: 'DELETE'
     });
 
     const payload = await response.json();
     if (!payload.ok) {
-      setError(payload.error?.message ?? 'Unable to remove image.');
+      addToast(payload.error?.message ?? 'Unable to remove image.', 'error');
       return;
     }
 
@@ -279,7 +266,7 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
       ...prev,
       images: prev.images.filter((image) => image.id !== galleryImageId)
     }));
-    setMessage('Image removed.');
+    addToast('Image removed.', 'success');
   };
 
   // ── Render ───────────────────────────────────────────────────────────────────
@@ -533,18 +520,6 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
           )}
         </div>
       </section>
-
-      {(message || error) && (
-        <div
-          className={`rounded-md border px-4 py-2 text-sm ${
-            error
-              ? 'border-rose-200 bg-rose-50 text-rose-700'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-          }`}
-        >
-          {error ?? message}
-        </div>
-      )}
     </div>
   );
 };

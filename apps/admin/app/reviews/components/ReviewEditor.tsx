@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useToast } from '../../components/Toaster';
 
 type Gallery = {
   id: string;
@@ -51,8 +52,7 @@ const toDateInputValue = (iso: string | null): string => {
 const ReviewEditor = ({ review, galleries, allImageAssets }: ReviewEditorProps) => {
   const router = useRouter();
   const [state, setState] = useState(review);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { addToast } = useToast();
   const [deleting, setDeleting] = useState(false);
 
   // Images available for picking: if a gallery is selected, prefer its images;
@@ -63,8 +63,6 @@ const ReviewEditor = ({ review, galleries, allImageAssets }: ReviewEditorProps) 
 
   const save = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
-    setMessage(null);
 
     const body: Record<string, unknown> = {
       clientName: state.clientName,
@@ -89,7 +87,7 @@ const ReviewEditor = ({ review, galleries, allImageAssets }: ReviewEditorProps) 
     const payload = await response.json();
 
     if (!payload.ok) {
-      setError(payload.error?.message ?? 'Unable to save review.');
+      addToast(payload.error?.message ?? 'Unable to save review.', 'error');
       return;
     }
 
@@ -100,7 +98,7 @@ const ReviewEditor = ({ review, galleries, allImageAssets }: ReviewEditorProps) 
         ? new Date(payload.data.sessionDate).toISOString().slice(0, 10)
         : null
     }));
-    setMessage('Review saved.');
+    addToast('Review saved.', 'success');
   };
 
   const deleteReview = async () => {
@@ -111,7 +109,7 @@ const ReviewEditor = ({ review, galleries, allImageAssets }: ReviewEditorProps) 
     const payload = await response.json();
 
     if (!payload.ok) {
-      setError(payload.error?.message ?? 'Unable to delete review.');
+      addToast(payload.error?.message ?? 'Unable to delete review.', 'error');
       setDeleting(false);
       return;
     }
@@ -296,18 +294,6 @@ const ReviewEditor = ({ review, galleries, allImageAssets }: ReviewEditorProps) 
           </button>
         </div>
       </form>
-
-      {(message || error) && (
-        <div
-          className={`rounded-md border px-4 py-2 text-sm ${
-            error
-              ? 'border-rose-200 bg-rose-50 text-rose-700'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-          }`}
-        >
-          {error ?? message}
-        </div>
-      )}
     </div>
   );
 };
