@@ -56,6 +56,7 @@ const ScheduleManager = ({
     }
 
     setLocations((prev) => [...prev, payload.data].sort((a, b) => a.name.localeCompare(b.name)));
+    setWindowForm((prev) => ({ ...prev, locationId: prev.locationId || payload.data.id }));
     setNewLocationName('');
     addToast('Location added.', 'success');
   };
@@ -231,7 +232,9 @@ const ScheduleManager = ({
         </p>
 
         {locations.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-400">Add at least one location above first.</p>
+          <p className="mt-4 text-sm text-slate-400">
+            Add at least one location in the section above first.
+          </p>
         ) : (
           <form onSubmit={addWindow} className="mt-4 flex flex-wrap items-end gap-4">
             <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
