@@ -17,7 +17,9 @@ export const POST = async (
   const body = await req.json().catch(() => null);
   const parsed = ReorderSchema.safeParse(body);
   if (!parsed.success) {
-    return jsonError(createApiError('VALIDATION_ERROR', 'ids must be a non-empty array of strings.'));
+    return jsonError(
+      createApiError('VALIDATION_ERROR', 'ids must be a non-empty array of strings.')
+    );
   }
 
   const { ids } = parsed.data;

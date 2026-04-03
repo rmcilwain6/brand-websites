@@ -8,7 +8,9 @@ import { ToastProvider } from './Toaster';
 const navItems = [
   { label: 'Galleries', href: '/galleries' },
   { label: 'Packages', href: '/packages' },
-  { label: 'Reviews', href: '/reviews' }
+  { label: 'Reviews', href: '/reviews' },
+  { label: 'Availability', href: '/availability' },
+  { label: 'Schedule', href: '/schedule' }
 ];
 
 export const AdminShell = ({ children }: { children: ReactNode }) => {
