@@ -2,6 +2,21 @@
 
 import Image from 'next/image';
 import { useRef, useState } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useToast } from '../../components/Toaster';
 
 const statusOptions = ['DRAFT', 'PUBLISHED', 'ARCHIVED'] as const;
@@ -46,11 +61,88 @@ type UploadItem = {
 
 const stripExtension = (filename: string) => filename.replace(/\.[^/.]+$/, '');
 
+// ── Sortable image row ────────────────────────────────────────────────────────
+
+const SortableImageRow = ({
+  image,
+  onSetCover,
+  onRemove
+}: {
+  image: GalleryImage;
+  onSetCover: (id: string) => void;
+  onRemove: (id: string) => void;
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: image.id
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center justify-between gap-4 rounded-md border border-slate-100 bg-white px-3 py-2"
+    >
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className="cursor-grab touch-none text-slate-300 hover:text-slate-500 active:cursor-grabbing"
+          aria-label="Drag to reorder"
+        >
+          ⠿
+        </button>
+        <Image
+          src={image.imageAsset.src}
+          alt={image.imageAsset.alt}
+          width={48}
+          height={48}
+          className="h-12 w-12 rounded-md object-cover"
+        />
+        <div>
+          <p className="text-sm font-semibold text-slate-800">{image.imageAsset.alt}</p>
+          <p className="text-xs text-slate-500">
+            {image.isCover && <span className="text-amber-600">Cover</span>}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        {!image.isCover && (
+          <button
+            type="button"
+            onClick={() => onSetCover(image.id)}
+            className="text-xs font-semibold text-slate-500 hover:text-amber-600"
+          >
+            Set cover
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => onRemove(image.id)}
+          className="text-xs font-semibold text-rose-600 hover:text-rose-500"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
   const [galleryState, setGalleryState] = useState(gallery);
   const { addToast } = useToast();
   const [queue, setQueue] = useState<UploadItem[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [orderDirty, setOrderDirty] = useState(false);
+  const [savingOrder, setSavingOrder] = useState(false);
+
+  const sensors = useSensors(useSensor(PointerSensor));
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── Gallery details ──────────────────────────────────────────────────────────
@@ -269,6 +361,38 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
     addToast('Image removed.', 'success');
   };
 
+  // ── Reorder ──────────────────────────────────────────────────────────────────
+
+  const onDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setGalleryState((prev) => {
+      const oldIndex = prev.images.findIndex((img) => img.id === active.id);
+      const newIndex = prev.images.findIndex((img) => img.id === over.id);
+      return { ...prev, images: arrayMove(prev.images, oldIndex, newIndex) };
+    });
+    setOrderDirty(true);
+  };
+
+  const saveOrder = async () => {
+    setSavingOrder(true);
+    const ids = galleryState.images.map((img) => img.id);
+    const response = await fetch(`/api/galleries/${gallery.id}/images/reorder`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids })
+    });
+    const payload = await response.json();
+    setSavingOrder(false);
+    if (!payload.ok) {
+      addToast(payload.error?.message ?? 'Unable to save order.', 'error');
+      return;
+    }
+    setOrderDirty(false);
+    addToast('Image order saved.', 'success');
+  };
+
   // ── Render ───────────────────────────────────────────────────────────────────
 
   const queuedCount = queue.filter((i) => i.status === 'queued').length;
@@ -472,51 +596,45 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
         )}
 
         {/* Attached images */}
-        <div className="mt-6 space-y-2">
+        <div className="mt-6">
           {galleryState.images.length === 0 ? (
             <p className="text-sm text-slate-500">No images attached yet.</p>
           ) : (
-            galleryState.images.map((image) => (
-              <div
-                key={image.id}
-                className="flex items-center justify-between gap-4 rounded-md border border-slate-100 px-3 py-2"
+            <>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={onDragEnd}
               >
-                <div className="flex items-center gap-3">
-                  <Image
-                    src={image.imageAsset.src}
-                    alt={image.imageAsset.alt}
-                    width={48}
-                    height={48}
-                    className="h-12 w-12 rounded-md object-cover"
-                  />
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800">{image.imageAsset.alt}</p>
-                    <p className="text-xs text-slate-500">
-                      #{image.order}
-                      {image.isCover && <span className="ml-1.5 text-amber-600">Cover</span>}
-                    </p>
+                <SortableContext
+                  items={galleryState.images.map((img) => img.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-2">
+                    {galleryState.images.map((image) => (
+                      <SortableImageRow
+                        key={image.id}
+                        image={image}
+                        onSetCover={setCoverImage}
+                        onRemove={removeGalleryImage}
+                      />
+                    ))}
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {!image.isCover && (
-                    <button
-                      type="button"
-                      onClick={() => setCoverImage(image.id)}
-                      className="text-xs font-semibold text-slate-500 hover:text-amber-600"
-                    >
-                      Set cover
-                    </button>
-                  )}
+                </SortableContext>
+              </DndContext>
+              {orderDirty && (
+                <div className="mt-3 flex justify-end">
                   <button
                     type="button"
-                    onClick={() => removeGalleryImage(image.id)}
-                    className="text-xs font-semibold text-rose-600 hover:text-rose-500"
+                    onClick={saveOrder}
+                    disabled={savingOrder}
+                    className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-300"
                   >
-                    Remove
+                    {savingOrder ? 'Saving…' : 'Save order'}
                   </button>
                 </div>
-              </div>
-            ))
+              )}
+            </>
           )}
         </div>
       </section>
