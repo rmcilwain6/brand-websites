@@ -8,8 +8,8 @@ export const GET = async (req: Request): Promise<Response> => {
 
   const slots = await prisma.timeSlot.findMany({
     where: {
-      ...(from && { startsAt: { gte: new Date(from) } }),
-      ...(to && { endsAt: { lte: new Date(to) } })
+      ...(from && { endsAt: { gte: new Date(from) } }),
+      ...(to && { startsAt: { lte: new Date(to) } })
     },
     orderBy: { startsAt: 'asc' },
     select: { id: true, startsAt: true, endsAt: true, status: true }

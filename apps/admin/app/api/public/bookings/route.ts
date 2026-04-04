@@ -16,6 +16,7 @@ export const POST = async (req: Request): Promise<Response> => {
     name,
     email,
     phone,
+    location,
     preferredDate,
     preferredTime,
     notes,
@@ -40,6 +41,7 @@ export const POST = async (req: Request): Promise<Response> => {
         phone: phone ?? null,
         message: notes ?? null,
         payload: {
+          location,
           packageName: packageName ?? null,
           modifierIds,
           estimatedTotalCents: estimatedTotalCents ?? null,
@@ -67,6 +69,7 @@ export const POST = async (req: Request): Promise<Response> => {
     name,
     email,
     phone: phone ?? undefined,
+    location,
     preferredDate,
     preferredTime: preferredTime ?? undefined,
     packageName: packageName ?? undefined,

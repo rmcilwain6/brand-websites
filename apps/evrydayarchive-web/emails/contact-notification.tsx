@@ -6,10 +6,11 @@ import { EmailLayout, tokens } from './layout';
 type Props = {
   name: string;
   email: string;
+  location?: string;
   message?: string;
 };
 
-export const ContactNotification = ({ name, email, message }: Props) => (
+export const ContactNotification = ({ name, email, location, message }: Props) => (
   <EmailLayout preview={`New message from ${name}`}>
     <Text style={styles.label}>New message</Text>
     <Text style={styles.heading}>From {name}</Text>
@@ -28,6 +29,12 @@ export const ContactNotification = ({ name, email, message }: Props) => (
             </Link>
           </td>
         </tr>
+        {location && (
+          <tr>
+            <td style={styles.fieldLabel}>Location</td>
+            <td style={styles.fieldValue}>{location}</td>
+          </tr>
+        )}
       </tbody>
     </table>
 
@@ -45,6 +52,7 @@ export const ContactNotification = ({ name, email, message }: Props) => (
 ContactNotification.PreviewProps = {
   name: 'Sarah Holloway',
   email: 'sarah@example.com',
+  location: 'Kamloops',
   message:
     "Hi Reed, I've been following your work for a while and I'd love to chat about doing a session this summer. We're planning a family trip to Kamloops in July — would you be available?"
 };

@@ -2,16 +2,30 @@
 
 import { useState } from 'react';
 
+import { LocationPicker } from '../components/location-picker';
+import type { CoreLocation } from '../components/location-picker';
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
+
+const inputCls = (hasError = false) =>
+  [
+    'w-full rounded-card border bg-canvas px-4 py-3 text-base text-ink placeholder-ink-faint transition-colors duration-fast focus:outline-none disabled:opacity-50',
+    hasError ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-ink'
+  ].join(' ');
 
 export const ContactForm = () => {
   const [state, setState] = useState<FormState>('idle');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [locationSelect, setLocationSelect] = useState<CoreLocation | 'Other' | ''>('');
+  const [locationOther, setLocationOther] = useState('');
   const [message, setMessage] = useState('');
+
+  const resolvedLocation =
+    locationSelect === 'Other' ? locationOther.trim() : locationSelect || undefined;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +41,13 @@ export const ContactForm = () => {
       const res = await fetch('/api/inquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'general', name, email, message })
+        body: JSON.stringify({
+          type: 'general',
+          name,
+          email,
+          location: resolvedLocation,
+          message
+        })
       });
 
       if (res.ok) {
@@ -65,7 +85,7 @@ export const ContactForm = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           disabled={state === 'submitting'}
-          className="w-full rounded-card border border-border bg-canvas px-4 py-3 text-base text-ink placeholder-ink-faint transition-colors duration-fast focus:border-ink focus:outline-none disabled:opacity-50"
+          className={inputCls()}
           placeholder="Your name"
         />
       </div>
@@ -86,16 +106,41 @@ export const ContactForm = () => {
           }}
           disabled={state === 'submitting'}
           aria-describedby={emailError ? 'email-error' : undefined}
-          className={[
-            'w-full rounded-card border bg-canvas px-4 py-3 text-base text-ink placeholder-ink-faint transition-colors duration-fast focus:outline-none disabled:opacity-50',
-            emailError ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-ink'
-          ].join(' ')}
+          className={inputCls(!!emailError)}
           placeholder="you@example.com"
         />
         {emailError && (
           <p id="email-error" role="alert" className="mt-1.5 text-sm text-red-600">
             {emailError}
           </p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="location-select" className="mb-2 block text-sm font-medium text-ink">
+          Where are you based?{' '}
+          <span className="text-xs font-normal text-ink-faint">(optional)</span>
+        </label>
+        <LocationPicker
+          id="location-select"
+          value={locationSelect}
+          onChange={(v) => {
+            setLocationSelect(v);
+            setLocationOther('');
+          }}
+        />
+
+        {locationSelect === 'Other' && (
+          <input
+            id="location-other"
+            type="text"
+            placeholder="e.g. Tofino, Whistler, Victoria area…"
+            value={locationOther}
+            onChange={(e) => setLocationOther(e.target.value)}
+            disabled={state === 'submitting'}
+            aria-label="Describe your location"
+            className={`${inputCls()} mt-2`}
+          />
         )}
       </div>
 
