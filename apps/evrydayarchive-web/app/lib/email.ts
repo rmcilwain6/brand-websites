@@ -34,14 +34,16 @@ export const sendContactConfirmation = async ({ name, email }: { name: string; e
 export const sendContactNotification = async ({
   name,
   email,
+  location,
   message
 }: {
   name: string;
   email: string;
+  location?: string;
   message?: string;
 }) => {
   const { NOTIFICATION_EMAIL } = getEmailEnv();
-  const html = await render(ContactNotification({ name, email, message }));
+  const html = await render(ContactNotification({ name, email, location, message }));
 
   await getResend().emails.send({
     from: FROM,

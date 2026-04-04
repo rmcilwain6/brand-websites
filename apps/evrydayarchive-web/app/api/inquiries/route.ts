@@ -9,12 +9,12 @@ export const POST = async (req: Request): Promise<Response> => {
     return jsonError(result.error);
   }
 
-  const { name, email, message } = result.data;
+  const { name, email, location, message } = result.data;
 
   // Fire both emails concurrently; don't let a send failure block the response.
   Promise.all([
     sendContactConfirmation({ name, email }),
-    sendContactNotification({ name, email, message })
+    sendContactNotification({ name, email, location, message })
   ]).catch((err) => {
     console.error('[inquiries] Email send failed', err);
   });
