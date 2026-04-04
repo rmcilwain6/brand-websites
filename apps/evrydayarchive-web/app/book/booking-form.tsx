@@ -5,12 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 
 import type {
   IncrementerConfig,
+  LocationWindow,
   PublicPackage,
   PublicPackageModifier,
   SliderConfig,
   TimeSlot
 } from '@repo/core';
-import { PublicAvailabilityResponseSchema } from '@repo/core';
+import { PublicAvailabilityResponseSchema, PublicScheduleResponseSchema } from '@repo/core';
 
 import { LocationPicker } from '../components/location-picker';
 import type { CoreLocation } from '../components/location-picker';
@@ -131,6 +132,7 @@ export const BookingForm = ({
   const [notes, setNotes] = useState('');
 
   const [unavailableDates, setUnavailableDates] = useState<Set<string>>(new Set());
+  const [locationWindows, setLocationWindows] = useState<LocationWindow[]>([]);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -139,7 +141,7 @@ export const BookingForm = ({
 
   const today = new Date().toISOString().split('T')[0] as string;
 
-  // ── Fetch availability on mount ─────────────────────────────────────────────
+  // ── Fetch availability + schedule on mount ──────────────────────────────────
 
   useEffect(() => {
     const from = today;
@@ -158,6 +160,18 @@ export const BookingForm = ({
       })
       .catch(() => {
         // Non-critical — calendar still works without availability data
+      });
+
+    fetch(`/api/schedule?from=${from}&to=${to}`)
+      .then((r) => r.json())
+      .then((body) => {
+        const parsed = PublicScheduleResponseSchema.safeParse(body);
+        if (parsed.success) {
+          setLocationWindows(parsed.data);
+        }
+      })
+      .catch(() => {
+        // Non-critical — calendar still works without schedule data
       });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -386,6 +400,7 @@ export const BookingForm = ({
               }}
               min={today}
               unavailableDates={unavailableDates}
+              locationWindows={locationWindows}
               placeholder="Choose a date"
               hasError={!!fieldErrors.date}
               aria-describedby={fieldErrors.date ? 'date-error' : undefined}

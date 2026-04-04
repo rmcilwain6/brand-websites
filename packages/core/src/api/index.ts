@@ -2,6 +2,7 @@ export * from './client';
 export * from './errors';
 export * from './publicAvailability';
 export * from './publicGalleries';
+export * from './publicSchedule';
 export * from './publicPackages';
 export * from './publicReviews';
 export * from './response';
