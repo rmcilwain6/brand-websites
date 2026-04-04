@@ -56,7 +56,15 @@ const buildUnavailableDates = (slots: TimeSlot[]): Set<string> => {
   const set = new Set<string>();
   for (const slot of slots) {
     if (slot.status === 'UNAVAILABLE') {
-      set.add(toDateString(slot.startsAt));
+      const start = new Date(slot.startsAt);
+      const end = new Date(slot.endsAt);
+      const cursor = new Date(start);
+      cursor.setUTCHours(0, 0, 0, 0);
+      end.setUTCHours(0, 0, 0, 0);
+      while (cursor <= end) {
+        set.add(cursor.toISOString().split('T')[0] as string);
+        cursor.setUTCDate(cursor.getUTCDate() + 1);
+      }
     }
   }
   return set;
