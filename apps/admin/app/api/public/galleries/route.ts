@@ -5,6 +5,7 @@ type GalleryWithCover = {
   id: string;
   slug: string;
   title: string;
+  headline: string | null;
   location: string | null;
   order: number;
   featured: boolean;
@@ -48,6 +49,7 @@ export const GET = async (req: Request): Promise<Response> => {
         id: gallery.id,
         slug: gallery.slug,
         title: gallery.title,
+        headline: gallery.headline,
         location: gallery.location,
         order: gallery.order,
         featured: gallery.featured,

@@ -60,8 +60,10 @@ type Gallery = {
   id: string;
   title: string;
   slug: string;
+  headline: string | null;
   description: string | null;
   location: string | null;
+  shootDate: string | null;
   status: GalleryStatus;
   order: number;
   featured: boolean;
@@ -181,8 +183,10 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
       body: JSON.stringify({
         title: galleryState.title,
         slug: galleryState.slug,
+        headline: galleryState.headline || undefined,
         description: galleryState.description || undefined,
         location: galleryState.location || undefined,
+        shootDate: galleryState.shootDate || undefined,
         order: galleryState.order,
         featured: galleryState.featured,
         imageLayout: galleryState.imageLayout
@@ -502,6 +506,15 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
             />
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+            Headline
+            <input
+              value={galleryState.headline ?? ''}
+              onChange={(e) => setGalleryState((prev) => ({ ...prev, headline: e.target.value }))}
+              placeholder="e.g. Golden hour on the coast"
+              className="rounded-md border border-slate-200 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
             Description
             <textarea
               value={galleryState.description ?? ''}
@@ -518,6 +531,17 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
               value={galleryState.location ?? ''}
               onChange={(e) => setGalleryState((prev) => ({ ...prev, location: e.target.value }))}
               className="rounded-md border border-slate-200 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+            Shoot date
+            <input
+              type="date"
+              value={galleryState.shootDate ? galleryState.shootDate.split('T')[0] : ''}
+              onChange={(e) =>
+                setGalleryState((prev) => ({ ...prev, shootDate: e.target.value || null }))
+              }
+              className="w-44 rounded-md border border-slate-200 px-3 py-2 text-sm"
             />
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">

@@ -12,8 +12,10 @@ export const GalleryCreateSchema = z.object({
     .string()
     .min(2)
     .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and dashes.'),
+  headline: z.string().optional(),
   description: z.string().optional(),
   location: z.string().optional(),
+  shootDate: z.coerce.date().optional(),
   order: z.number().int().min(0).optional(),
   featured: z.boolean().optional(),
   password: z.string().min(4).optional(),
@@ -58,6 +60,7 @@ export const GalleryListItemSchema = z.object({
   id: z.string(),
   slug: z.string(),
   title: z.string(),
+  headline: z.string().nullable(),
   location: z.string().nullable(),
   coverImage: GalleryCoverImageSchema.nullable(),
   imageCount: z.number().int().nonnegative(),
@@ -81,7 +84,9 @@ export const GalleryDetailSchema = z.object({
   id: z.string(),
   slug: z.string(),
   title: z.string(),
+  headline: z.string().nullable(),
   description: z.string().nullable(),
+  shootDate: z.string().nullable(),
   location: z.string().nullable(),
   imageLayout: GalleryImageLayoutSchema,
   images: z.array(GalleryImageSchema)

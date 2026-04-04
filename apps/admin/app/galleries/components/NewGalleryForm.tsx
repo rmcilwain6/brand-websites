@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 const initialState = {
   title: '',
   slug: '',
+  headline: '',
   description: '',
   location: ''
 };
@@ -33,6 +34,7 @@ const NewGalleryForm = () => {
       body: JSON.stringify({
         title: formState.title,
         slug: formState.slug,
+        headline: formState.headline || undefined,
         description: formState.description || undefined,
         location: formState.location || undefined
       })
@@ -67,6 +69,15 @@ const NewGalleryForm = () => {
           onChange={handleChange('slug')}
           className="rounded-md border border-slate-200 px-3 py-2 text-sm"
           required
+        />
+      </label>
+      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        Headline
+        <input
+          value={formState.headline}
+          onChange={handleChange('headline')}
+          placeholder="e.g. Golden hour on the coast"
+          className="rounded-md border border-slate-200 px-3 py-2 text-sm"
         />
       </label>
       <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">

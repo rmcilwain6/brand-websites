@@ -22,7 +22,11 @@ const GalleryDetailPage = async ({ params }: { params: { id: string } }) => {
   }
 
   const { passwordHash, ...galleryWithoutPasswordHash } = gallery;
-  const galleryForEditor = { ...galleryWithoutPasswordHash, hasPassword: !!passwordHash };
+  const galleryForEditor = {
+    ...galleryWithoutPasswordHash,
+    hasPassword: !!passwordHash,
+    shootDate: gallery.shootDate?.toISOString() ?? null
+  };
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-16">

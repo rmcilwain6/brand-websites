@@ -7,6 +7,7 @@ const galleryListResponse = [
     id: 'gallery-1',
     slug: 'fall-highlights',
     title: 'Fall Highlights',
+    headline: 'Golden hour on the coast',
     location: 'Austin, TX',
     coverImage: { src: 'https://example.com/cover.jpg', alt: 'Cover', height: 1, width: 1 },
     imageCount: 12,
@@ -19,7 +20,9 @@ const galleryDetailResponse = {
   id: 'gallery-1',
   slug: 'fall-highlights',
   title: 'Fall Highlights',
+  headline: 'Golden hour on the coast',
   description: null,
+  shootDate: '2024-10-15T00:00:00.000Z',
   location: 'Austin, TX',
   imageLayout: 'MASONRY',
   images: [
