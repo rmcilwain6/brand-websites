@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export * from './schemas/admin-packages';
+export * from './schemas/availability';
 export * from './schemas/booking-form';
 export * from './schemas/booking-request';
 export * from './schemas/gallery';

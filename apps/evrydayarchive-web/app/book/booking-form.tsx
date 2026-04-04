@@ -7,8 +7,10 @@ import type {
   IncrementerConfig,
   PublicPackage,
   PublicPackageModifier,
-  SliderConfig
+  SliderConfig,
+  TimeSlot
 } from '@repo/core';
+import { PublicAvailabilityResponseSchema } from '@repo/core';
 
 import { LocationPicker } from '../components/location-picker';
 import type { CoreLocation } from '../components/location-picker';
@@ -47,13 +49,6 @@ type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 type FieldErrors = Partial<Record<'name' | 'email' | 'phone' | 'location' | 'date', string>>;
 
 // ── Availability helpers ──────────────────────────────────────────────────────
-
-type TimeSlot = {
-  id: string;
-  startsAt: string;
-  endsAt: string;
-  status: string;
-};
 
 const toDateString = (iso: string): string => iso.split('T')[0] as string;
 
@@ -148,8 +143,10 @@ export const BookingForm = ({
     fetch(`/api/availability?from=${from}&to=${to}`)
       .then((r) => r.json())
       .then((body) => {
-        const slots: TimeSlot[] = Array.isArray(body?.data) ? body.data : [];
-        setUnavailableDates(buildUnavailableDates(slots));
+        const parsed = PublicAvailabilityResponseSchema.safeParse(body);
+        if (parsed.success) {
+          setUnavailableDates(buildUnavailableDates(parsed.data));
+        }
       })
       .catch(() => {
         // Non-critical — calendar still works without availability data
