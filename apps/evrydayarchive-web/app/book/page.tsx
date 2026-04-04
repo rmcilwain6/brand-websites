@@ -1,11 +1,15 @@
 import Link from 'next/link';
 
 import {
+  fetchPublicAvailability,
+  fetchPublicSchedule,
   fetchPublicPackages,
   type IncrementerConfig,
+  type LocationWindow,
   type PublicPackage,
   type PublicPackageModifier,
-  type SliderConfig
+  type SliderConfig,
+  type TimeSlot
 } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
@@ -57,12 +61,26 @@ export default async function BookPage({ searchParams }: Props) {
   } = await searchParams;
   const { ADMIN_API_BASE_URL } = getServerEnv();
 
+  const rangeFrom = new Date().toISOString().split('T')[0]!;
+  const rangeToDate = new Date();
+  rangeToDate.setMonth(rangeToDate.getMonth() + 18);
+  const rangeTo = rangeToDate.toISOString().split('T')[0]!;
+
   let packages: PublicPackage[] = [];
-  try {
-    packages = await fetchPublicPackages(ADMIN_API_BASE_URL, { next: { revalidate: 60 } });
-  } catch {
-    // Graceful degradation — form still works without package context
-  }
+  let timeSlots: TimeSlot[] = [];
+  let locationWindows: LocationWindow[] = [];
+
+  await Promise.allSettled([
+    fetchPublicPackages(ADMIN_API_BASE_URL, { next: { revalidate: 60 } }).then(
+      (r) => (packages = r)
+    ),
+    fetchPublicAvailability(ADMIN_API_BASE_URL, { from: rangeFrom, to: rangeTo }).then(
+      (r) => (timeSlots = r)
+    ),
+    fetchPublicSchedule(ADMIN_API_BASE_URL, { from: rangeFrom, to: rangeTo }).then(
+      (r) => (locationWindows = r)
+    )
+  ]);
 
   // Resolve package by slug
   const pkg = packageSlug ? packages.find((p) => p.slug === packageSlug) : undefined;
@@ -150,6 +168,8 @@ export default async function BookPage({ searchParams }: Props) {
               resolvedModifiers={resolvedModifiers}
               modifierValues={modifierValues}
               estimatedTotalCents={estimatedTotalCents}
+              timeSlots={timeSlots}
+              locationWindows={locationWindows}
             />
           </div>
 

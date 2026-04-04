@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import type {
   IncrementerConfig,
@@ -11,7 +11,6 @@ import type {
   SliderConfig,
   TimeSlot
 } from '@repo/core';
-import { PublicAvailabilityResponseSchema, PublicScheduleResponseSchema } from '@repo/core';
 
 import { LocationPicker } from '../components/location-picker';
 import type { CoreLocation } from '../components/location-picker';
@@ -25,6 +24,8 @@ type Props = {
   resolvedModifiers: PublicPackageModifier[];
   modifierValues: Record<string, number>;
   estimatedTotalCents: number | undefined;
+  timeSlots: TimeSlot[];
+  locationWindows: LocationWindow[];
 };
 
 const modifierDisplayValue = (
@@ -115,7 +116,9 @@ export const BookingForm = ({
   pkg,
   resolvedModifiers,
   modifierValues,
-  estimatedTotalCents
+  estimatedTotalCents,
+  timeSlots,
+  locationWindows
 }: Props) => {
   const [status, setStatus] = useState<FormStatus>('idle');
   const [serverError, setServerError] = useState('');
@@ -131,8 +134,7 @@ export const BookingForm = ({
   const [preferredTime, setPreferredTime] = useState('');
   const [notes, setNotes] = useState('');
 
-  const [unavailableDates, setUnavailableDates] = useState<Set<string>>(new Set());
-  const [locationWindows, setLocationWindows] = useState<LocationWindow[]>([]);
+  const [unavailableDates] = useState(() => buildUnavailableDates(timeSlots));
 
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -140,40 +142,6 @@ export const BookingForm = ({
   const locationOtherRef = useRef<HTMLInputElement>(null);
 
   const today = new Date().toISOString().split('T')[0] as string;
-
-  // ── Fetch availability + schedule on mount ──────────────────────────────────
-
-  useEffect(() => {
-    const from = today;
-    // Fetch 18 months ahead — covers any reasonable booking window
-    const toDate = new Date();
-    toDate.setMonth(toDate.getMonth() + 18);
-    const to = toDate.toISOString().split('T')[0];
-
-    fetch(`/api/availability?from=${from}&to=${to}`)
-      .then((r) => r.json())
-      .then((body) => {
-        const parsed = PublicAvailabilityResponseSchema.safeParse(body);
-        if (parsed.success) {
-          setUnavailableDates(buildUnavailableDates(parsed.data));
-        }
-      })
-      .catch(() => {
-        // Non-critical — calendar still works without availability data
-      });
-
-    fetch(`/api/schedule?from=${from}&to=${to}`)
-      .then((r) => r.json())
-      .then((body) => {
-        const parsed = PublicScheduleResponseSchema.safeParse(body);
-        if (parsed.success) {
-          setLocationWindows(parsed.data);
-        }
-      })
-      .catch(() => {
-        // Non-critical — calendar still works without schedule data
-      });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Derived location value ──────────────────────────────────────────────────
 
