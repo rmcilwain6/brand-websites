@@ -259,7 +259,11 @@ export const DatePicker = ({
           role="dialog"
           aria-label="Choose a date"
           className="absolute left-0 top-[calc(100%+6px)] z-20 rounded-card border border-border bg-canvas shadow-warm lg:flex"
-          style={{ minWidth: 'max(100%, min(296px, 100vw - 2rem))' }}
+          style={{
+            width: showSchedulePanel
+              ? 'max(100%, min(472px, 100vw - 2rem))' // 296px calendar + 176px panel (w-44)
+              : 'max(100%, min(296px, 100vw - 2rem))'
+          }}
         >
           {/* Calendar side — fills the natural width on mobile, flex-1 on desktop */}
           <div className="flex-1">
