@@ -5,6 +5,7 @@ import { EmailLayout, tokens } from './layout';
 
 type Props = {
   name: string;
+  location: string;
   preferredDate: string;
   preferredTime?: string;
   packageName?: string;
@@ -21,6 +22,7 @@ const formatCurrency = (cents: number) =>
 
 export const BookingConfirmation = ({
   name,
+  location,
   preferredDate,
   preferredTime,
   packageName,
@@ -48,6 +50,10 @@ export const BookingConfirmation = ({
             </tr>
           )}
           <tr>
+            <td style={styles.fieldLabel}>Location</td>
+            <td style={styles.fieldValue}>{location}</td>
+          </tr>
+          <tr>
             <td style={styles.fieldLabel}>Preferred date</td>
             <td style={styles.fieldValue}>{dateDisplay}</td>
           </tr>
@@ -73,6 +79,7 @@ export const BookingConfirmation = ({
 
 BookingConfirmation.PreviewProps = {
   name: 'Sarah Holloway',
+  location: 'Vancouver',
   preferredDate: '2026-07-12',
   preferredTime: '10:00',
   packageName: 'Full Day',

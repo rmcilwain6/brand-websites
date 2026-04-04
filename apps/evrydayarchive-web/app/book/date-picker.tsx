@@ -27,6 +27,7 @@ type Props = {
   value: string; // YYYY-MM-DD or ''
   onChange: (v: string) => void;
   min?: string; // YYYY-MM-DD — dates before this are disabled
+  unavailableDates?: Set<string>; // YYYY-MM-DD dates explicitly marked unavailable
   placeholder?: string;
   hasError?: boolean;
   'aria-describedby'?: string;
@@ -47,6 +48,7 @@ export const DatePicker = ({
   value,
   onChange,
   min,
+  unavailableDates,
   placeholder = 'Select a date',
   hasError = false,
   'aria-describedby': ariaDescribedby
@@ -122,6 +124,8 @@ export const DatePicker = ({
     return d < new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
   };
 
+  const isUnavailable = (day: number) => !!unavailableDates?.has(toYMD(viewYear, viewMonth, day));
+
   const isSelected = (day: number) => value === toYMD(viewYear, viewMonth, day);
 
   const isToday = (day: number) =>
@@ -130,7 +134,7 @@ export const DatePicker = ({
   // ── Actions ──────────────────────────────────────────────────────────────
 
   const selectDay = (day: number) => {
-    if (isDisabled(day)) return;
+    if (isDisabled(day) || isUnavailable(day)) return;
     onChange(toYMD(viewYear, viewMonth, day));
     setOpen(false);
   };
@@ -234,7 +238,7 @@ export const DatePicker = ({
           role="dialog"
           aria-label="Choose a date"
           className="absolute left-0 top-[calc(100%+6px)] z-20 rounded-card border border-border bg-canvas shadow-warm"
-          style={{ width: 'max(100%, 296px)' }}
+          style={{ width: 'max(100%, min(296px, 100vw - 2rem))' }}
         >
           {/* Month / year header */}
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -290,6 +294,7 @@ export const DatePicker = ({
                 const selected = isSelected(day);
                 const todayCell = isToday(day);
                 const disabled = isDisabled(day);
+                const unavailable = !disabled && isUnavailable(day);
 
                 return (
                   <div key={idx} role="gridcell">
@@ -301,18 +306,21 @@ export const DatePicker = ({
                       disabled={disabled}
                       onClick={() => selectDay(day)}
                       tabIndex={focusedDay === day ? 0 : -1}
-                      aria-label={`${MONTH_NAMES[viewMonth]} ${day}, ${viewYear}${selected ? ' (selected)' : ''}`}
+                      aria-label={`${MONTH_NAMES[viewMonth]} ${day}, ${viewYear}${selected ? ' (selected)' : ''}${unavailable ? ' (not available)' : ''}`}
                       aria-pressed={selected}
-                      aria-disabled={disabled}
+                      aria-disabled={disabled || unavailable}
+                      title={unavailable ? 'Not available' : undefined}
                       className={[
                         'mx-auto flex h-8 w-8 items-center justify-center rounded-card text-sm transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
                         selected
                           ? 'bg-accent font-medium text-white'
                           : disabled
                             ? 'cursor-not-allowed text-ink-faint opacity-30'
-                            : todayCell
-                              ? 'font-medium text-ink ring-1 ring-inset ring-border hover:bg-sun'
-                              : 'text-ink-muted hover:bg-sun hover:text-ink'
+                            : unavailable
+                              ? 'cursor-not-allowed bg-red-50 text-red-300 dark:bg-red-950/20 dark:text-red-700'
+                              : todayCell
+                                ? 'font-medium text-ink ring-1 ring-inset ring-border hover:bg-sun'
+                                : 'text-ink-muted hover:bg-sun hover:text-ink'
                       ].join(' ')}
                     >
                       {day}

@@ -20,6 +20,7 @@ type BookingEmailData = {
   name: string;
   email: string;
   phone?: string;
+  location: string;
   preferredDate: string;
   preferredTime?: string;
   packageName?: string;

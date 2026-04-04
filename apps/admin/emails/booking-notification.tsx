@@ -7,6 +7,7 @@ type Props = {
   name: string;
   email: string;
   phone?: string;
+  location: string;
   preferredDate: string;
   preferredTime?: string;
   packageName?: string;
@@ -26,6 +27,7 @@ export const BookingNotification = ({
   name,
   email,
   phone,
+  location,
   preferredDate,
   preferredTime,
   packageName,
@@ -67,6 +69,10 @@ export const BookingNotification = ({
             </tr>
           )}
           <tr>
+            <td style={styles.fieldLabel}>Location</td>
+            <td style={styles.fieldValue}>{location}</td>
+          </tr>
+          <tr>
             <td style={styles.fieldLabel}>Preferred date</td>
             <td style={styles.fieldValue}>{dateDisplay}</td>
           </tr>
@@ -99,6 +105,7 @@ BookingNotification.PreviewProps = {
   name: 'Sarah Holloway',
   email: 'sarah@example.com',
   phone: '+1 (250) 555-0198',
+  location: 'Vancouver',
   preferredDate: '2026-07-12',
   preferredTime: '10:00',
   packageName: 'Full Day',

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type {
   IncrementerConfig,
@@ -10,6 +10,8 @@ import type {
   SliderConfig
 } from '@repo/core';
 
+import { LocationPicker } from '../components/location-picker';
+import type { CoreLocation } from '../components/location-picker';
 import { DatePicker } from './date-picker';
 import { TimePicker } from './time-picker';
 
@@ -42,7 +44,28 @@ const modifierDisplayValue = (
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
-type FieldErrors = Partial<Record<'name' | 'email' | 'phone' | 'date', string>>;
+type FieldErrors = Partial<Record<'name' | 'email' | 'phone' | 'location' | 'date', string>>;
+
+// ── Availability helpers ──────────────────────────────────────────────────────
+
+type TimeSlot = {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  status: string;
+};
+
+const toDateString = (iso: string): string => iso.split('T')[0] as string;
+
+const buildUnavailableDates = (slots: TimeSlot[]): Set<string> => {
+  const set = new Set<string>();
+  for (const slot of slots) {
+    if (slot.status === 'UNAVAILABLE') {
+      set.add(toDateString(slot.startsAt));
+    }
+  }
+  return set;
+};
 
 // ── Validation helpers ────────────────────────────────────────────────────────
 
@@ -98,15 +121,44 @@ export const BookingForm = ({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [locationSelect, setLocationSelect] = useState<CoreLocation | 'Other' | ''>('');
+  const [locationOther, setLocationOther] = useState('');
   const [preferredDate, setPreferredDate] = useState('');
   const [preferredTime, setPreferredTime] = useState('');
   const [notes, setNotes] = useState('');
 
+  const [unavailableDates, setUnavailableDates] = useState<Set<string>>(new Set());
+
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
+  const locationOtherRef = useRef<HTMLInputElement>(null);
 
   const today = new Date().toISOString().split('T')[0] as string;
+
+  // ── Fetch availability on mount ─────────────────────────────────────────────
+
+  useEffect(() => {
+    const from = today;
+    // Fetch 18 months ahead — covers any reasonable booking window
+    const toDate = new Date();
+    toDate.setMonth(toDate.getMonth() + 18);
+    const to = toDate.toISOString().split('T')[0];
+
+    fetch(`/api/availability?from=${from}&to=${to}`)
+      .then((r) => r.json())
+      .then((body) => {
+        const slots: TimeSlot[] = Array.isArray(body?.data) ? body.data : [];
+        setUnavailableDates(buildUnavailableDates(slots));
+      })
+      .catch(() => {
+        // Non-critical — calendar still works without availability data
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Derived location value ──────────────────────────────────────────────────
+
+  const resolvedLocation = locationSelect === 'Other' ? locationOther.trim() : locationSelect;
 
   // ── Validation ──────────────────────────────────────────────────────────────
 
@@ -127,6 +179,13 @@ export const BookingForm = ({
 
     if (phone.trim() && !isValidPhone(phone)) {
       errs.phone = 'Please enter a valid phone number, or leave this blank.';
+    }
+
+    if (!resolvedLocation) {
+      errs.location =
+        locationSelect === 'Other'
+          ? 'Please describe the shoot location.'
+          : 'Please select a location.';
     }
 
     if (!preferredDate) {
@@ -151,10 +210,10 @@ export const BookingForm = ({
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setFieldErrors(errs);
-      // Focus the first invalid field
       if (errs.name) nameRef.current?.focus();
       else if (errs.email) emailRef.current?.focus();
       else if (errs.phone) phoneRef.current?.focus();
+      else if (errs.location && locationSelect === 'Other') locationOtherRef.current?.focus();
       return;
     }
 
@@ -164,6 +223,7 @@ export const BookingForm = ({
       name,
       email,
       phone: phone || undefined,
+      location: resolvedLocation,
       preferredDate,
       preferredTime: preferredTime || undefined,
       notes: notes || undefined,
@@ -246,11 +306,63 @@ export const BookingForm = ({
         </div>
       )}
 
+      {/* Location */}
+      <fieldset className="space-y-5">
+        <legend className="text-sm font-semibold text-ink">Where are you based?</legend>
+        <p className="text-xs leading-relaxed text-ink-faint">
+          I travel regularly between Vancouver Island and the mainland. Let me know which area
+          you&apos;re in so I can confirm I&apos;ll be there.
+        </p>
+
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="location-select" className="text-sm font-medium text-ink-muted">
+            Location{' '}
+            <span className="text-accent" aria-hidden="true">
+              *
+            </span>
+          </label>
+          <LocationPicker
+            id="location-select"
+            value={locationSelect}
+            onChange={(v) => {
+              setLocationSelect(v);
+              setLocationOther('');
+              clearError('location');
+            }}
+            hasError={!!fieldErrors.location && locationSelect !== 'Other'}
+            aria-describedby={
+              fieldErrors.location && locationSelect !== 'Other' ? 'location-error' : undefined
+            }
+          />
+
+          {locationSelect === 'Other' && (
+            <input
+              ref={locationOtherRef}
+              id="location-other"
+              type="text"
+              placeholder="e.g. Tofino, Whistler, Victoria area…"
+              value={locationOther}
+              onChange={(e) => {
+                setLocationOther(e.target.value);
+                clearError('location');
+              }}
+              aria-label="Describe your location"
+              aria-invalid={!!fieldErrors.location}
+              aria-describedby={fieldErrors.location ? 'location-error' : undefined}
+              className={inputCls(!!fieldErrors.location)}
+            />
+          )}
+
+          <FieldError id="location-error" message={fieldErrors.location} />
+        </div>
+      </fieldset>
+
       {/* Date + time */}
       <fieldset className="space-y-5">
         <legend className="text-sm font-semibold text-ink">Preferred date &amp; time</legend>
         <p className="text-xs leading-relaxed text-ink-faint">
           This is a preference, not a confirmed slot. I&apos;ll reach out to confirm availability.
+          Dates shown in red are already booked.
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
@@ -268,6 +380,7 @@ export const BookingForm = ({
                 clearError('date');
               }}
               min={today}
+              unavailableDates={unavailableDates}
               placeholder="Choose a date"
               hasError={!!fieldErrors.date}
               aria-describedby={fieldErrors.date ? 'date-error' : undefined}
@@ -374,7 +487,7 @@ export const BookingForm = ({
           rows={4}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Location ideas, vision, special requests…"
+          placeholder="Vision, vibe, special requests…"
           className={`${inputCls()} resize-none`}
         />
       </div>
