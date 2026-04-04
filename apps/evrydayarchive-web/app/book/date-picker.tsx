@@ -258,15 +258,11 @@ export const DatePicker = ({
         <div
           role="dialog"
           aria-label="Choose a date"
-          className="absolute left-0 top-[calc(100%+6px)] z-20 rounded-card border border-border bg-canvas shadow-warm lg:flex"
-          style={{
-            width: showSchedulePanel
-              ? 'max(100%, min(472px, 100vw - 2rem))' // 296px calendar + 176px panel (w-44)
-              : 'max(100%, min(296px, 100vw - 2rem))'
-          }}
+          className="absolute left-0 top-[calc(100%+6px)] z-20 rounded-card border border-border bg-canvas shadow-warm flex flex-col md:flex-row"
+          style={{ minWidth: 'max(100%, min(296px, 100vw - 2rem))' }}
         >
-          {/* Calendar side — fills the natural width on mobile, flex-1 on desktop */}
-          <div className="flex-1">
+          {/* Calendar side — min-w-[296px] on md+ pushes the container wider to fit both children */}
+          <div className="min-w-0 flex-1 md:min-w-[296px]">
             {/* Month / year header */}
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <button
@@ -369,9 +365,9 @@ export const DatePicker = ({
             </div>
           </div>
 
-          {/* Schedule panel — desktop only, attached to the right of the popup */}
+          {/* Schedule panel — below calendar on mobile, attached to the right on md+ */}
           {showSchedulePanel && (
-            <div className="hidden w-44 flex-none border-l border-border p-4 lg:block">
+            <div className="flex-none border-t border-border p-4 md:w-44 md:border-l md:border-t-0">
               <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-ink-faint">
                 Where I&apos;ll be
               </p>
