@@ -13,6 +13,20 @@ import type {
 } from '@repo/core';
 import { PublicAvailabilityResponseSchema, PublicScheduleResponseSchema } from '@repo/core';
 
+// ── Schedule helpers ──────────────────────────────────────────────────────────
+
+const fmtWindowDate = (iso: string) =>
+  new Intl.DateTimeFormat('en-CA', { month: 'short', day: 'numeric' }).format(new Date(iso));
+
+const windowsForMonth = (windows: LocationWindow[], year: number, month: number) =>
+  windows.filter((w) => {
+    const wStart = new Date(w.startDate);
+    const wEnd = new Date(w.endDate);
+    const mStart = new Date(year, month, 1);
+    const mEnd = new Date(year, month + 1, 0, 23, 59, 59);
+    return wStart <= mEnd && wEnd >= mStart;
+  });
+
 import { LocationPicker } from '../components/location-picker';
 import type { CoreLocation } from '../components/location-picker';
 import { DatePicker } from './date-picker';
@@ -133,6 +147,10 @@ export const BookingForm = ({
 
   const [unavailableDates, setUnavailableDates] = useState<Set<string>>(new Set());
   const [locationWindows, setLocationWindows] = useState<LocationWindow[]>([]);
+
+  const now = new Date();
+  const [calViewYear, setCalViewYear] = useState(now.getFullYear());
+  const [calViewMonth, setCalViewMonth] = useState(now.getMonth());
 
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -383,36 +401,71 @@ export const BookingForm = ({
           This is a preference, not a confirmed slot. I&apos;ll reach out to confirm availability.
           Dates shown in red are already booked.
         </p>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="preferred-date" className="text-sm font-medium text-ink-muted">
-              Date{' '}
-              <span className="text-accent" aria-hidden="true">
-                *
-              </span>
-            </label>
-            <DatePicker
-              id="preferred-date"
-              value={preferredDate}
-              onChange={(v) => {
-                setPreferredDate(v);
-                clearError('date');
-              }}
-              min={today}
-              unavailableDates={unavailableDates}
-              locationWindows={locationWindows}
-              placeholder="Choose a date"
-              hasError={!!fieldErrors.date}
-              aria-describedby={fieldErrors.date ? 'date-error' : undefined}
-            />
-            <FieldError id="date-error" message={fieldErrors.date} />
+        <div className="lg:flex lg:items-start lg:gap-5">
+          {/* Date + time pickers */}
+          <div className="grid flex-1 gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="preferred-date" className="text-sm font-medium text-ink-muted">
+                Date{' '}
+                <span className="text-accent" aria-hidden="true">
+                  *
+                </span>
+              </label>
+              <DatePicker
+                id="preferred-date"
+                value={preferredDate}
+                onChange={(v) => {
+                  setPreferredDate(v);
+                  clearError('date');
+                }}
+                min={today}
+                unavailableDates={unavailableDates}
+                onMonthChange={(y, m) => {
+                  setCalViewYear(y);
+                  setCalViewMonth(m);
+                }}
+                placeholder="Choose a date"
+                hasError={!!fieldErrors.date}
+                aria-describedby={fieldErrors.date ? 'date-error' : undefined}
+              />
+              <FieldError id="date-error" message={fieldErrors.date} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="preferred-time" className="text-sm font-medium text-ink-muted">
+                Preferred time{' '}
+                <span className="text-xs font-normal text-ink-faint">(optional)</span>
+              </label>
+              <TimePicker id="preferred-time" value={preferredTime} onChange={setPreferredTime} />
+            </div>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="preferred-time" className="text-sm font-medium text-ink-muted">
-              Preferred time <span className="text-xs font-normal text-ink-faint">(optional)</span>
-            </label>
-            <TimePicker id="preferred-time" value={preferredTime} onChange={setPreferredTime} />
-          </div>
+
+          {/* Schedule panel — right of pickers on desktop, below on mobile */}
+          {locationWindows.length > 0 && (
+            <div className="mt-4 rounded-card border border-border bg-surface p-4 lg:mt-0 lg:w-44 lg:flex-none">
+              <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-ink-faint">
+                Where I&apos;ll be
+              </p>
+              {windowsForMonth(locationWindows, calViewYear, calViewMonth).length === 0 ? (
+                <p className="text-xs leading-relaxed text-ink-faint">
+                  No schedule set for this month.
+                </p>
+              ) : (
+                <ul className="space-y-3">
+                  {windowsForMonth(locationWindows, calViewYear, calViewMonth).map((w) => (
+                    <li key={w.id}>
+                      <p className="text-xs font-medium text-ink">{w.location.name}</p>
+                      <p className="mt-0.5 text-[11px] leading-snug text-ink-faint">
+                        {fmtWindowDate(w.startDate)} – {fmtWindowDate(w.endDate)}
+                      </p>
+                      {w.notes && (
+                        <p className="mt-0.5 text-[11px] leading-snug text-ink-faint">{w.notes}</p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </div>
       </fieldset>
 
