@@ -349,7 +349,7 @@ export const BookingForm = ({
         <legend className="text-sm font-semibold text-ink">Preferred date &amp; time</legend>
         <p className="text-xs leading-relaxed text-ink-faint">
           This is a preference, not a confirmed slot. I&apos;ll reach out to confirm availability.
-          Dates shown in red are already booked.
+          Dates shown in red are unavailable.
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
