@@ -96,7 +96,7 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
           )}
           <h2 className="text-3xl font-semibold tracking-tight text-ink">{gallery.title}</h2>
           {gallery.headline && (
-            <p className="mt-2 text-base italic leading-snug text-ink-muted">{gallery.headline}</p>
+            <p className="mt-2 text-base leading-snug text-ink-muted">{gallery.headline}</p>
           )}
         </div>
 
@@ -159,9 +159,7 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
               {gallery.title}
             </h2>
             {gallery.headline && (
-              <p className="mt-2 text-base italic leading-snug text-ink-muted">
-                {gallery.headline}
-              </p>
+              <p className="mt-2 text-base leading-snug text-ink-muted">{gallery.headline}</p>
             )}
           </div>
 
