@@ -1,7 +1,7 @@
 'use client';
 
 import Image from './img';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -72,10 +72,37 @@ const EstStamp = () => {
  * Desktop: sticky top wrapper — logo | nav (+ "April Sale" toggle) | theme + Inquire.
  *          Clicking "April Sale" expands a full-width panel below the nav bar.
  */
+const SALE_BANNER_KEY = 'ea-sale-banner';
+
 export const SiteHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Start closed to avoid SSR/hydration mismatch; effect opens it unless user dismissed it.
   const [saleOpen, setSaleOpen] = useState(false);
   const [mobileSaleOpen, setMobileSaleOpen] = useState(false);
+
+  // Open the banner by default on mount, unless the user has explicitly closed it.
+  useEffect(() => {
+    if (saleActive && localStorage.getItem(SALE_BANNER_KEY) !== 'closed') {
+      setSaleOpen(true);
+    }
+  }, []);
+
+  const handleSaleToggle = () => {
+    setSaleOpen((open) => {
+      const next = !open;
+      if (!next) {
+        localStorage.setItem(SALE_BANNER_KEY, 'closed');
+      } else {
+        localStorage.removeItem(SALE_BANNER_KEY);
+      }
+      return next;
+    });
+  };
+
+  const handleSaleClose = () => {
+    setSaleOpen(false);
+    localStorage.setItem(SALE_BANNER_KEY, 'closed');
+  };
 
   return (
     <>
@@ -120,7 +147,7 @@ export const SiteHeader = () => {
               {saleActive && (
                 <button
                   type="button"
-                  onClick={() => setSaleOpen((o) => !o)}
+                  onClick={handleSaleToggle}
                   aria-expanded={saleOpen}
                   className={cn(
                     'flex items-center gap-1.5 text-sm font-medium text-accent',
@@ -157,29 +184,23 @@ export const SiteHeader = () => {
           <div
             className={cn(
               'overflow-hidden transition-[max-height] ease-in-out',
-              saleOpen ? 'max-h-24 duration-standard' : 'max-h-0 duration-fast'
+              saleOpen ? 'max-h-16 duration-standard' : 'max-h-0 duration-fast'
             )}
           >
-            <div className="flex items-center justify-between gap-4 bg-accent px-4 py-3 sm:px-6 lg:px-8">
-              <p className="flex items-center gap-3 text-sm text-white">
-                <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/60">
-                  {SALE.name}
-                </span>
-                Book any session in May and get 10% off your shoot — no code needed.
-              </p>
-              <div className="flex flex-none items-center gap-3">
-                <Link
-                  href="/book"
-                  onClick={() => setSaleOpen(false)}
-                  className="rounded-card bg-white/20 px-3 py-1 text-xs font-medium text-white transition-colors duration-fast hover:bg-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
-                >
-                  Book now →
-                </Link>
+            <div className="border-b border-border bg-sun">
+              <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2.5 sm:px-6 lg:px-8">
+                <p className="flex items-center gap-3 text-sm text-ink-muted">
+                  {/* Accent stamp — same visual language as the EST. 2025 detail */}
+                  <span className="inline-flex items-center whitespace-nowrap rounded-sm border border-accent/40 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-accent">
+                    {SALE.name}
+                  </span>
+                  Book any session in May and get 10% off your shoot — no code needed.
+                </p>
                 <button
                   type="button"
-                  onClick={() => setSaleOpen(false)}
+                  onClick={handleSaleClose}
                   aria-label="Close April Sale banner"
-                  className="text-white/60 transition-colors duration-fast hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:rounded-sm"
+                  className="flex-none text-ink-faint transition-colors duration-fast hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
                 >
                   <XIcon size={14} />
                 </button>
@@ -251,43 +272,43 @@ export const SiteHeader = () => {
 
       {/* ── Mobile: sale bar (persistent, sits above bottom nav) ─────────── */}
       {saleActive && (
-        <div className="fixed bottom-16 left-0 right-0 z-40 bg-accent md:hidden">
-          {/* Expanded detail panel — reveals upward from the thin label bar */}
+        <div className="fixed bottom-16 left-0 right-0 z-40 md:hidden">
+          {/* Expanded detail panel — bg-canvas, reveals upward from the thin label bar */}
           <div
             className={cn(
               'overflow-hidden transition-[max-height] ease-in-out',
               mobileSaleOpen ? 'max-h-36 duration-standard' : 'max-h-0 duration-fast'
             )}
           >
-            <div className="px-4 pb-3 pt-3">
-              <p className="text-sm leading-relaxed text-white">
+            <div className="border-b border-border bg-canvas px-4 pb-3 pt-3">
+              <p className="text-sm leading-relaxed text-ink-muted">
                 Book any session in May and get 10% off your shoot — no code needed.
               </p>
               <Link
                 href="/book"
                 onClick={() => setMobileSaleOpen(false)}
-                className="mt-2 inline-flex items-center text-xs font-medium text-white/80 underline underline-offset-2 transition-colors duration-fast hover:text-white"
+                className="mt-2 inline-flex items-center text-xs font-medium text-accent underline underline-offset-2 transition-opacity duration-fast hover:opacity-75"
               >
                 Book now →
               </Link>
             </div>
           </div>
 
-          {/* Thin label bar — always visible */}
+          {/* Thin label bar — bg-sun, always visible */}
           <button
             type="button"
             onClick={() => setMobileSaleOpen((o) => !o)}
             aria-expanded={mobileSaleOpen}
             aria-label={mobileSaleOpen ? 'Close April Sale details' : 'View April Sale details'}
-            className="flex h-7 w-full items-center justify-center gap-1.5 text-white"
+            className="flex h-7 w-full items-center justify-center gap-1.5 bg-sun"
           >
-            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em]">
+            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-accent">
               {SALE.name}
             </span>
             {/* Chevron points up (▲) when collapsed to suggest expanding upward */}
             <ChevronDown
               className={cn(
-                'transition-transform duration-fast',
+                'text-accent/70 transition-transform duration-fast',
                 mobileSaleOpen ? 'rotate-0' : 'rotate-180'
               )}
             />
