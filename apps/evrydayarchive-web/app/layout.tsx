@@ -10,6 +10,7 @@ import { SiteHeader } from './components/site-header';
 import { SiteFooter } from './components/site-footer';
 import { NavigationFeedback } from './components/navigation-feedback';
 import { PageFade } from './components/page-fade';
+import { isSaleAnnouncementActive } from './lib/sale';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -100,6 +101,7 @@ const jsonLd = {
 };
 
 const isComingSoon = process.env.NEXT_PUBLIC_COMING_SOON === 'true';
+const saleActive = isSaleAnnouncementActive();
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -134,8 +136,9 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         <ThemeProvider>
           {!isComingSoon && <SiteHeader />}
           <NavigationFeedback />
-          {/* pb-16 on mobile reserves space for the fixed bottom nav bar */}
-          <div className="pb-16 md:pb-0">
+          {/* pb-16 on mobile reserves space for the fixed bottom nav bar.
+               When the sale bar (h-7 = 28px) is also present, add another 28px → 92px total. */}
+          <div className={saleActive ? 'pb-[92px] md:pb-0' : 'pb-16 md:pb-0'}>
             <PageFade>{children}</PageFade>
           </div>
           {!isComingSoon && <SiteFooter />}

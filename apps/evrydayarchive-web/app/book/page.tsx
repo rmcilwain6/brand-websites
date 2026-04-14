@@ -13,6 +13,7 @@ import {
 } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
+import { isSaleDiscountActive, applyDiscount, SALE } from '../lib/sale';
 import { BookingForm } from './booking-form';
 
 export const dynamic = 'force-dynamic';
@@ -128,6 +129,11 @@ export default async function BookPage({ searchParams }: Props) {
         }, 0)
       : undefined;
 
+  // During May 2026, booking requests get 10% off automatically.
+  const discountActive = isSaleDiscountActive();
+  const discountedTotalCents =
+    discountActive && estimatedTotalCents != null ? applyDiscount(estimatedTotalCents) : undefined;
+
   const backHref =
     from === 'packages' || !pkg ? '/packages' : `/package-builder?package=${pkg.slug}`;
   const backLabel = from === 'packages' || !pkg ? '← Back to packages' : '← Back to builder';
@@ -168,6 +174,7 @@ export default async function BookPage({ searchParams }: Props) {
               resolvedModifiers={resolvedModifiers}
               modifierValues={modifierValues}
               estimatedTotalCents={estimatedTotalCents}
+              discountedTotalCents={discountedTotalCents}
               timeSlots={timeSlots}
               locationWindows={locationWindows}
             />
@@ -181,6 +188,7 @@ export default async function BookPage({ searchParams }: Props) {
                 resolvedModifiers={resolvedModifiers}
                 modifierValues={modifierValues}
                 estimatedTotalCents={estimatedTotalCents}
+                discountedTotalCents={discountedTotalCents}
               />
               <div className="mt-6 px-1">
                 <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
@@ -206,6 +214,7 @@ type SummaryPanelProps = {
   resolvedModifiers: PublicPackageModifier[];
   modifierValues: Record<string, number>;
   estimatedTotalCents: number | undefined;
+  discountedTotalCents: number | undefined;
 };
 
 const modifierDisplayValue = (
@@ -231,7 +240,8 @@ const SummaryPanel = ({
   pkg,
   resolvedModifiers,
   modifierValues,
-  estimatedTotalCents
+  estimatedTotalCents,
+  discountedTotalCents
 }: SummaryPanelProps) => (
   <div className="rounded-card border border-border bg-sun px-6 py-6 shadow-warm-sm">
     <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-faint">
@@ -282,9 +292,30 @@ const SummaryPanel = ({
     {/* Estimated total */}
     {estimatedTotalCents != null && (
       <>
+        {discountedTotalCents != null && (
+          <div className="mb-3 flex items-center gap-2 rounded-card border border-accent/20 bg-accent/5 px-3 py-2">
+            <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-accent/80">
+              {SALE.name}
+            </span>
+            <span className="text-xs text-accent">{SALE.discountLabel} applied</span>
+          </div>
+        )}
         <div className="flex items-baseline justify-between">
           <span className="text-sm font-medium text-ink-muted">Estimated total</span>
-          <span className="text-xl font-semibold text-ink">{formatPrice(estimatedTotalCents)}</span>
+          {discountedTotalCents != null ? (
+            <div className="flex flex-col items-end gap-0.5">
+              <span className="text-xs tabular-nums text-ink-faint line-through">
+                {formatPrice(estimatedTotalCents)}
+              </span>
+              <span className="text-xl font-semibold text-ink">
+                {formatPrice(discountedTotalCents)}
+              </span>
+            </div>
+          ) : (
+            <span className="text-xl font-semibold text-ink">
+              {formatPrice(estimatedTotalCents)}
+            </span>
+          )}
         </div>
         <p className="mt-1.5 text-xs leading-relaxed text-ink-faint">
           Final pricing confirmed after we connect.

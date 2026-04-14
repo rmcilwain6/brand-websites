@@ -16,6 +16,7 @@ import { LocationPicker } from '../components/location-picker';
 import type { CoreLocation } from '../components/location-picker';
 import { DatePicker } from './date-picker';
 import { TimePicker } from './time-picker';
+import { SALE } from '../lib/sale';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -24,6 +25,8 @@ type Props = {
   resolvedModifiers: PublicPackageModifier[];
   modifierValues: Record<string, number>;
   estimatedTotalCents: number | undefined;
+  /** Defined during May 2026 only — 10% April Sale discount applied. */
+  discountedTotalCents: number | undefined;
   timeSlots: TimeSlot[];
   locationWindows: LocationWindow[];
 };
@@ -117,6 +120,7 @@ export const BookingForm = ({
   resolvedModifiers,
   modifierValues,
   estimatedTotalCents,
+  discountedTotalCents,
   timeSlots,
   locationWindows
 }: Props) => {
@@ -218,7 +222,9 @@ export const BookingForm = ({
       packageName: pkg?.name,
       modifierIds: resolvedModifiers.filter((m) => !m.isRequired).map((m) => m.id),
       modifierValues: Object.keys(modifierValues).length > 0 ? modifierValues : undefined,
-      estimatedTotalCents
+      // Use the discounted total when the April Sale applies, so the booking record
+      // reflects what the customer was actually quoted.
+      estimatedTotalCents: discountedTotalCents ?? estimatedTotalCents
     };
 
     try {
@@ -283,11 +289,28 @@ export const BookingForm = ({
             </ul>
           )}
           {estimatedTotalCents != null && (
-            <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
-              <span className="text-xs text-ink-faint">Estimated total</span>
-              <span className="text-sm font-semibold text-ink">
-                {formatPrice(estimatedTotalCents)}
-              </span>
+            <div className="mt-3 border-t border-border pt-3">
+              {discountedTotalCents != null && (
+                <div className="mb-2 flex items-center gap-1.5 rounded-card border border-accent/20 bg-accent/5 px-2.5 py-1.5">
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-accent/80">
+                    {SALE.name}
+                  </span>
+                  <span className="text-xs text-accent">{SALE.discountLabel}</span>
+                </div>
+              )}
+              <div className="flex items-baseline justify-between">
+                <span className="text-xs text-ink-faint">Estimated total</span>
+                <div className="flex items-baseline gap-2">
+                  {discountedTotalCents != null && (
+                    <span className="text-xs tabular-nums text-ink-faint line-through">
+                      {formatPrice(estimatedTotalCents)}
+                    </span>
+                  )}
+                  <span className="text-sm font-semibold text-ink">
+                    {formatPrice(discountedTotalCents ?? estimatedTotalCents)}
+                  </span>
+                </div>
+              </div>
             </div>
           )}
         </div>
