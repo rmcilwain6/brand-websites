@@ -13,7 +13,7 @@ import {
 } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
-import { isSaleDiscountActive, applyDiscount, SALE } from '../lib/sale';
+import { isSaleAnnouncementActive } from '../lib/sale';
 import { BookingForm } from './booking-form';
 
 export const dynamic = 'force-dynamic';
@@ -24,15 +24,9 @@ type Props = {
     modifiers?: string;
     modifierValues?: string;
     from?: string;
+    sale?: string;
   }>;
 };
-
-const formatPrice = (cents: number): string =>
-  new Intl.NumberFormat('en-CA', {
-    style: 'currency',
-    currency: 'CAD',
-    maximumFractionDigits: 0
-  }).format(cents / 100);
 
 // ── Price helpers ─────────────────────────────────────────────────────────────
 
@@ -58,7 +52,8 @@ export default async function BookPage({ searchParams }: Props) {
     package: packageSlug,
     modifiers: modifiersParam,
     modifierValues: modifierValuesParam,
-    from
+    from,
+    sale
   } = await searchParams;
   const { ADMIN_API_BASE_URL } = getServerEnv();
 
@@ -129,10 +124,9 @@ export default async function BookPage({ searchParams }: Props) {
         }, 0)
       : undefined;
 
-  // During May 2026, booking requests get 10% off automatically.
-  const discountActive = isSaleDiscountActive();
-  const discountedTotalCents =
-    discountActive && estimatedTotalCents != null ? applyDiscount(estimatedTotalCents) : undefined;
+  // Spring Sale: opt-in via the package builder (sale=1 param).
+  // Date validation (must be a May date) happens client-side in BookingForm.
+  const springSale = sale === '1' && isSaleAnnouncementActive();
 
   const backHref =
     from === 'packages' || !pkg ? '/packages' : `/package-builder?package=${pkg.slug}`;
@@ -165,162 +159,19 @@ export default async function BookPage({ searchParams }: Props) {
           </p>
         </header>
 
-        {/* Two-column layout on desktop */}
+        {/* Two-column layout — BookingForm owns both the form and the reactive sidebar */}
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
-          {/* Form — left / full width on mobile */}
-          <div className="min-w-0 flex-1">
-            <BookingForm
-              pkg={pkg ?? null}
-              resolvedModifiers={resolvedModifiers}
-              modifierValues={modifierValues}
-              estimatedTotalCents={estimatedTotalCents}
-              discountedTotalCents={discountedTotalCents}
-              timeSlots={timeSlots}
-              locationWindows={locationWindows}
-            />
-          </div>
-
-          {/* Summary sidebar — desktop only */}
-          {pkg && (
-            <aside className="hidden lg:block lg:w-80 lg:flex-none lg:sticky lg:top-8">
-              <SummaryPanel
-                pkg={pkg}
-                resolvedModifiers={resolvedModifiers}
-                modifierValues={modifierValues}
-                estimatedTotalCents={estimatedTotalCents}
-                discountedTotalCents={discountedTotalCents}
-              />
-              <div className="mt-6 px-1">
-                <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
-                  What happens next
-                </p>
-                <p className="text-sm leading-relaxed text-ink-muted">
-                  Once you submit, I&apos;ll review your request and be in touch to confirm the date
-                  and sort out any details.
-                </p>
-              </div>
-            </aside>
-          )}
+          <BookingForm
+            pkg={pkg ?? null}
+            resolvedModifiers={resolvedModifiers}
+            modifierValues={modifierValues}
+            estimatedTotalCents={estimatedTotalCents}
+            springSale={springSale}
+            timeSlots={timeSlots}
+            locationWindows={locationWindows}
+          />
         </div>
       </div>
     </main>
   );
 }
-
-// ── Summary panel (desktop sidebar) ──────────────────────────────────────────
-
-type SummaryPanelProps = {
-  pkg: PublicPackage;
-  resolvedModifiers: PublicPackageModifier[];
-  modifierValues: Record<string, number>;
-  estimatedTotalCents: number | undefined;
-  discountedTotalCents: number | undefined;
-};
-
-const modifierDisplayValue = (
-  m: PublicPackageModifier,
-  values: Record<string, number>
-): string | null => {
-  if (m.type === 'SLIDER') {
-    const cfg = m.config as SliderConfig | null;
-    if (!cfg) return null;
-    const v = values[m.id] ?? cfg.defaultValue;
-    return `${v}${cfg.unit}`;
-  }
-  if (m.type === 'INCREMENTER') {
-    const cfg = m.config as IncrementerConfig | null;
-    if (!cfg) return null;
-    const v = values[m.id] ?? cfg.defaultValue;
-    return `${v}${cfg.unit ? ` ${cfg.unit}` : ''}`;
-  }
-  return null;
-};
-
-const SummaryPanel = ({
-  pkg,
-  resolvedModifiers,
-  modifierValues,
-  estimatedTotalCents,
-  discountedTotalCents
-}: SummaryPanelProps) => (
-  <div className="rounded-card border border-border bg-sun px-6 py-6 shadow-warm-sm">
-    <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-faint">
-      Your selection
-    </p>
-
-    {/* Package name + base price */}
-    <div className="mb-4 border-b border-border pb-4">
-      <h2 className="text-base font-semibold text-ink">{pkg.name}</h2>
-      {pkg.description && (
-        <p className="mt-1 text-sm leading-relaxed text-ink-muted">{pkg.description}</p>
-      )}
-      {pkg.basePriceCents != null && (
-        <p className="mt-2 text-xs text-ink-faint">
-          Base:{' '}
-          <span className="font-medium text-ink-muted">{formatPrice(pkg.basePriceCents)}</span>
-        </p>
-      )}
-    </div>
-
-    {/* Selected modifiers */}
-    {resolvedModifiers.length > 0 && (
-      <ul className="mb-4 space-y-2 border-b border-border pb-4">
-        {resolvedModifiers.map((m) => {
-          const delta = computeModifierDelta(m, modifierValues);
-          const displayVal = modifierDisplayValue(m, modifierValues);
-          return (
-            <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
-              <span className="text-ink-muted">
-                {m.name}
-                {displayVal && <span className="ml-1 text-xs text-ink-faint">({displayVal})</span>}
-                {m.isRequired && !displayVal && (
-                  <span className="ml-1 text-xs text-ink-faint">(included)</span>
-                )}
-              </span>
-              {!m.isRequired && delta !== 0 && (
-                <span className="flex-none text-xs tabular-nums text-ink-faint">
-                  {delta > 0 ? '+' : '−'}
-                  {formatPrice(Math.abs(delta))}
-                </span>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    )}
-
-    {/* Estimated total */}
-    {estimatedTotalCents != null && (
-      <>
-        {discountedTotalCents != null && (
-          <div className="mb-3 flex items-center gap-2 rounded-card border border-accent/20 bg-accent/5 px-3 py-2">
-            <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-accent/80">
-              {SALE.name}
-            </span>
-            <span className="text-xs text-accent">{SALE.discountLabel} applied</span>
-          </div>
-        )}
-        <div className="flex items-baseline justify-between">
-          <span className="text-sm font-medium text-ink-muted">Estimated total</span>
-          {discountedTotalCents != null ? (
-            <div className="flex flex-col items-end gap-0.5">
-              <span className="text-xs tabular-nums text-ink-faint line-through">
-                {formatPrice(estimatedTotalCents)}
-              </span>
-              <span className="text-xl font-semibold text-ink">
-                {formatPrice(discountedTotalCents)}
-              </span>
-            </div>
-          ) : (
-            <span className="text-xl font-semibold text-ink">
-              {formatPrice(estimatedTotalCents)}
-            </span>
-          )}
-        </div>
-        <p className="mt-1.5 text-xs leading-relaxed text-ink-faint">
-          Final pricing confirmed after we connect.
-        </p>
-      </>
-    )}
-  </div>
-);
