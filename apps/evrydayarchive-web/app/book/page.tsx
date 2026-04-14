@@ -13,7 +13,7 @@ import {
 } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
-import { isSaleAnnouncementActive } from '../lib/sale';
+import { isSaleAnnouncementActive, isSaleAutoOptIn } from '../lib/sale';
 import { BookingForm } from './booking-form';
 
 export const dynamic = 'force-dynamic';
@@ -124,9 +124,9 @@ export default async function BookPage({ searchParams }: Props) {
         }, 0)
       : undefined;
 
-  // Spring Sale: opt-in via the package builder (sale=1 param).
-  // Date validation (must be a May date) happens client-side in BookingForm.
-  const springSale = sale === '1' && isSaleAnnouncementActive();
+  // Spring Sale: opt-in via the package builder (sale=1 param), or auto-enabled during
+  // April and May. Date validation (must be a May date) happens client-side in BookingForm.
+  const springSale = (sale === '1' || isSaleAutoOptIn()) && isSaleAnnouncementActive();
 
   const backHref =
     from === 'packages' || !pkg ? '/packages' : `/package-builder?package=${pkg.slug}`;

@@ -293,11 +293,19 @@ export const BookingForm = ({
               <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
                 Your selection
               </p>
-              <p className="text-base font-semibold text-ink">{pkg.name}</p>
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="text-base font-semibold text-ink">{pkg.name}</p>
+                {pkg.basePriceCents != null && (
+                  <span className="flex-none text-sm tabular-nums text-ink">
+                    {formatPrice(pkg.basePriceCents)}
+                  </span>
+                )}
+              </div>
               {resolvedModifiers.length > 0 && (
                 <ul className="mt-2 space-y-1">
                   {resolvedModifiers.map((m) => {
                     const displayVal = modifierDisplayValue(m, modifierValues);
+                    const delta = computeModifierDelta(m, modifierValues);
                     return (
                       <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
                         <span className="text-ink-muted">
@@ -309,9 +317,10 @@ export const BookingForm = ({
                             <span className="ml-1 text-xs text-ink-faint">(included)</span>
                           )}
                         </span>
-                        {m.priceDeltaCents != null && !m.isRequired && (
+                        {delta !== 0 && (
                           <span className="flex-none text-xs tabular-nums text-ink-faint">
-                            +{formatPrice(m.priceDeltaCents)}
+                            {delta > 0 ? '+' : ''}
+                            {formatPrice(delta)}
                           </span>
                         )}
                       </li>
@@ -322,11 +331,14 @@ export const BookingForm = ({
               {estimatedTotalCents != null && (
                 <div className="mt-3 border-t border-border pt-3">
                   {discountActive && (
-                    <div className="mb-2 flex items-center gap-1.5 rounded-card border border-accent/20 bg-accent/5 px-2.5 py-1.5">
-                      <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-accent/80">
-                        {SALE.name}
+                    <div className="mb-2 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs tracking-widest text-accent">{SALE.name}</span>
+                        <span className="text-xs text-accent">{SALE.discountLabel}</span>
+                      </div>
+                      <span className="flex-none text-xs tabular-nums text-accent">
+                        −{formatPrice(estimatedTotalCents - applyDiscount(estimatedTotalCents))}
                       </span>
-                      <span className="text-xs text-accent">{SALE.discountLabel}</span>
                     </div>
                   )}
                   {saleAnnouncementActive && preferredDate && !discountActive && (
@@ -624,7 +636,14 @@ const SummaryPanel = ({
       <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
         Your selection
       </p>
-      <p className="text-base font-semibold text-ink">{pkg.name}</p>
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="text-base font-semibold text-ink">{pkg.name}</p>
+        {pkg.basePriceCents != null && (
+          <span className="flex-none text-sm tabular-nums text-ink">
+            {formatPrice(pkg.basePriceCents)}
+          </span>
+        )}
+      </div>
       {pkg.description && (
         <p className="mt-1 text-sm leading-relaxed text-ink-muted">{pkg.description}</p>
       )}

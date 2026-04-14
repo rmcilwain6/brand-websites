@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
-import { isSaleAnnouncementActive, applyDiscount, SALE } from '../lib/sale';
+import { isSaleAnnouncementActive, isSaleAutoOptIn, applyDiscount, SALE } from '../lib/sale';
 
 import type {
   IncrementerConfig,
@@ -153,7 +153,7 @@ const saleAnnouncementActive = isSaleAnnouncementActive();
 
 export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
   const [items, setItems] = useState<BuilderItem[]>(() => pkg.modifiers.map(modifierToItem));
-  const [springSaleEnabled, setSpringSaleEnabled] = useState(false);
+  const [springSaleEnabled, setSpringSaleEnabled] = useState(() => isSaleAutoOptIn());
 
   const updateControl = useCallback((id: string, next: Partial<ControlState>) => {
     setItems((prev) => {

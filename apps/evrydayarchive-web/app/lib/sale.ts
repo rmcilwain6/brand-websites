@@ -30,6 +30,19 @@ export function isSaleAnnouncementActive(): boolean {
 }
 
 /**
+ * True during April and May 2026 — the window when the Spring Sale toggle should be
+ * pre-selected for users who land on the builder or booking page without having opted in.
+ */
+export function isSaleAutoOptIn(): boolean {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-indexed
+  if (year < 2026) return true; // before 2026 — dev convenience
+  if (year > 2026) return false;
+  return month === 3 || month === SALE.discountMonth; // April (3) or May (4)
+}
+
+/**
  * True when a booking submitted right now qualifies for the discount (May 2026 only).
  */
 export function isSaleDiscountActive(): boolean {

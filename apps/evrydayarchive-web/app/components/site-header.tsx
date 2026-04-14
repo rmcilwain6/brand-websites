@@ -280,7 +280,7 @@ export const SiteHeader = () => {
               mobileSaleOpen ? 'max-h-36 duration-standard' : 'max-h-0 duration-fast'
             )}
           >
-            <div className="border-b border-border bg-canvas px-4 pb-3 pt-3 text-center">
+            <div className="border-b border-border bg-sun px-4 pb-3 pt-3 text-center">
               <p className="text-sm leading-relaxed text-ink-muted">
                 Any sessions booked for May receive a 10% discount.
               </p>
