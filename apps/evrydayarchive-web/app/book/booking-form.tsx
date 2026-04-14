@@ -16,7 +16,7 @@ import { LocationPicker } from '../components/location-picker';
 import type { CoreLocation } from '../components/location-picker';
 import { DatePicker } from './date-picker';
 import { TimePicker } from './time-picker';
-import { SALE, applyDiscount, isSaleDate } from '../lib/sale';
+import { SALE, applyDiscount, isSaleAnnouncementActive, isSaleDate } from '../lib/sale';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -166,9 +166,12 @@ export const BookingForm = ({
 
   const today = new Date().toISOString().split('T')[0] as string;
 
-  // Spring Sale: active when the user opted in AND has selected (or not yet chosen) a May date.
-  // Becomes false as soon as they pick a non-May date, removing it from pricing.
-  const discountActive = springSale && (!preferredDate || isSaleDate(preferredDate));
+  // Spring Sale: active whenever the sale is running and a May date is selected.
+  // If the user came from the builder with sale=1 and hasn't picked a date yet, treat as pending
+  // (discount shown) — it clears as soon as they pick a non-May date.
+  const saleAnnouncementActive = isSaleAnnouncementActive();
+  const discountActive =
+    saleAnnouncementActive && ((springSale && !preferredDate) || isSaleDate(preferredDate));
   const discountedTotalCents =
     discountActive && estimatedTotalCents != null ? applyDiscount(estimatedTotalCents) : undefined;
   const effectiveTotalCents = discountedTotalCents ?? estimatedTotalCents;
@@ -326,7 +329,7 @@ export const BookingForm = ({
                       <span className="text-xs text-accent">{SALE.discountLabel}</span>
                     </div>
                   )}
-                  {springSale && preferredDate && !discountActive && (
+                  {saleAnnouncementActive && preferredDate && !discountActive && (
                     <p className="mb-2 text-xs text-ink-faint">
                       Spring Sale applies to May sessions only.
                     </p>
@@ -428,6 +431,11 @@ export const BookingForm = ({
                   placeholder="Choose a date"
                   hasError={!!fieldErrors.date}
                   aria-describedby={fieldErrors.date ? 'date-error' : undefined}
+                  saleMonth={
+                    saleAnnouncementActive
+                      ? { year: SALE.discountYear, month: SALE.discountMonth }
+                      : undefined
+                  }
                 />
                 <FieldError id="date-error" message={fieldErrors.date} />
               </div>
@@ -571,7 +579,6 @@ export const BookingForm = ({
             modifierValues={modifierValues}
             estimatedTotalCents={estimatedTotalCents}
             discountActive={discountActive}
-            springSale={springSale}
             hasDate={!!preferredDate}
           />
           <div className="mt-6 px-1">
@@ -597,7 +604,6 @@ type SummaryPanelProps = {
   modifierValues: Record<string, number>;
   estimatedTotalCents: number | undefined;
   discountActive: boolean;
-  springSale: boolean;
   hasDate: boolean;
 };
 
@@ -607,7 +613,6 @@ const SummaryPanel = ({
   modifierValues,
   estimatedTotalCents,
   discountActive,
-  springSale,
   hasDate
 }: SummaryPanelProps) => {
   const discountedTotal =
@@ -667,7 +672,7 @@ const SummaryPanel = ({
               </span>
             </div>
           )}
-          {springSale && hasDate && !discountActive && (
+          {isSaleAnnouncementActive() && hasDate && !discountActive && (
             <p className="text-xs text-ink-faint">Spring Sale applies to May sessions only.</p>
           )}
           <div className="flex items-baseline justify-between">
