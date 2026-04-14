@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
+import { isSaleAnnouncementActive, applyDiscount, SALE } from '../lib/sale';
 
 import type {
   IncrementerConfig,
@@ -148,8 +149,11 @@ const modifierToItem = (m: PublicPackageModifier): BuilderItem => ({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+const saleAnnouncementActive = isSaleAnnouncementActive();
+
 export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
   const [items, setItems] = useState<BuilderItem[]>(() => pkg.modifiers.map(modifierToItem));
+  const [springSaleEnabled, setSpringSaleEnabled] = useState(false);
 
   const updateControl = useCallback((id: string, next: Partial<ControlState>) => {
     setItems((prev) => {
@@ -164,6 +168,10 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
     () => (pkg.basePriceCents ?? 0) + items.reduce((sum, item) => sum + itemPriceDelta(item), 0),
     [items, pkg.basePriceCents]
   );
+
+  // Discount amount in cents when spring sale is toggled on
+  const springDiscount = springSaleEnabled ? total - applyDiscount(total) : undefined;
+  const displayTotal = springDiscount != null ? total - springDiscount : total;
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams({ package: pkg.slug });
@@ -194,8 +202,10 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
       );
     }
 
+    if (springSaleEnabled) params.set('sale', '1');
+
     return `?${params.toString()}`;
-  }, [items, pkg.slug]);
+  }, [items, pkg.slug, springSaleEnabled]);
 
   return (
     <div className="mx-auto w-full max-w-3xl">
@@ -219,12 +229,19 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
             )}
           </div>
 
-          {/* Modifier rows */}
-          {items.length > 0 && (
+          {/* Modifier rows + optional Spring Sale row */}
+          {(items.length > 0 || saleAnnouncementActive) && (
             <div className="divide-y divide-border">
               {items.map((item) => (
                 <ModifierRow key={item.id} item={item} allItems={items} onChange={updateControl} />
               ))}
+              {saleAnnouncementActive && (
+                <SpringSaleRow
+                  enabled={springSaleEnabled}
+                  discountCents={springDiscount ?? 0}
+                  onToggle={(checked) => setSpringSaleEnabled(checked)}
+                />
+              )}
             </div>
           )}
 
@@ -232,7 +249,18 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
           <div className="border-t border-border px-7 py-6">
             <div className="mb-5 flex items-baseline justify-between">
               <span className="text-sm font-medium text-ink-muted">Estimated total</span>
-              <span className="text-2xl font-semibold text-ink">{formatPrice(total)}</span>
+              {springDiscount != null ? (
+                <div className="flex flex-col items-end gap-0.5">
+                  <span className="text-sm tabular-nums text-ink-faint line-through">
+                    {formatPrice(total)}
+                  </span>
+                  <span className="text-2xl font-semibold text-ink">
+                    {formatPrice(displayTotal)}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-2xl font-semibold text-ink">{formatPrice(total)}</span>
+              )}
             </div>
             <p className="mb-5 text-xs leading-relaxed text-ink-faint">
               Prices are estimates. Final scope and pricing is confirmed after we talk through the
@@ -257,7 +285,7 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
 
         {/* ── Sticky price widget (desktop only) ───────────────────── */}
         <aside className="sticky top-6 hidden w-52 shrink-0 lg:block">
-          <PriceWidget pkg={pkg} items={items} total={total} />
+          <PriceWidget pkg={pkg} items={items} total={total} springDiscount={springDiscount} />
         </aside>
       </div>
     </div>
@@ -270,14 +298,17 @@ type PriceWidgetProps = {
   pkg: PublicPackage;
   items: BuilderItem[];
   total: number;
+  springDiscount: number | undefined;
 };
 
-const PriceWidget = ({ pkg, items, total }: PriceWidgetProps) => {
+const PriceWidget = ({ pkg, items, total, springDiscount }: PriceWidgetProps) => {
   const activeLines = useMemo(() => {
     return items
       .map((item) => ({ name: item.name, delta: itemPriceDelta(item) }))
       .filter((line) => line.delta !== 0);
   }, [items]);
+
+  const displayTotal = springDiscount != null ? total - springDiscount : total;
 
   return (
     <div className="rounded-card border border-border bg-canvas p-5 shadow-warm-sm">
@@ -305,15 +336,59 @@ const PriceWidget = ({ pkg, items, total }: PriceWidgetProps) => {
             </span>
           </div>
         ))}
+        {springDiscount != null && (
+          <div className="flex items-baseline justify-between gap-2">
+            <span className="truncate text-accent">{SALE.name}</span>
+            <span className="shrink-0 tabular-nums text-accent">
+              −{formatPrice(springDiscount)}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="mt-4 flex items-baseline justify-between border-t border-border pt-4">
         <span className="text-xs text-ink-faint">Total</span>
-        <span className="text-xl font-semibold tabular-nums text-ink">{formatPrice(total)}</span>
+        <span className="text-xl font-semibold tabular-nums text-ink">
+          {formatPrice(displayTotal)}
+        </span>
       </div>
     </div>
   );
 };
+
+// ── SpringSaleRow ─────────────────────────────────────────────────────────────
+
+type SpringSaleRowProps = {
+  enabled: boolean;
+  discountCents: number;
+  onToggle: (checked: boolean) => void;
+};
+
+const SpringSaleRow = ({ enabled, discountCents, onToggle }: SpringSaleRowProps) => (
+  <div className="flex items-center gap-4 bg-sun px-7 py-5">
+    <div className="min-w-0 flex-1">
+      <div className="mb-1">
+        <span className="inline-flex items-center whitespace-nowrap rounded-sm border border-accent/40 px-1.5 py-[3px] font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-accent">
+          {SALE.name}
+        </span>
+      </div>
+      <p className="text-xs leading-relaxed text-ink-faint">
+        Book for May and receive 10% off — discount confirmed at checkout.
+      </p>
+    </div>
+    <div className="flex flex-none flex-col items-end gap-1.5">
+      <CheckboxControl checked={enabled} label="Apply Spring Sale discount" onChange={onToggle} />
+      <span
+        className={[
+          'text-xs font-medium tabular-nums',
+          enabled ? 'text-accent' : 'text-ink-faint'
+        ].join(' ')}
+      >
+        {enabled ? `−${formatPrice(discountCents)}` : `−${SALE.discountRate * 100}%`}
+      </span>
+    </div>
+  </div>
+);
 
 // ── ModifierRow ───────────────────────────────────────────────────────────────
 

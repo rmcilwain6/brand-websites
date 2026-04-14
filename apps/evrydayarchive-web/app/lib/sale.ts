@@ -41,3 +41,16 @@ export function isSaleDiscountActive(): boolean {
 export function applyDiscount(cents: number): number {
   return Math.round(cents * (1 - SALE.discountRate));
 }
+
+/**
+ * Returns true if a YYYY-MM-DD date string falls within the sale's discount month.
+ * Used client-side on the booking page to validate the selected shoot date.
+ */
+export function isSaleDate(dateStr: string): boolean {
+  if (!dateStr) return false;
+  const parts = dateStr.split('-');
+  if (parts.length < 2) return false;
+  const year = parseInt(parts[0]!, 10);
+  const month = parseInt(parts[1]!, 10); // 1-indexed in YYYY-MM-DD
+  return year === SALE.discountYear && month === SALE.discountMonth + 1;
+}
