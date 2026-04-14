@@ -1,14 +1,14 @@
 /**
- * April Sale — May 2026 promotion.
+ * Spring Sale — May 2026 promotion.
  *
- * Any booking request submitted in May 2026 receives 10% off.
+ * Any session booked for May 2026 receives 10% off.
  * The announcement bar is visible from mid-April through end of May.
  *
  * Remove or update this file when the sale ends.
  */
 
 export const SALE = {
-  name: 'April Sale',
+  name: 'Spring Sale',
   discountRate: 0.1,
   discountLabel: '10% off',
   /** Month (0-indexed) in which submitted bookings get the discount. May = 4. */

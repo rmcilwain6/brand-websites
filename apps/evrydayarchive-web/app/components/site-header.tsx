@@ -194,7 +194,7 @@ export const SiteHeader = () => {
                   <span className="inline-flex items-center whitespace-nowrap rounded-sm border border-accent/40 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-accent">
                     {SALE.name}
                   </span>
-                  Book any session in May and get 10% off your shoot — no code needed.
+                  Any sessions booked for May receive a 10% discount.
                 </p>
                 <button
                   type="button"
@@ -280,17 +280,10 @@ export const SiteHeader = () => {
               mobileSaleOpen ? 'max-h-36 duration-standard' : 'max-h-0 duration-fast'
             )}
           >
-            <div className="border-b border-border bg-canvas px-4 pb-3 pt-3">
+            <div className="border-b border-border bg-canvas px-4 pb-3 pt-3 text-center">
               <p className="text-sm leading-relaxed text-ink-muted">
-                Book any session in May and get 10% off your shoot — no code needed.
+                Any sessions booked for May receive a 10% discount.
               </p>
-              <Link
-                href="/book"
-                onClick={() => setMobileSaleOpen(false)}
-                className="mt-2 inline-flex items-center text-xs font-medium text-accent underline underline-offset-2 transition-opacity duration-fast hover:opacity-75"
-              >
-                Book now →
-              </Link>
             </div>
           </div>
 
