@@ -16,6 +16,7 @@ import { LocationPicker } from '../components/location-picker';
 import type { CoreLocation } from '../components/location-picker';
 import { DatePicker } from './date-picker';
 import { TimePicker } from './time-picker';
+import { SALE, applyDiscount, isSaleAnnouncementActive, isSaleDate } from '../lib/sale';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -24,6 +25,8 @@ type Props = {
   resolvedModifiers: PublicPackageModifier[];
   modifierValues: Record<string, number>;
   estimatedTotalCents: number | undefined;
+  /** True when the user opted into the Spring Sale in the package builder (sale=1 param). */
+  springSale: boolean;
   timeSlots: TimeSlot[];
   locationWindows: LocationWindow[];
 };
@@ -44,6 +47,25 @@ const modifierDisplayValue = (
     return `${v}${cfg.unit ? ` ${cfg.unit}` : ''}`;
   }
   return null;
+};
+
+// Computes the price delta for a single modifier given current slider/incrementer values.
+// Mirrors the same helper in book/page.tsx (used server-side for the estimated total).
+const computeModifierDelta = (m: PublicPackageModifier, values: Record<string, number>): number => {
+  if (m.type === 'SLIDER') {
+    const cfg = m.config as SliderConfig | null;
+    if (!cfg) return 0;
+    const value = values[m.id] ?? cfg.defaultValue;
+    const steps = Math.round((value - cfg.defaultValue) / cfg.step);
+    return steps * cfg.pricePerStep;
+  }
+  if (m.type === 'INCREMENTER') {
+    const cfg = m.config as IncrementerConfig | null;
+    if (!cfg) return 0;
+    const count = values[m.id] ?? cfg.defaultValue;
+    return (count - cfg.defaultValue) * cfg.pricePerUnit;
+  }
+  return m.priceDeltaCents ?? 0;
 };
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
@@ -117,6 +139,7 @@ export const BookingForm = ({
   resolvedModifiers,
   modifierValues,
   estimatedTotalCents,
+  springSale,
   timeSlots,
   locationWindows
 }: Props) => {
@@ -142,6 +165,16 @@ export const BookingForm = ({
   const locationOtherRef = useRef<HTMLInputElement>(null);
 
   const today = new Date().toISOString().split('T')[0] as string;
+
+  // Spring Sale: active whenever the sale is running and a May date is selected.
+  // If the user came from the builder with sale=1 and hasn't picked a date yet, treat as pending
+  // (discount shown) — it clears as soon as they pick a non-May date.
+  const saleAnnouncementActive = isSaleAnnouncementActive();
+  const discountActive =
+    saleAnnouncementActive && ((springSale && !preferredDate) || isSaleDate(preferredDate));
+  const discountedTotalCents =
+    discountActive && estimatedTotalCents != null ? applyDiscount(estimatedTotalCents) : undefined;
+  const effectiveTotalCents = discountedTotalCents ?? estimatedTotalCents;
 
   // ── Derived location value ──────────────────────────────────────────────────
 
@@ -218,7 +251,9 @@ export const BookingForm = ({
       packageName: pkg?.name,
       modifierIds: resolvedModifiers.filter((m) => !m.isRequired).map((m) => m.id),
       modifierValues: Object.keys(modifierValues).length > 0 ? modifierValues : undefined,
-      estimatedTotalCents
+      // Reflects the discounted total when Spring Sale is active so the booking record
+      // shows what the customer was actually quoted.
+      estimatedTotalCents: effectiveTotalCents
     };
 
     try {
@@ -249,261 +284,432 @@ export const BookingForm = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-10">
-      {/* Mobile-only package summary — desktop has a sidebar */}
-      {pkg && (
-        <div className="rounded-card border border-border bg-sun px-5 py-5 lg:hidden">
-          <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
-            Your selection
-          </p>
-          <p className="text-base font-semibold text-ink">{pkg.name}</p>
-          {resolvedModifiers.length > 0 && (
-            <ul className="mt-2 space-y-1">
-              {resolvedModifiers.map((m) => {
-                const displayVal = modifierDisplayValue(m, modifierValues);
-                return (
-                  <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
-                    <span className="text-ink-muted">
-                      {m.name}
-                      {displayVal && (
-                        <span className="ml-1 text-xs text-ink-faint">({displayVal})</span>
-                      )}
-                      {m.isRequired && !displayVal && (
-                        <span className="ml-1 text-xs text-ink-faint">(included)</span>
-                      )}
-                    </span>
-                    {m.priceDeltaCents != null && !m.isRequired && (
-                      <span className="flex-none text-xs tabular-nums text-ink-faint">
-                        +{formatPrice(m.priceDeltaCents)}
+    <>
+      <div className="min-w-0 flex-1">
+        <form onSubmit={handleSubmit} noValidate className="space-y-10">
+          {/* Mobile-only package summary — desktop has a sidebar */}
+          {pkg && (
+            <div className="rounded-card border border-border bg-sun px-5 py-5 lg:hidden">
+              <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
+                Your selection
+              </p>
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="text-base font-semibold text-ink">{pkg.name}</p>
+                {pkg.basePriceCents != null && (
+                  <span className="flex-none text-sm tabular-nums text-ink">
+                    {formatPrice(pkg.basePriceCents)}
+                  </span>
+                )}
+              </div>
+              {resolvedModifiers.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {resolvedModifiers.map((m) => {
+                    const displayVal = modifierDisplayValue(m, modifierValues);
+                    const delta = computeModifierDelta(m, modifierValues);
+                    return (
+                      <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
+                        <span className="text-ink-muted">
+                          {m.name}
+                          {displayVal && (
+                            <span className="ml-1 text-xs text-ink-faint">({displayVal})</span>
+                          )}
+                          {m.isRequired && !displayVal && (
+                            <span className="ml-1 text-xs text-ink-faint">(included)</span>
+                          )}
+                        </span>
+                        {delta !== 0 && (
+                          <span className="flex-none text-xs tabular-nums text-ink-faint">
+                            {delta > 0 ? '+' : ''}
+                            {formatPrice(delta)}
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {estimatedTotalCents != null && (
+                <div className="mt-3 border-t border-border pt-3">
+                  {discountActive && (
+                    <div className="mb-2 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs tracking-widest text-accent">{SALE.name}</span>
+                        <span className="text-xs text-accent">{SALE.discountLabel}</span>
+                      </div>
+                      <span className="flex-none text-xs tabular-nums text-accent">
+                        −{formatPrice(estimatedTotalCents - applyDiscount(estimatedTotalCents))}
                       </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+                    </div>
+                  )}
+                  {saleAnnouncementActive && preferredDate && !discountActive && (
+                    <p className="mb-2 text-xs text-ink-faint">
+                      Spring Sale applies to May sessions only.
+                    </p>
+                  )}
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-xs text-ink-faint">Estimated total</span>
+                    <div className="flex items-baseline gap-2">
+                      {discountedTotalCents != null && (
+                        <span className="text-xs tabular-nums text-ink-faint line-through">
+                          {formatPrice(estimatedTotalCents)}
+                        </span>
+                      )}
+                      <span className="text-sm font-semibold text-ink">
+                        {formatPrice(effectiveTotalCents ?? estimatedTotalCents)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
-          {estimatedTotalCents != null && (
-            <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
-              <span className="text-xs text-ink-faint">Estimated total</span>
-              <span className="text-sm font-semibold text-ink">
-                {formatPrice(estimatedTotalCents)}
+
+          {/* Location */}
+          <fieldset className="space-y-5">
+            <legend className="text-sm font-semibold text-ink">Where are you based?</legend>
+            <p className="text-xs leading-relaxed text-ink-faint">
+              I travel regularly between Vancouver Island and the mainland. Let me know which area
+              you&apos;re in so I can confirm I&apos;ll be there.
+            </p>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="location-select" className="text-sm font-medium text-ink-muted">
+                Location{' '}
+                <span className="text-accent" aria-hidden="true">
+                  *
+                </span>
+              </label>
+              <LocationPicker
+                id="location-select"
+                value={locationSelect}
+                onChange={(v) => {
+                  setLocationSelect(v);
+                  setLocationOther('');
+                  clearError('location');
+                }}
+                hasError={!!fieldErrors.location && locationSelect !== 'Other'}
+                aria-describedby={
+                  fieldErrors.location && locationSelect !== 'Other' ? 'location-error' : undefined
+                }
+              />
+
+              {locationSelect === 'Other' && (
+                <input
+                  ref={locationOtherRef}
+                  id="location-other"
+                  type="text"
+                  placeholder="e.g. Tofino, Whistler, Victoria area…"
+                  value={locationOther}
+                  onChange={(e) => {
+                    setLocationOther(e.target.value);
+                    clearError('location');
+                  }}
+                  aria-label="Describe your location"
+                  aria-invalid={!!fieldErrors.location}
+                  aria-describedby={fieldErrors.location ? 'location-error' : undefined}
+                  className={inputCls(!!fieldErrors.location)}
+                />
+              )}
+
+              <FieldError id="location-error" message={fieldErrors.location} />
+            </div>
+          </fieldset>
+
+          {/* Date + time */}
+          <fieldset className="space-y-5">
+            <legend className="text-sm font-semibold text-ink">Preferred date &amp; time</legend>
+            <p className="text-xs leading-relaxed text-ink-faint">
+              This is a preference, not a confirmed slot. I&apos;ll reach out to confirm
+              availability. Dates shown in red are unavailable.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="preferred-date" className="text-sm font-medium text-ink-muted">
+                  Date{' '}
+                  <span className="text-accent" aria-hidden="true">
+                    *
+                  </span>
+                </label>
+                <DatePicker
+                  id="preferred-date"
+                  value={preferredDate}
+                  onChange={(v) => {
+                    setPreferredDate(v);
+                    clearError('date');
+                  }}
+                  min={today}
+                  unavailableDates={unavailableDates}
+                  locationWindows={locationWindows}
+                  placeholder="Choose a date"
+                  hasError={!!fieldErrors.date}
+                  aria-describedby={fieldErrors.date ? 'date-error' : undefined}
+                  saleMonth={
+                    saleAnnouncementActive
+                      ? { year: SALE.discountYear, month: SALE.discountMonth }
+                      : undefined
+                  }
+                />
+                <FieldError id="date-error" message={fieldErrors.date} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="preferred-time" className="text-sm font-medium text-ink-muted">
+                  Preferred time{' '}
+                  <span className="text-xs font-normal text-ink-faint">(optional)</span>
+                </label>
+                <TimePicker id="preferred-time" value={preferredTime} onChange={setPreferredTime} />
+              </div>
+            </div>
+          </fieldset>
+
+          {/* Contact details */}
+          <fieldset className="space-y-5">
+            <legend className="text-sm font-semibold text-ink">Your details</legend>
+
+            {/* Name */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="name" className="text-sm font-medium text-ink-muted">
+                Full name{' '}
+                <span className="text-accent" aria-hidden="true">
+                  *
+                </span>
+              </label>
+              <input
+                ref={nameRef}
+                id="name"
+                type="text"
+                autoComplete="name"
+                placeholder="Jane Smith"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  clearError('name');
+                }}
+                aria-invalid={!!fieldErrors.name}
+                aria-describedby={fieldErrors.name ? 'name-error' : undefined}
+                className={inputCls(!!fieldErrors.name)}
+              />
+              <FieldError id="name-error" message={fieldErrors.name} />
+            </div>
+
+            {/* Email */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="email" className="text-sm font-medium text-ink-muted">
+                Email{' '}
+                <span className="text-accent" aria-hidden="true">
+                  *
+                </span>
+              </label>
+              <input
+                ref={emailRef}
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  clearError('email');
+                }}
+                aria-invalid={!!fieldErrors.email}
+                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
+                className={inputCls(!!fieldErrors.email)}
+              />
+              <FieldError id="email-error" message={fieldErrors.email} />
+            </div>
+
+            {/* Phone */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="phone" className="text-sm font-medium text-ink-muted">
+                Phone <span className="text-xs font-normal text-ink-faint">(optional)</span>
+              </label>
+              <input
+                ref={phoneRef}
+                id="phone"
+                type="tel"
+                autoComplete="tel"
+                placeholder="+1 (613) 555-0100"
+                value={phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  clearError('phone');
+                }}
+                aria-invalid={!!fieldErrors.phone}
+                aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
+                className={inputCls(!!fieldErrors.phone)}
+              />
+              <FieldError id="phone-error" message={fieldErrors.phone} />
+            </div>
+          </fieldset>
+
+          {/* Notes */}
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="notes" className="text-sm font-medium text-ink-muted">
+              Anything else I should know?{' '}
+              <span className="text-xs font-normal text-ink-faint">(optional)</span>
+            </label>
+            <textarea
+              id="notes"
+              rows={4}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Vision, vibe, special requests…"
+              className={`${inputCls()} resize-none`}
+            />
+          </div>
+
+          {/* Server error */}
+          {status === 'error' && (
+            <p
+              role="alert"
+              className="rounded-card border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
+              {serverError}
+            </p>
+          )}
+
+          {/* Submit */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <button
+              type="submit"
+              disabled={status === 'submitting'}
+              className="rounded-card bg-accent px-8 py-3.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            >
+              {status === 'submitting' ? 'Sending…' : 'Send request'}
+            </button>
+            <p className="text-xs leading-relaxed text-ink-faint">
+              No commitment. I&apos;ll be in touch soon.
+            </p>
+          </div>
+        </form>
+      </div>
+
+      {pkg && (
+        <aside className="hidden lg:block lg:w-80 lg:flex-none lg:sticky lg:top-8">
+          <SummaryPanel
+            pkg={pkg}
+            resolvedModifiers={resolvedModifiers}
+            modifierValues={modifierValues}
+            estimatedTotalCents={estimatedTotalCents}
+            discountActive={discountActive}
+            hasDate={!!preferredDate}
+          />
+          <div className="mt-6 px-1">
+            <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
+              What happens next
+            </p>
+            <p className="text-sm leading-relaxed text-ink-muted">
+              Once you submit, I&apos;ll review your request and be in touch to confirm the date and
+              sort out any details.
+            </p>
+          </div>
+        </aside>
+      )}
+    </>
+  );
+};
+
+// ── Desktop summary sidebar ───────────────────────────────────────────────────
+
+type SummaryPanelProps = {
+  pkg: PublicPackage;
+  resolvedModifiers: PublicPackageModifier[];
+  modifierValues: Record<string, number>;
+  estimatedTotalCents: number | undefined;
+  discountActive: boolean;
+  hasDate: boolean;
+};
+
+const SummaryPanel = ({
+  pkg,
+  resolvedModifiers,
+  modifierValues,
+  estimatedTotalCents,
+  discountActive,
+  hasDate
+}: SummaryPanelProps) => {
+  const discountedTotal =
+    discountActive && estimatedTotalCents != null ? applyDiscount(estimatedTotalCents) : undefined;
+  const effectiveTotal = discountedTotal ?? estimatedTotalCents;
+
+  return (
+    <div className="rounded-card border border-border bg-sun px-5 py-6">
+      <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
+        Your selection
+      </p>
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="text-base font-semibold text-ink">{pkg.name}</p>
+        {pkg.basePriceCents != null && (
+          <span className="flex-none text-sm tabular-nums text-ink">
+            {formatPrice(pkg.basePriceCents)}
+          </span>
+        )}
+      </div>
+      {pkg.description && (
+        <p className="mt-1 text-sm leading-relaxed text-ink-muted">{pkg.description}</p>
+      )}
+
+      {resolvedModifiers.length > 0 && (
+        <ul className="mt-4 space-y-2 border-t border-border pt-4">
+          {resolvedModifiers.map((m) => {
+            const displayVal = modifierDisplayValue(m, modifierValues);
+            const delta = computeModifierDelta(m, modifierValues);
+            return (
+              <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
+                <span className="text-ink-muted">
+                  {m.name}
+                  {displayVal && (
+                    <span className="ml-1 text-xs text-ink-faint">({displayVal})</span>
+                  )}
+                  {m.isRequired && !displayVal && (
+                    <span className="ml-1 text-xs text-ink-faint">(included)</span>
+                  )}
+                </span>
+                {delta !== 0 && (
+                  <span className="flex-none text-xs tabular-nums text-ink-faint">
+                    {delta > 0 ? '+' : ''}
+                    {formatPrice(delta)}
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {estimatedTotalCents != null && (
+        <div className="mt-4 space-y-2 border-t border-border pt-4">
+          {discountActive && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-accent/80">
+                  {SALE.name}
+                </span>
+                <span className="text-xs text-accent">{SALE.discountLabel}</span>
+              </div>
+              <span className="flex-none text-xs tabular-nums text-accent">
+                −{formatPrice(estimatedTotalCents - applyDiscount(estimatedTotalCents))}
               </span>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Location */}
-      <fieldset className="space-y-5">
-        <legend className="text-sm font-semibold text-ink">Where are you based?</legend>
-        <p className="text-xs leading-relaxed text-ink-faint">
-          I travel regularly between Vancouver Island and the mainland. Let me know which area
-          you&apos;re in so I can confirm I&apos;ll be there.
-        </p>
-
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="location-select" className="text-sm font-medium text-ink-muted">
-            Location{' '}
-            <span className="text-accent" aria-hidden="true">
-              *
-            </span>
-          </label>
-          <LocationPicker
-            id="location-select"
-            value={locationSelect}
-            onChange={(v) => {
-              setLocationSelect(v);
-              setLocationOther('');
-              clearError('location');
-            }}
-            hasError={!!fieldErrors.location && locationSelect !== 'Other'}
-            aria-describedby={
-              fieldErrors.location && locationSelect !== 'Other' ? 'location-error' : undefined
-            }
-          />
-
-          {locationSelect === 'Other' && (
-            <input
-              ref={locationOtherRef}
-              id="location-other"
-              type="text"
-              placeholder="e.g. Tofino, Whistler, Victoria area…"
-              value={locationOther}
-              onChange={(e) => {
-                setLocationOther(e.target.value);
-                clearError('location');
-              }}
-              aria-label="Describe your location"
-              aria-invalid={!!fieldErrors.location}
-              aria-describedby={fieldErrors.location ? 'location-error' : undefined}
-              className={inputCls(!!fieldErrors.location)}
-            />
+          {isSaleAnnouncementActive() && hasDate && !discountActive && (
+            <p className="text-xs text-ink-faint">Spring Sale applies to May sessions only.</p>
           )}
-
-          <FieldError id="location-error" message={fieldErrors.location} />
-        </div>
-      </fieldset>
-
-      {/* Date + time */}
-      <fieldset className="space-y-5">
-        <legend className="text-sm font-semibold text-ink">Preferred date &amp; time</legend>
-        <p className="text-xs leading-relaxed text-ink-faint">
-          This is a preference, not a confirmed slot. I&apos;ll reach out to confirm availability.
-          Dates shown in red are unavailable.
-        </p>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="preferred-date" className="text-sm font-medium text-ink-muted">
-              Date{' '}
-              <span className="text-accent" aria-hidden="true">
-                *
+          <div className="flex items-baseline justify-between">
+            <span className="text-xs text-ink-faint">Estimated total</span>
+            <div className="flex items-baseline gap-2">
+              {discountedTotal != null && (
+                <span className="text-xs tabular-nums text-ink-faint line-through">
+                  {formatPrice(estimatedTotalCents)}
+                </span>
+              )}
+              <span className="text-sm font-semibold text-ink">
+                {formatPrice(effectiveTotal ?? estimatedTotalCents)}
               </span>
-            </label>
-            <DatePicker
-              id="preferred-date"
-              value={preferredDate}
-              onChange={(v) => {
-                setPreferredDate(v);
-                clearError('date');
-              }}
-              min={today}
-              unavailableDates={unavailableDates}
-              locationWindows={locationWindows}
-              placeholder="Choose a date"
-              hasError={!!fieldErrors.date}
-              aria-describedby={fieldErrors.date ? 'date-error' : undefined}
-            />
-            <FieldError id="date-error" message={fieldErrors.date} />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="preferred-time" className="text-sm font-medium text-ink-muted">
-              Preferred time <span className="text-xs font-normal text-ink-faint">(optional)</span>
-            </label>
-            <TimePicker id="preferred-time" value={preferredTime} onChange={setPreferredTime} />
+            </div>
           </div>
         </div>
-      </fieldset>
-
-      {/* Contact details */}
-      <fieldset className="space-y-5">
-        <legend className="text-sm font-semibold text-ink">Your details</legend>
-
-        {/* Name */}
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="name" className="text-sm font-medium text-ink-muted">
-            Full name{' '}
-            <span className="text-accent" aria-hidden="true">
-              *
-            </span>
-          </label>
-          <input
-            ref={nameRef}
-            id="name"
-            type="text"
-            autoComplete="name"
-            placeholder="Jane Smith"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              clearError('name');
-            }}
-            aria-invalid={!!fieldErrors.name}
-            aria-describedby={fieldErrors.name ? 'name-error' : undefined}
-            className={inputCls(!!fieldErrors.name)}
-          />
-          <FieldError id="name-error" message={fieldErrors.name} />
-        </div>
-
-        {/* Email */}
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="email" className="text-sm font-medium text-ink-muted">
-            Email{' '}
-            <span className="text-accent" aria-hidden="true">
-              *
-            </span>
-          </label>
-          <input
-            ref={emailRef}
-            id="email"
-            type="email"
-            autoComplete="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              clearError('email');
-            }}
-            aria-invalid={!!fieldErrors.email}
-            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-            className={inputCls(!!fieldErrors.email)}
-          />
-          <FieldError id="email-error" message={fieldErrors.email} />
-        </div>
-
-        {/* Phone */}
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="phone" className="text-sm font-medium text-ink-muted">
-            Phone <span className="text-xs font-normal text-ink-faint">(optional)</span>
-          </label>
-          <input
-            ref={phoneRef}
-            id="phone"
-            type="tel"
-            autoComplete="tel"
-            placeholder="+1 (613) 555-0100"
-            value={phone}
-            onChange={(e) => {
-              setPhone(e.target.value);
-              clearError('phone');
-            }}
-            aria-invalid={!!fieldErrors.phone}
-            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
-            className={inputCls(!!fieldErrors.phone)}
-          />
-          <FieldError id="phone-error" message={fieldErrors.phone} />
-        </div>
-      </fieldset>
-
-      {/* Notes */}
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="notes" className="text-sm font-medium text-ink-muted">
-          Anything else I should know?{' '}
-          <span className="text-xs font-normal text-ink-faint">(optional)</span>
-        </label>
-        <textarea
-          id="notes"
-          rows={4}
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Vision, vibe, special requests…"
-          className={`${inputCls()} resize-none`}
-        />
-      </div>
-
-      {/* Server error */}
-      {status === 'error' && (
-        <p
-          role="alert"
-          className="rounded-card border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-        >
-          {serverError}
-        </p>
       )}
-
-      {/* Submit */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <button
-          type="submit"
-          disabled={status === 'submitting'}
-          className="rounded-card bg-accent px-8 py-3.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-        >
-          {status === 'submitting' ? 'Sending…' : 'Send request'}
-        </button>
-        <p className="text-xs leading-relaxed text-ink-faint">
-          No commitment. I&apos;ll be in touch soon.
-        </p>
-      </div>
-    </form>
+    </div>
   );
 };
 

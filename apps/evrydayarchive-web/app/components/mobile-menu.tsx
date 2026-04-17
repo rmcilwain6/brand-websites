@@ -14,6 +14,10 @@ type MobileMenuProps = {
   isOpen: boolean;
   onClose: () => void;
   links: readonly NavLink[];
+  /** Tailwind class controlling how far the overlay stops from the bottom of the viewport.
+   *  Defaults to 'bottom-16' (clears the mobile nav bar only).
+   *  Pass 'bottom-[92px]' when the sale bar is also present. */
+  bottomOffset?: string;
 };
 
 /**
@@ -29,7 +33,13 @@ type MobileMenuProps = {
  * On release: close animation and navigation fire simultaneously so the
  * menu collapses downward while the new page loads behind it.
  */
-export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
+export const MobileMenu = ({
+  id,
+  isOpen,
+  onClose,
+  links,
+  bottomOffset = 'bottom-16'
+}: MobileMenuProps) => {
   const pathname = usePathname();
   const allLinks: NavLink[] = [{ href: '/', label: 'Home' }, ...links];
 
@@ -41,7 +51,8 @@ export const MobileMenu = ({ id, isOpen, onClose, links }: MobileMenuProps) => {
       aria-label="Navigation menu"
       aria-hidden={!isOpen}
       className={cn(
-        'fixed inset-x-0 top-0 bottom-16 z-30 flex flex-col bg-canvas md:hidden',
+        'fixed inset-x-0 top-0 z-30 flex flex-col bg-canvas md:hidden',
+        bottomOffset,
         'transition-[clip-path] duration-standard',
         isOpen
           ? '[clip-path:inset(0%_0_0_0)] pointer-events-auto'
