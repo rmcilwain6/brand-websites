@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from '../components/img';
 import Link from 'next/link';
 
@@ -5,6 +6,12 @@ import { fetchPublicGalleries, type GalleryListItem } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
 import { Frame } from '../components/frame';
+
+export const metadata: Metadata = {
+  title: 'Portfolio | Evryday Archive Co',
+  description:
+    'Browse photography galleries by Reed McIlwain — lifestyle, family, and everyday moments documented in Kamloops and Vancouver Island.'
+};
 
 export const dynamic = 'force-dynamic';
 

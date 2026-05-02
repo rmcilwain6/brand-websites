@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { FaqAccordion } from './faq-accordion';
@@ -49,6 +50,12 @@ const FAQ_ITEMS = [
       "Always. The listed packages are starting points. If your situation is different — unusual hours, a specific location, a larger group, or something entirely different — send a message and we'll figure it out."
   }
 ];
+
+export const metadata: Metadata = {
+  title: 'FAQs | Evryday Archive Co',
+  description:
+    'Answers to common questions about booking, pricing, turnaround time, and what to expect from your Evryday Archive session.'
+};
 
 const FaqPage = () => {
   return (

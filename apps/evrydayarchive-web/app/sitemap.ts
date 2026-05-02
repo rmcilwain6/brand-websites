@@ -12,7 +12,6 @@ const staticRoutes: MetadataRoute.Sitemap = [
   { url: `${BASE_URL}/packages`, priority: 0.8, changeFrequency: 'monthly' },
   { url: `${BASE_URL}/package-builder`, priority: 0.7, changeFrequency: 'monthly' },
   { url: `${BASE_URL}/inquire`, priority: 0.7, changeFrequency: 'monthly' },
-  { url: `${BASE_URL}/book`, priority: 0.7, changeFrequency: 'monthly' },
   { url: `${BASE_URL}/process`, priority: 0.6, changeFrequency: 'monthly' },
   { url: `${BASE_URL}/faq`, priority: 0.6, changeFrequency: 'monthly' },
   { url: `${BASE_URL}/contact`, priority: 0.6, changeFrequency: 'monthly' },

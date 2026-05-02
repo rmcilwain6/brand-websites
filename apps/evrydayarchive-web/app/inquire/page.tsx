@@ -1,9 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { fetchPublicPackages, type PublicPackage } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
 import { Questionnaire } from './questionnaire';
+
+export const metadata: Metadata = {
+  title: 'Get Started | Evryday Archive Co',
+  description:
+    'Tell us about yourself and get a tailored session recommendation. Start planning your Evryday Archive photography session today.'
+};
 
 export const dynamic = 'force-dynamic';
 
