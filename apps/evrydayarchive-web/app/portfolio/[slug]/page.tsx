@@ -42,12 +42,10 @@ export const generateMetadata = async ({
         title,
         description,
         url: `https://evrydayarchive.co/portfolio/${params.slug}`,
-        type: 'website',
-        images: [{ url: '/logo/og-image.jpg', width: 1200, height: 630 }]
+        type: 'website'
       },
       twitter: {
-        card: 'summary_large_image',
-        images: ['/logo/og-image.jpg']
+        card: 'summary_large_image'
       }
     };
   } catch {

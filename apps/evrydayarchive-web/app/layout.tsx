@@ -29,6 +29,10 @@ export const metadata: Metadata = {
   title: 'Evryday Archive Co | Reed McIlwain, Photographer',
   description:
     'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
+  icons: {
+    icon: [{ url: '/logo/icon-square.png', sizes: '512x512', type: 'image/png' }],
+    apple: '/logo/icon-square.png'
+  },
   openGraph: {
     type: 'website',
     url: 'https://evrydayarchive.co',
@@ -52,6 +56,12 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
   name: 'Evryday Archive Co',
+  logo: {
+    '@type': 'ImageObject',
+    url: 'https://evrydayarchive.co/logo/og-image-square.png',
+    width: 1200,
+    height: 1200
+  },
   founder: {
     '@type': 'Person',
     name: 'Reed McIlwain'
