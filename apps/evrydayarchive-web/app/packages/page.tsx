@@ -1,8 +1,15 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { fetchPublicPackages, type PublicPackage } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
+
+export const metadata: Metadata = {
+  title: 'Photography Packages | Evryday Archive Co',
+  description:
+    'Transparent session pricing with no hidden fees. Browse photography packages and find the right fit for your budget and occasion.'
+};
 
 export const dynamic = 'force-dynamic';
 

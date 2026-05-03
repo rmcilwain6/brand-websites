@@ -1,9 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { fetchPublicPackages, type PublicPackage } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
 import { BuilderCard } from './builder-card';
+
+export const metadata: Metadata = {
+  title: 'Build Your Package | Evryday Archive Co',
+  description:
+    'Customize your photography session from the ground up. Mix and match add-ons to build a package that fits your vision and budget.'
+};
 
 export const dynamic = 'force-dynamic';
 

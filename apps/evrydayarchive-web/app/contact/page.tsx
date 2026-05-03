@@ -1,4 +1,12 @@
+import type { Metadata } from 'next';
+
 import { ContactForm } from './contact-form';
+
+export const metadata: Metadata = {
+  title: 'Contact | Evryday Archive Co',
+  description:
+    'Get in touch with Evryday Archive Co. Reach out with questions, inquiries, or to start planning your photography session with Reed McIlwain.'
+};
 
 const ContactPage = () => {
   return (

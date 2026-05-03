@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import {
@@ -15,6 +16,12 @@ import {
 import { getServerEnv } from '../lib/env';
 import { isSaleAnnouncementActive, isSaleAutoOptIn } from '../lib/sale';
 import { BookingForm } from './booking-form';
+
+export const metadata: Metadata = {
+  title: 'Book a Session | Evryday Archive Co',
+  description: 'Request your photography session with Evryday Archive Co.',
+  robots: { index: false }
+};
 
 export const dynamic = 'force-dynamic';
 

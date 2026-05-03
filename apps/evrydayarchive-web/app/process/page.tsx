@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { Placard } from '../components/placard';
 
 const STEPS = [
@@ -32,6 +34,12 @@ const STEPS = [
       'The gallery is yours. Print, share, keep. If you want prints or albums arranged, I can help. And if you come back for another session someday, all the better.'
   }
 ];
+
+export const metadata: Metadata = {
+  title: 'How It Works | Evryday Archive Co',
+  description:
+    'From first inquiry to final gallery — here is how Reed McIlwain documents your everyday life from start to finish.'
+};
 
 const ProcessPage = () => {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from '../components/img';
 import Link from 'next/link';
 
@@ -170,6 +171,12 @@ const ArchiveGrid = ({ mobile }: { mobile: boolean }) => {
       </div>
     </section>
   );
+};
+
+export const metadata: Metadata = {
+  title: 'About | Evryday Archive Co',
+  description:
+    'Meet Reed McIlwain, the photographer behind Evryday Archive Co — documenting ordinary life as something worth keeping in Kamloops and Vancouver Island.'
 };
 
 // ── Page ──────────────────────────────────────────────────────────────────────
