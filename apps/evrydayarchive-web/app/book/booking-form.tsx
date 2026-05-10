@@ -251,6 +251,7 @@ export const BookingForm = ({
       packageName: pkg?.name,
       modifierIds: resolvedModifiers.filter((m) => !m.isRequired).map((m) => m.id),
       modifierValues: Object.keys(modifierValues).length > 0 ? modifierValues : undefined,
+      springSale: springSale || undefined,
       // Reflects the discounted total when Spring Sale is active so the booking record
       // shows what the customer was actually quoted.
       estimatedTotalCents: effectiveTotalCents

@@ -1,6 +1,7 @@
 import { Link, Text } from '@react-email/components';
 import * as React from 'react';
 
+import type { ModifierLineItem } from '../app/lib/email';
 import { EmailLayout, tokens } from './layout';
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
   estimatedTotalCents?: number;
   notes?: string;
   inquiryId: string;
+  modifierLineItems?: ModifierLineItem[];
 };
 
 const formatCurrency = (cents: number) =>
@@ -22,6 +24,12 @@ const formatCurrency = (cents: number) =>
     currency: 'CAD',
     maximumFractionDigits: 0
   }).format(cents / 100);
+
+const formatDelta = (cents: number | null): string => {
+  if (cents === null || cents === 0) return 'Included';
+  if (cents > 0) return `+${formatCurrency(cents)}`;
+  return `−${formatCurrency(Math.abs(cents))}`;
+};
 
 export const BookingNotification = ({
   name,
@@ -33,9 +41,11 @@ export const BookingNotification = ({
   packageName,
   estimatedTotalCents,
   notes,
-  inquiryId
+  inquiryId,
+  modifierLineItems
 }: Props) => {
   const dateDisplay = preferredTime ? `${preferredDate} at ${preferredTime}` : preferredDate;
+  const hasModifiers = modifierLineItems && modifierLineItems.length > 0;
 
   return (
     <EmailLayout preview={`New booking request — ${packageName ?? 'no package'} — ${name}`}>
@@ -76,7 +86,7 @@ export const BookingNotification = ({
             <td style={styles.fieldLabel}>Preferred date</td>
             <td style={styles.fieldValue}>{dateDisplay}</td>
           </tr>
-          {estimatedTotalCents != null && (
+          {!hasModifiers && estimatedTotalCents != null && (
             <tr>
               <td style={styles.fieldLabel}>Est. total</td>
               <td style={styles.fieldValue}>{formatCurrency(estimatedTotalCents)}</td>
@@ -88,6 +98,31 @@ export const BookingNotification = ({
           </tr>
         </tbody>
       </table>
+
+      {hasModifiers && (
+        <>
+          <Text style={styles.sectionLabel}>Package modifiers</Text>
+          <table style={styles.modifierTable}>
+            <tbody>
+              {modifierLineItems!.map((item, i) => (
+                <tr key={i}>
+                  <td style={styles.modifierName}>{item.name}</td>
+                  <td style={styles.modifierValue}>{item.displayValue ?? ''}</td>
+                  <td style={styles.modifierPrice}>{formatDelta(item.priceDeltaCents)}</td>
+                </tr>
+              ))}
+              {estimatedTotalCents != null && (
+                <tr>
+                  <td colSpan={2} style={styles.totalLabel}>
+                    Estimated total
+                  </td>
+                  <td style={styles.totalPrice}>{formatCurrency(estimatedTotalCents)}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </>
+      )}
 
       {notes && (
         <>
@@ -109,10 +144,16 @@ BookingNotification.PreviewProps = {
   preferredDate: '2026-07-12',
   preferredTime: '10:00',
   packageName: 'Full Day',
-  estimatedTotalCents: 95000,
+  estimatedTotalCents: 85500,
   notes: 'Looking for a mix of candid and a few posed shots in the park.',
-  inquiryId: 'clz1abc2def3ghi4'
-};
+  inquiryId: 'clz1abc2def3ghi4',
+  modifierLineItems: [
+    { name: 'Session length', displayValue: '4 hr', priceDeltaCents: null },
+    { name: 'Studio backdrop', priceDeltaCents: 7500 },
+    { name: 'Rush editing', displayValue: 'Rush (7 days)', priceDeltaCents: 15000 },
+    { name: 'Spring Sale (10% off)', priceDeltaCents: -10500 }
+  ]
+} satisfies Props;
 
 export default BookingNotification;
 
@@ -158,6 +199,63 @@ const styles = {
   link: {
     color: tokens.accent,
     textDecoration: 'none'
+  },
+  sectionLabel: {
+    color: tokens.inkFaint,
+    fontSize: '11px',
+    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    letterSpacing: '0.08em',
+    margin: '0 0 12px',
+    textTransform: 'uppercase' as const
+  },
+  modifierTable: {
+    borderCollapse: 'collapse' as const,
+    marginBottom: '28px',
+    width: '100%'
+  },
+  modifierName: {
+    color: tokens.inkMuted,
+    fontSize: '13px',
+    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    paddingBottom: '7px',
+    paddingRight: '16px',
+    verticalAlign: 'top' as const
+  },
+  modifierValue: {
+    color: tokens.inkFaint,
+    fontSize: '13px',
+    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    paddingBottom: '7px',
+    paddingRight: '16px',
+    verticalAlign: 'top' as const,
+    width: '100px'
+  },
+  modifierPrice: {
+    color: tokens.inkMuted,
+    fontSize: '13px',
+    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    paddingBottom: '7px',
+    textAlign: 'right' as const,
+    verticalAlign: 'top' as const,
+    whiteSpace: 'nowrap' as const
+  },
+  totalLabel: {
+    borderTop: `1px solid ${tokens.border}`,
+    color: tokens.ink,
+    fontSize: '13px',
+    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    fontWeight: '600',
+    paddingTop: '10px'
+  },
+  totalPrice: {
+    borderTop: `1px solid ${tokens.border}`,
+    color: tokens.ink,
+    fontSize: '13px',
+    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    fontWeight: '600',
+    paddingTop: '10px',
+    textAlign: 'right' as const,
+    whiteSpace: 'nowrap' as const
   },
   notesLabel: {
     color: tokens.inkFaint,

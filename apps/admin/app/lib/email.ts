@@ -16,6 +16,12 @@ const getResend = () => {
   return resend;
 };
 
+export type ModifierLineItem = {
+  name: string;
+  displayValue?: string;
+  priceDeltaCents: number | null;
+};
+
 type BookingEmailData = {
   name: string;
   email: string;
@@ -27,6 +33,7 @@ type BookingEmailData = {
   estimatedTotalCents?: number;
   notes?: string;
   inquiryId: string;
+  modifierLineItems?: ModifierLineItem[];
 };
 
 // ── Booking: confirmation to the client ──────────────────────────────────────
