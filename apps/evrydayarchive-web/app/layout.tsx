@@ -10,6 +10,7 @@ import { SiteHeader } from './components/site-header';
 import { SiteFooter } from './components/site-footer';
 import { NavigationFeedback } from './components/navigation-feedback';
 import { PageFade } from './components/page-fade';
+import { MetaPixel } from './components/meta-pixel';
 import { isSaleAnnouncementActive } from './lib/sale';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -155,6 +156,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />
+        <MetaPixel />
       </body>
     </html>
   );
