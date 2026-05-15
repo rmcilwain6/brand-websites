@@ -15,3 +15,17 @@ export const BookingRequestSubmissionPayloadSchema = z.object({
 });
 
 export type BookingRequestSubmissionPayload = z.infer<typeof BookingRequestSubmissionPayloadSchema>;
+
+export const BookingRequestStatusValues = [
+  'PENDING',
+  'REVIEWED',
+  'APPROVED',
+  'DECLINED',
+  'CANCELLED'
+] as const;
+
+export const BookingRequestUpdateSchema = z.object({
+  status: z.enum(BookingRequestStatusValues).optional()
+});
+
+export type BookingRequestUpdate = z.infer<typeof BookingRequestUpdateSchema>;
