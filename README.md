@@ -25,7 +25,6 @@ Apps must not import from other apps. All shared code goes through `@repo/core`,
 
 - Node.js 20+
 - pnpm 9+
-- A running PostgreSQL instance (or use the Neon connection string from `.env`)
 
 ### 1) Install dependencies
 
@@ -35,46 +34,46 @@ pnpm install
 
 ### 2) Configure environment variables
 
-Copy the example files and fill in any blank values:
+Two files need to exist locally. They are gitignored and never committed.
+
+**`packages/db/.env`** — read by Prisma CLI (`db:migrate`, `db:deploy`, `db:studio`, etc.):
+
+```bash
+cp packages/db/.env.example packages/db/.env
+# then fill in DATABASE_URL with the dev branch connection string from Neon
+```
+
+**`apps/admin/.env`** — read by the running Next.js admin app:
 
 ```bash
 cp apps/admin/.env.example apps/admin/.env
-cp apps/evrydayarchive-web/.env.example apps/evrydayarchive-web/.env
+# then fill in all values
 ```
-
-**`apps/admin/.env`** — required vars:
 
 | Variable                | Purpose                                    |
 | ----------------------- | ------------------------------------------ |
-| `DATABASE_URL`          | PostgreSQL connection string               |
+| `DATABASE_URL`          | Neon dev branch connection string          |
 | `ADMIN_PASSWORD`        | Login password for the admin UI            |
 | `AUTH_SECRET`           | Session signing secret (any random string) |
+| `RESEND_API_KEY`        | Resend — transactional email               |
+| `NOTIFICATION_EMAIL`    | Address that receives booking alerts       |
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary account — image uploads         |
 | `CLOUDINARY_API_KEY`    | Cloudinary API key                         |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret                      |
 
-**`apps/evrydayarchive-web/.env`** — required vars:
+`DATABASE_URL` must be identical in both files — they read the same DB, from different contexts (CLI vs runtime).
 
-| Variable                  | Purpose                                                     |
-| ------------------------- | ----------------------------------------------------------- |
-| `ADMIN_API_BASE_URL`      | Base URL of the admin app (for fetching galleries/packages) |
-| `DATABASE_URL`            | PostgreSQL connection string (used for waitlist writes)     |
-| `NEXT_PUBLIC_COMING_SOON` | Set `"true"` to redirect all routes to `/coming-soon`       |
-
-For Prisma CLI commands run directly from `packages/db`, also create:
+**`apps/evrydayarchive-web/.env`** — the public site does not connect to the DB directly (it goes through the admin API), so `DATABASE_URL` is not needed here:
 
 ```bash
-cp apps/admin/.env packages/db/.env   # or set DATABASE_URL manually
+cp apps/evrydayarchive-web/.env.example apps/evrydayarchive-web/.env
 ```
 
-### 3) Generate Prisma client and run migrations
+| Variable             | Purpose                                                  |
+| -------------------- | -------------------------------------------------------- |
+| `ADMIN_API_BASE_URL` | Base URL of the admin app (e.g. `http://localhost:3001`) |
 
-```bash
-pnpm --filter @repo/db db:generate
-pnpm --filter @repo/db db:migrate
-```
-
-### 4) Start the apps
+### 3) Start the apps
 
 ```bash
 pnpm dev                             # all apps in parallel
@@ -84,39 +83,99 @@ pnpm --filter admin dev              # admin only (port 3001)
 
 ---
 
-## Deployment & hosting
+## Database
 
-| App                  | Host              | Domain                    |
-| -------------------- | ----------------- | ------------------------- |
-| `evrydayarchive-web` | Vercel            | `evrydayarchive.co`       |
-| `admin`              | Vercel            | `admin.evrydayarchive.co` |
-| Database             | Neon (PostgreSQL) | shared across envs        |
+### Setup
 
-Both apps are deployed as separate Vercel projects, each configured via the Vercel dashboard (build commands, env vars, domains). There is no `vercel.json` in the repo — all deployment config lives in the Vercel UI.
+One Neon project (`brand-websites-db-production`) with two branches:
 
-The public site's `ADMIN_API_BASE_URL` is set in its Vercel project env vars and points to `admin.evrydayarchive.co`.
+| Branch        | Used by                                |
+| ------------- | -------------------------------------- |
+| `production`  | Vercel production deployment           |
+| `development` | Local dev + Vercel preview deployments |
 
-**Coming-soon mode** is controlled by `NEXT_PUBLIC_COMING_SOON=true` in the public app's environment. When enabled, middleware redirects all routes to `/coming-soon` except `/api/*`. The coming-soon page includes a waitlist email capture form.
+Your local `DATABASE_URL` always points to the `development` branch. Get the connection string from the Neon console: open the project → select the `development` branch → Connection details → choose the `local_development` role.
+
+### The two commands — and when to use each
+
+| Command           | When                                                         | What it does                                                                                                                             |
+| ----------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm db:migrate` | **Local dev only.** After editing `schema.prisma`.           | Creates a new `.sql` migration file in `packages/db/prisma/migrations/`, applies it to your local DB, and regenerates the Prisma client. |
+| `pnpm db:deploy`  | **Deploying.** Applying migrations to production or preview. | Applies any pending migration files that are already in the repo. Creates nothing new.                                                   |
+
+The short version: **`migrate` creates migration files. `deploy` applies them.**
+
+Once a migration file exists in the repo (i.e. you ran `migrate` and committed), you never need to run `migrate` again for that change — only `deploy` on each target environment.
+
+### Workflow: making a schema change
+
+```bash
+# 1. Edit packages/db/prisma/schema.prisma
+
+# 2. Create the migration and apply it locally
+pnpm db:migrate
+# Prisma will prompt for a migration name (e.g. "add_user_preferences")
+
+# 3. Commit the migration file alongside your code changes
+git add packages/db/prisma/migrations/
+git commit -m "..."
+
+# 4. Apply to production after merging (see Deploying migrations below)
+```
+
+### Deploying migrations to production
+
+After merging code that includes a new migration, apply it to the production branch before or immediately after the Vercel deployment goes live:
+
+```bash
+DATABASE_URL="<production-branch-connection-string>" pnpm db:deploy
+```
+
+Get the production connection string from Neon: select the `production` branch → Connection details.
+
+Apply to the preview/development branch the same way if it has drifted:
+
+```bash
+# packages/db/.env already points at development branch, so just:
+pnpm db:deploy
+```
+
+### Other useful commands
+
+```bash
+pnpm db:status   # show which migrations are applied vs pending on the connected DB
+pnpm db:studio   # open Prisma Studio (visual DB browser) against your local DB
+```
+
+Run from `packages/db` directly for commands not aliased at the root:
+
+```bash
+pnpm --filter @repo/db db:reset        # drop and recreate all tables (destructive — dev only)
+pnpm --filter @repo/db db:reset:force  # same, skips confirmation prompt
+```
 
 ---
 
-## Database
+## Deployment & hosting
 
-Managed via Prisma in `packages/db`. The same Neon database is used in both local dev (pointed at by your local `.env` files) and in production.
+| App                  | Host              | Domain                         |
+| -------------------- | ----------------- | ------------------------------ |
+| `evrydayarchive-web` | Vercel            | `evrydayarchive.co`            |
+| `admin`              | Vercel            | `admin.evrydayarchive.co`      |
+| Database             | Neon (PostgreSQL) | `brand-websites-db-production` |
 
-```bash
-# Regenerate Prisma client after schema changes
-pnpm --filter @repo/db db:generate
+Both apps are deployed as separate Vercel projects configured via the Vercel dashboard. There is no `vercel.json` in the repo — all deployment config lives in the Vercel UI.
 
-# Create and apply a new migration
-pnpm --filter @repo/db db:migrate
+### Vercel environment variables
 
-# Reset the database (destructive — drops all tables)
-pnpm --filter @repo/db db:reset
-pnpm --filter @repo/db db:reset:force   # skips interactive confirmation
-```
+`DATABASE_URL` is scoped per environment in Vercel:
 
-Note: `db:reset` does not create the database itself — it must already exist.
+| Vercel environment | `DATABASE_URL` points at  |
+| ------------------ | ------------------------- |
+| Production         | Neon `production` branch  |
+| Preview            | Neon `development` branch |
+
+The public site's `ADMIN_API_BASE_URL` is set in its Vercel project env vars and points to `admin.evrydayarchive.co`.
 
 ---
 
@@ -124,7 +183,7 @@ Note: `db:reset` does not create the database itself — it must already exist.
 
 Single-password session auth. Set in `apps/admin/.env`:
 
-```bash
+```
 ADMIN_PASSWORD=your-strong-password
 AUTH_SECRET=some-random-string
 ```
@@ -166,12 +225,6 @@ Tests live alongside the code they test:
 - `packages/**/src/**/*.test.ts` — unit/contract tests for shared packages
 - `apps/**/app/**/route.test.ts` — integration tests for route handlers
 
-**Testing strategy (target ratios):**
-
-- Unit + integration: ~80–90% of the suite
-- Contract tests: ~10–15%
-- E2E smoke tests: ~5% (critical paths only — login, gallery publish, public portfolio)
-
 ---
 
 ## API contract
@@ -205,7 +258,9 @@ export const POST = async (req: Request): Promise<Response> => {
 
 ## Troubleshooting
 
-- **`Environment variable not found: DATABASE_URL`** — verify `.env` files exist in `apps/admin`, `apps/evrydayarchive-web`, and optionally `packages/db`.
+- **Server error on `/bookings` or other admin pages** — your local DB may be missing a migration. Run `pnpm db:status` to check, then `pnpm db:deploy` to apply any pending ones.
+- **`Environment variable not found: DATABASE_URL`** — verify `packages/db/.env` and `apps/admin/.env` both exist and contain `DATABASE_URL`.
 - **Public site shows no portfolio data** — ensure `ADMIN_API_BASE_URL` points to a running admin instance and that `pnpm --filter admin dev` is running.
 - **Admin login fails** — verify `ADMIN_PASSWORD` and `AUTH_SECRET` are set in `apps/admin/.env` and restart the dev server after changes.
+- **Booking emails not sending** — check `RESEND_API_KEY` and `NOTIFICATION_EMAIL` are set in `apps/admin/.env`. Navigate to the booking in `/bookings` on the admin — the email status section will show the exact error if one occurred.
 - **Cloudinary uploads fail** — verify `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` are set in `apps/admin/.env`.

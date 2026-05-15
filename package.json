@@ -18,10 +18,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ci": "vitest run --coverage",
-    "db-schema:generate": "pnpm --filter @repo/db db:generate",
-    "db-schema:migrate": "pnpm --filter @repo/db db:migrate",
-    "db-schema:deploy": "pnpm --filter @repo/db db:deploy",
-    "db-schema:update": "pnpm db-schema:generate && pnpm db-schema:migrate"
+    "db:migrate": "pnpm --filter @repo/db db:migrate",
+    "db:deploy": "pnpm --filter @repo/db db:deploy",
+    "db:status": "pnpm --filter @repo/db db:status",
+    "db:studio": "pnpm --filter @repo/db db:studio"
   },
   "devDependencies": {
     "@types/node": "20.14.2",
