@@ -223,6 +223,8 @@ model BookingRequest {
   requestedAt     DateTime?
   notes           String?
   selectedOptions Json?
+  emailSentAt     DateTime?
+  emailError      String?
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
   inquiry         Inquiry?             @relation(fields: [inquiryId], references: [id], onDelete: SetNull)

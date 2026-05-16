@@ -1,5 +1,4 @@
 export { prisma } from './client';
-export { getDbEnv } from './env';
 export type {
   BookingRequest,
   BookingRequestStatus,

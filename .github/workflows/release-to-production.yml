@@ -1,23 +1,41 @@
 name: Release to Production
 
 # Triggered when a release is published from the GitHub UI or CLI.
-# Fast-forwards the `production` branch to the release tag so Vercel
-# picks it up and deploys automatically.
+# Runs database migrations against production first, then fast-forwards
+# the `production` branch to the release tag so Vercel picks it up and deploys.
 on:
   release:
     types: [published]
 
 jobs:
   deploy:
-    name: Fast-forward production to release tag
+    name: Migrate and release to production
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # Needs write access to push production
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run database migrations
+        run: pnpm db:deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_PROD_OWNER_URL }}
 
       - name: Fast-forward production to ${{ github.ref_name }}
         run: |

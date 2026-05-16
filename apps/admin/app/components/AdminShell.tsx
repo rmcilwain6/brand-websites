@@ -8,6 +8,7 @@ import { ToastProvider } from './Toaster';
 const navItems = [
   { label: 'Galleries', href: '/galleries' },
   { label: 'Packages', href: '/packages' },
+  { label: 'Bookings', href: '/bookings' },
   { label: 'Reviews', href: '/reviews' },
   { label: 'Availability', href: '/availability' },
   { label: 'Schedule', href: '/schedule' }
