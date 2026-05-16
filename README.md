@@ -40,8 +40,10 @@ Two files need to exist locally. They are gitignored and never committed.
 
 ```bash
 cp packages/db/.env.example packages/db/.env
-# then fill in DATABASE_URL with the dev branch connection string from Neon
+# Set DATABASE_URL to the neondb_owner connection string for the development branch
 ```
+
+Use the **`neondb_owner` role** here. Migrations require DDL permissions (ALTER TABLE, CREATE TABLE) that Neon only grants to the owner role — application roles are restricted to DML only.
 
 **`apps/admin/.env`** — read by the running Next.js admin app:
 
@@ -52,7 +54,7 @@ cp apps/admin/.env.example apps/admin/.env
 
 | Variable                | Purpose                                    |
 | ----------------------- | ------------------------------------------ |
-| `DATABASE_URL`          | Neon dev branch connection string          |
+| `DATABASE_URL`          | Neon dev branch — `local_development` role |
 | `ADMIN_PASSWORD`        | Login password for the admin UI            |
 | `AUTH_SECRET`           | Session signing secret (any random string) |
 | `RESEND_API_KEY`        | Resend — transactional email               |
@@ -61,7 +63,9 @@ cp apps/admin/.env.example apps/admin/.env
 | `CLOUDINARY_API_KEY`    | Cloudinary API key                         |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret                      |
 
-`DATABASE_URL` must be identical in both files — they read the same DB, from different contexts (CLI vs runtime).
+Use the **`local_development` role** here. The running app only needs DML permissions (SELECT, INSERT, UPDATE, DELETE) — using a restricted role limits blast radius if credentials are ever exposed.
+
+Both files point at the same Neon `development` branch, but with different roles: owner for migrations, application role for the app.
 
 **`apps/evrydayarchive-web/.env`** — the public site does not connect to the DB directly (it goes through the admin API), so `DATABASE_URL` is not needed here:
 
@@ -128,10 +132,10 @@ git commit -m "..."
 After merging code that includes a new migration, apply it to the production branch before or immediately after the Vercel deployment goes live:
 
 ```bash
-DATABASE_URL="<production-branch-connection-string>" pnpm db:deploy
+DATABASE_URL="<production-branch-neondb_owner-connection-string>" pnpm db:deploy
 ```
 
-Get the production connection string from Neon: select the `production` branch → Connection details.
+Get the connection string from Neon: select the `production` branch → Connection details → **`neondb_owner` role**. The same DDL permission requirement applies — application roles cannot run migrations.
 
 Apply to the preview/development branch the same way if it has drifted:
 
