@@ -1,45 +1,27 @@
-import { prisma } from '@repo/db';
-import { z } from 'zod';
+import { getServerEnv } from '../../lib/env';
 
-const schema = z.object({
-  email: z.string().email()
-});
+export const POST = async (req: Request): Promise<Response> => {
+  const { ADMIN_API_BASE_URL } = getServerEnv();
 
-// Simple in-memory rate limiter: max 5 submissions per IP per hour.
-// Good enough for a low-traffic coming-soon page; resets on cold start.
-const attempts = new Map<string, number[]>();
-const WINDOW_MS = 60 * 60 * 1000;
-const MAX_ATTEMPTS = 5;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const windowStart = now - WINDOW_MS;
-  const timestamps = (attempts.get(ip) ?? []).filter((t) => t > windowStart);
-  if (timestamps.length >= MAX_ATTEMPTS) return true;
-  attempts.set(ip, [...timestamps, now]);
-  return false;
-}
-
-export async function POST(req: Request) {
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
-
-  if (isRateLimited(ip)) {
-    return Response.json({ error: 'Too many requests' }, { status: 429 });
-  }
-
+  let body: unknown;
   try {
-    const body = await req.json();
-    const { email } = schema.parse(body);
-
-    await prisma.waitlistEntry.upsert({
-      where: { email },
-      create: { email },
-      update: {}
-    });
-
-    return Response.json({ ok: true });
-  } catch (err) {
-    console.error('[waitlist] error:', err);
+    body = await req.json();
+  } catch {
     return Response.json({ error: 'Invalid request' }, { status: 400 });
   }
-}
+
+  let adminRes: Response;
+  try {
+    adminRes = await fetch(new URL('/api/public/waitlist', ADMIN_API_BASE_URL), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch (err) {
+    console.error('[waitlist] Failed to reach admin API', err);
+    return Response.json({ error: 'Unable to submit. Please try again.' }, { status: 502 });
+  }
+
+  const data = await adminRes.json().catch(() => null);
+  return Response.json(data, { status: adminRes.status });
+};
