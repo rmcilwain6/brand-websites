@@ -36,19 +36,12 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    url: 'https://evrydayarchive.co',
-    title: 'Evryday Archive Co | Reed McIlwain, Photographer',
-    description:
-      'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
     locale: 'en_CA',
     siteName: 'Evryday Archive Co',
     images: [{ url: '/logo/og-image.jpg', width: 1200, height: 630 }]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Evryday Archive Co | Reed McIlwain, Photographer',
-    description:
-      'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
     images: ['/logo/og-image.jpg']
   }
 };
