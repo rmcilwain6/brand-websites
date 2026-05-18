@@ -26,7 +26,7 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://evrydayarchive.co'),
+  metadataBase: new URL('https://www.evrydayarchive.co'),
   title: 'Evryday Archive Co | Reed McIlwain, Photographer',
   description:
     'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',

@@ -54,7 +54,8 @@ const FAQ_ITEMS = [
 export const metadata: Metadata = {
   title: 'FAQs | Evryday Archive Co',
   description:
-    'Answers to common questions about booking, pricing, turnaround time, and what to expect from your Evryday Archive session.'
+    'Answers to common questions about booking, pricing, turnaround time, and what to expect from your Evryday Archive session.',
+  alternates: { canonical: '/faq' }
 };
 
 const FaqPage = () => {

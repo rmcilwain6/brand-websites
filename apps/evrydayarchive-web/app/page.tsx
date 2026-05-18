@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from './components/img';
 import Link from 'next/link';
 
@@ -6,6 +7,10 @@ import { fetchPublicGalleries, type GalleryListItem } from '@repo/core';
 import { getServerEnv } from './lib/env';
 import { HeroSection } from './components/hero-section';
 import { Frame } from './components/frame';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' }
+};
 
 export default async function HomePage() {
   const { ADMIN_API_BASE_URL } = getServerEnv();

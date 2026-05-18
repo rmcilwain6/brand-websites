@@ -9,7 +9,8 @@ import { Questionnaire } from './questionnaire';
 export const metadata: Metadata = {
   title: 'Get Started | Evryday Archive Co',
   description:
-    'Tell us about yourself and get a tailored session recommendation. Start planning your Evryday Archive photography session today.'
+    'Tell us about yourself and get a tailored session recommendation. Start planning your Evryday Archive photography session today.',
+  alternates: { canonical: '/inquire' }
 };
 
 export const dynamic = 'force-dynamic';

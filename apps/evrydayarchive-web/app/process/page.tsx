@@ -38,7 +38,8 @@ const STEPS = [
 export const metadata: Metadata = {
   title: 'How It Works | Evryday Archive Co',
   description:
-    'From first inquiry to final gallery — here is how Reed McIlwain documents your everyday life from start to finish.'
+    'From first inquiry to final gallery — here is how Reed McIlwain documents your everyday life from start to finish.',
+  alternates: { canonical: '/process' }
 };
 
 const ProcessPage = () => {
