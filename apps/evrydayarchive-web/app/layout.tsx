@@ -55,8 +55,9 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'ProfessionalService',
+  '@type': 'LocalBusiness',
   name: 'Evryday Archive Co',
+  alternateName: 'Everyday Archive Co',
   logo: {
     '@type': 'ImageObject',
     url: 'https://evrydayarchive.co/logo/og-image-square.png',
@@ -67,42 +68,28 @@ const jsonLd = {
     '@type': 'Person',
     name: 'Reed McIlwain'
   },
+  employee: {
+    '@type': 'Person',
+    name: 'Reed McIlwain'
+  },
   description:
     'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
-  url: 'https://evrydayarchive.co',
+  url: 'https://www.evrydayarchive.co',
   areaServed: [
     {
       '@type': 'City',
       name: 'Kamloops',
       containedInPlace: {
-        '@type': 'State',
+        '@type': 'AdministrativeArea',
         name: 'British Columbia',
         containedInPlace: { '@type': 'Country', name: 'Canada' }
       }
     },
     {
-      '@type': 'City',
-      name: 'Vancouver',
+      '@type': 'AdministrativeArea',
+      name: 'Vancouver Island',
       containedInPlace: {
-        '@type': 'State',
-        name: 'British Columbia',
-        containedInPlace: { '@type': 'Country', name: 'Canada' }
-      }
-    },
-    {
-      '@type': 'City',
-      name: 'Victoria',
-      containedInPlace: {
-        '@type': 'State',
-        name: 'British Columbia',
-        containedInPlace: { '@type': 'Country', name: 'Canada' }
-      }
-    },
-    {
-      '@type': 'City',
-      name: 'Nanaimo',
-      containedInPlace: {
-        '@type': 'State',
+        '@type': 'AdministrativeArea',
         name: 'British Columbia',
         containedInPlace: { '@type': 'Country', name: 'Canada' }
       }
