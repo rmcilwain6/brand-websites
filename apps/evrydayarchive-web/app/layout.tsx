@@ -93,6 +93,24 @@ const jsonLd = {
         name: 'British Columbia',
         containedInPlace: { '@type': 'Country', name: 'Canada' }
       }
+    },
+    {
+      '@type': 'City',
+      name: 'Victoria',
+      containedInPlace: {
+        '@type': 'AdministrativeArea',
+        name: 'British Columbia',
+        containedInPlace: { '@type': 'Country', name: 'Canada' }
+      }
+    },
+    {
+      '@type': 'City',
+      name: 'Vancouver',
+      containedInPlace: {
+        '@type': 'AdministrativeArea',
+        name: 'British Columbia',
+        containedInPlace: { '@type': 'Country', name: 'Canada' }
+      }
     }
   ],
   sameAs: ['https://www.instagram.com/evrydayarchive.co/']
