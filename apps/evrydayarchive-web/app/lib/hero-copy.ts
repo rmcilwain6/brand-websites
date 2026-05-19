@@ -9,7 +9,7 @@ export type HeroTextVariant = {
 
 export const HERO_TEXT_VARIANTS: HeroTextVariant[] = [
   {
-    eyebrow: 'Kamloops · BC',
+    eyebrow: 'Kamloops · Victoria · Vancouver',
     heading: 'Your everyday life\nis worth documenting.',
     body: "Most people wait for a milestone. You don't have to. Sessions shaped around who you actually are, right now."
   },
