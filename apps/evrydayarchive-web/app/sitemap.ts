@@ -4,7 +4,7 @@ import { fetchPublicGalleries } from '@repo/core';
 
 import { getServerEnv } from './lib/env';
 
-const BASE_URL = 'https://evrydayarchive.co';
+const BASE_URL = 'https://www.evrydayarchive.co';
 
 const staticRoutes: MetadataRoute.Sitemap = [
   { url: BASE_URL, priority: 1.0, changeFrequency: 'weekly' },
