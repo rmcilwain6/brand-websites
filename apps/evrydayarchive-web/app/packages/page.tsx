@@ -8,7 +8,8 @@ import { getServerEnv } from '../lib/env';
 export const metadata: Metadata = {
   title: 'Photography Packages | Evryday Archive Co',
   description:
-    'Transparent session pricing with no hidden fees. Browse photography packages and find the right fit for your budget and occasion.'
+    'Transparent session pricing with no hidden fees. Browse photography packages and find the right fit for your budget and occasion.',
+  alternates: { canonical: '/packages' }
 };
 
 export const dynamic = 'force-dynamic';

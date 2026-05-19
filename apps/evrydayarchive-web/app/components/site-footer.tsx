@@ -23,7 +23,7 @@ export const SiteFooter = () => {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo/icon.svg" alt="" className="mx-auto h-8 w-auto sm:mx-0" />
             <p className="text-sm font-semibold text-ink">Evryday Archive Co</p>
-            <p className="text-xs text-ink-faint">Documenting life in Kamloops & BC</p>
+            <p className="text-xs text-ink-faint">Documenting life across BC</p>
           </div>
 
           {/* Email capture — mobile: order 2 | desktop: col 3 row 1 */}

@@ -20,7 +20,8 @@ import { BookingForm } from './booking-form';
 export const metadata: Metadata = {
   title: 'Book a Session | Evryday Archive Co',
   description: 'Request your photography session with Evryday Archive Co.',
-  robots: { index: false }
+  robots: { index: false },
+  alternates: { canonical: '/book' }
 };
 
 export const dynamic = 'force-dynamic';

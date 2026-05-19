@@ -176,7 +176,8 @@ const ArchiveGrid = ({ mobile }: { mobile: boolean }) => {
 export const metadata: Metadata = {
   title: 'About | Evryday Archive Co',
   description:
-    'Meet Reed McIlwain, the photographer behind Evryday Archive Co — documenting ordinary life as something worth keeping in Kamloops and Vancouver Island.'
+    'Meet Reed McIlwain, the photographer behind Evryday Archive Co — a BC photographer based in Kamloops, documenting ordinary life as something worth keeping.',
+  alternates: { canonical: '/about' }
 };
 
 // ── Page ──────────────────────────────────────────────────────────────────────

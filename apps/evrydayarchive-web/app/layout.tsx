@@ -26,37 +26,31 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://evrydayarchive.co'),
+  metadataBase: new URL('https://www.evrydayarchive.co'),
   title: 'Evryday Archive Co | Reed McIlwain, Photographer',
   description:
-    'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
+    'BC photographer based in Kamloops — documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
   icons: {
     icon: [{ url: '/logo/icon-square.png', sizes: '512x512', type: 'image/png' }],
     apple: '/logo/icon-square.png'
   },
   openGraph: {
     type: 'website',
-    url: 'https://evrydayarchive.co',
-    title: 'Evryday Archive Co | Reed McIlwain, Photographer',
-    description:
-      'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
     locale: 'en_CA',
     siteName: 'Evryday Archive Co',
     images: [{ url: '/logo/og-image.jpg', width: 1200, height: 630 }]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Evryday Archive Co | Reed McIlwain, Photographer',
-    description:
-      'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
     images: ['/logo/og-image.jpg']
   }
 };
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'ProfessionalService',
+  '@type': 'LocalBusiness',
   name: 'Evryday Archive Co',
+  alternateName: 'Everyday Archive Co',
   logo: {
     '@type': 'ImageObject',
     url: 'https://evrydayarchive.co/logo/og-image-square.png',
@@ -67,24 +61,28 @@ const jsonLd = {
     '@type': 'Person',
     name: 'Reed McIlwain'
   },
+  employee: {
+    '@type': 'Person',
+    name: 'Reed McIlwain'
+  },
   description:
-    'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
-  url: 'https://evrydayarchive.co',
+    'BC photographer based in Kamloops — documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
+  url: 'https://www.evrydayarchive.co',
   areaServed: [
     {
       '@type': 'City',
       name: 'Kamloops',
       containedInPlace: {
-        '@type': 'State',
+        '@type': 'AdministrativeArea',
         name: 'British Columbia',
         containedInPlace: { '@type': 'Country', name: 'Canada' }
       }
     },
     {
-      '@type': 'City',
-      name: 'Vancouver',
+      '@type': 'AdministrativeArea',
+      name: 'Vancouver Island',
       containedInPlace: {
-        '@type': 'State',
+        '@type': 'AdministrativeArea',
         name: 'British Columbia',
         containedInPlace: { '@type': 'Country', name: 'Canada' }
       }
@@ -93,16 +91,16 @@ const jsonLd = {
       '@type': 'City',
       name: 'Victoria',
       containedInPlace: {
-        '@type': 'State',
+        '@type': 'AdministrativeArea',
         name: 'British Columbia',
         containedInPlace: { '@type': 'Country', name: 'Canada' }
       }
     },
     {
       '@type': 'City',
-      name: 'Nanaimo',
+      name: 'Vancouver',
       containedInPlace: {
-        '@type': 'State',
+        '@type': 'AdministrativeArea',
         name: 'British Columbia',
         containedInPlace: { '@type': 'Country', name: 'Canada' }
       }

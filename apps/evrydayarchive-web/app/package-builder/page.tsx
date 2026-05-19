@@ -9,7 +9,8 @@ import { BuilderCard } from './builder-card';
 export const metadata: Metadata = {
   title: 'Build Your Package | Evryday Archive Co',
   description:
-    'Customize your photography session from the ground up. Mix and match add-ons to build a package that fits your vision and budget.'
+    'Customize your photography session from the ground up. Mix and match add-ons to build a package that fits your vision and budget.',
+  alternates: { canonical: '/package-builder' }
 };
 
 export const dynamic = 'force-dynamic';

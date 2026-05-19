@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Evryday Archive Co',
     short_name: 'Evryday Archive',
     description:
-      'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping.',
+      'BC photographer based in Kamloops, documenting ordinary life as something worth keeping.',
     start_url: '/',
     display: 'browser',
     background_color: '#f7f4ef',

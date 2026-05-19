@@ -38,10 +38,11 @@ export const generateMetadata = async ({
     return {
       title,
       description,
+      alternates: { canonical: `/portfolio/${params.slug}` },
       openGraph: {
         title,
         description,
-        url: `https://evrydayarchive.co/portfolio/${params.slug}`,
+        url: `https://www.evrydayarchive.co/portfolio/${params.slug}`,
         type: 'website'
       },
       twitter: {
