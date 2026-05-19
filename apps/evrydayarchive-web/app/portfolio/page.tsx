@@ -10,7 +10,7 @@ import { Frame } from '../components/frame';
 export const metadata: Metadata = {
   title: 'Portfolio | Evryday Archive Co',
   description:
-    'Browse photography galleries by Reed McIlwain — lifestyle, family, and everyday moments documented in Kamloops and Vancouver Island.',
+    'Browse photography galleries by Reed McIlwain — lifestyle, family, and everyday moments documented across British Columbia.',
   alternates: { canonical: '/portfolio' }
 };
 

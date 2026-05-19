@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.evrydayarchive.co'),
   title: 'Evryday Archive Co | Reed McIlwain, Photographer',
   description:
-    'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
+    'BC photographer based in Kamloops — documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
   icons: {
     icon: [{ url: '/logo/icon-square.png', sizes: '512x512', type: 'image/png' }],
     apple: '/logo/icon-square.png'
@@ -66,7 +66,7 @@ const jsonLd = {
     name: 'Reed McIlwain'
   },
   description:
-    'Kamloops & Vancouver Island photographer documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
+    'BC photographer based in Kamloops — documenting ordinary life as something worth keeping. Accessible sessions, transparent pricing.',
   url: 'https://www.evrydayarchive.co',
   areaServed: [
     {
