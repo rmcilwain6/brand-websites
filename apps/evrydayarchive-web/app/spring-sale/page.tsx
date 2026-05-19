@@ -117,15 +117,15 @@ export default function SpringSalePage() {
             {PACKAGES.map((pkg) => (
               <div
                 key={pkg.slug}
-                className="flex flex-col justify-between rounded-card border border-border bg-surface p-5"
+                className="flex flex-col justify-between rounded-card border border-border bg-surface p-5 min-[375px]:flex-row min-[375px]:items-center sm:flex-col sm:justify-between"
               >
-                <div className="mb-6">
+                <div className="mb-6 min-[375px]:mb-0 sm:mb-6">
                   <p className="mb-1 text-base font-semibold text-ink">{pkg.label}</p>
                   <p className="text-sm leading-relaxed text-ink-muted">{pkg.descriptor}</p>
                 </div>
                 <Link
                   href={`/package-builder?package=${pkg.slug}`}
-                  className="block rounded-card border border-accent px-4 py-3 text-center text-sm font-medium text-accent transition-colors duration-fast hover:bg-accent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent lg:border-transparent lg:bg-accent lg:text-white lg:hover:opacity-90"
+                  className="block shrink-0 rounded-card bg-accent px-4 py-3 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent min-[375px]:inline-block sm:block"
                 >
                   Start here
                 </Link>
