@@ -75,6 +75,8 @@ const EstStamp = () => {
 const SALE_BANNER_KEY = 'ea-sale-banner';
 
 export const SiteHeader = () => {
+  const pathname = usePathname();
+  const showSale = saleActive && pathname !== '/spring-sale';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // Start closed to avoid SSR/hydration mismatch; effect opens it unless user dismissed it.
   const [saleOpen, setSaleOpen] = useState(false);
@@ -82,10 +84,10 @@ export const SiteHeader = () => {
 
   // Open the banner by default on mount, unless the user has explicitly closed it.
   useEffect(() => {
-    if (saleActive && localStorage.getItem(SALE_BANNER_KEY) !== 'closed') {
+    if (showSale && localStorage.getItem(SALE_BANNER_KEY) !== 'closed') {
       setSaleOpen(true);
     }
-  }, []);
+  }, [showSale]);
 
   const handleSaleToggle = () => {
     setSaleOpen((open) => {
@@ -144,7 +146,7 @@ export const SiteHeader = () => {
                 <NavLink key={link.href} href={link.href} label={link.label} />
               ))}
 
-              {saleActive && (
+              {showSale && (
                 <button
                   type="button"
                   onClick={handleSaleToggle}
@@ -180,7 +182,7 @@ export const SiteHeader = () => {
         </div>
 
         {/* Sale panel — slides open below the nav bar */}
-        {saleActive && (
+        {showSale && (
           <div
             className={cn(
               'overflow-hidden transition-[max-height] ease-in-out',
@@ -271,7 +273,7 @@ export const SiteHeader = () => {
       </header>
 
       {/* ── Mobile: sale bar (persistent, sits above bottom nav) ─────────── */}
-      {saleActive && (
+      {showSale && (
         <div className="fixed bottom-16 left-0 right-0 z-40 md:hidden">
           {/* Expanded detail panel — bg-canvas, reveals upward from the thin label bar */}
           <div
@@ -314,7 +316,7 @@ export const SiteHeader = () => {
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
         links={NAV}
-        bottomOffset={saleActive ? 'bottom-[92px]' : 'bottom-16'}
+        bottomOffset={showSale ? 'bottom-[92px]' : 'bottom-16'}
       />
     </>
   );
