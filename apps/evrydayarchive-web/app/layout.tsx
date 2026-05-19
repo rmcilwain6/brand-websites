@@ -7,7 +7,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { ThemeProvider } from './providers/theme-provider';
 import { SiteHeader } from './components/site-header';
-import { SiteFooter } from './components/site-footer';
+import { ConditionalFooter } from './components/conditional-footer';
 import { NavigationFeedback } from './components/navigation-feedback';
 import { PageFade } from './components/page-fade';
 import { MetaPixel } from './components/meta-pixel';
@@ -150,7 +150,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           <div className={saleActive ? 'pb-[92px] md:pb-0' : 'pb-16 md:pb-0'}>
             <PageFade>{children}</PageFade>
           </div>
-          {!isComingSoon && <SiteFooter />}
+          {!isComingSoon && <ConditionalFooter />}
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />
