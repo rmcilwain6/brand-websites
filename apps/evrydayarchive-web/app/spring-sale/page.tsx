@@ -12,7 +12,7 @@ const PACKAGES = [
   {
     label: 'For me',
     descriptor: 'Solo sessions, one on one.',
-    slug: 'evryday'
+    slug: 'evryday-package'
   },
   {
     label: 'For me + some people',
@@ -125,9 +125,9 @@ export default function SpringSalePage() {
                 </div>
                 <Link
                   href={`/package-builder?package=${pkg.slug}`}
-                  className="block rounded-card bg-accent px-4 py-3 text-center text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                  className="block rounded-card border border-accent px-4 py-3 text-center text-sm font-medium text-accent transition-colors duration-fast hover:bg-accent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent lg:border-transparent lg:bg-accent lg:text-white lg:hover:opacity-90"
                 >
-                  Build this package
+                  Start here
                 </Link>
               </div>
             ))}
