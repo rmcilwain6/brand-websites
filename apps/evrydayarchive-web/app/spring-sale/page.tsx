@@ -35,27 +35,39 @@ export default function SpringSalePage() {
   return (
     <main>
       {/* ── Hero ──────────────────────────────────────────────────────────────── */}
-      <section className="relative h-svh min-h-[560px] w-full overflow-hidden bg-sun">
-        {/*
-         * TODO: Replace this comment block with the hero image:
-         * import Image from '../components/img';
-         * <Image
-         *   src="/images/spring-sale/hero.jpg"
-         *   alt="Evryday Archive Co — spring sale"
-         *   fill
-         *   className="object-cover object-center"
-         *   priority
-         *   sizes="100vw"
-         * />
-         */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 px-6 pb-12 sm:px-10 sm:pb-16 lg:px-16 lg:pb-20">
-          <h1 className="mb-3 max-w-lg text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-5xl">
-            10% off any session. Book before May 31st.
-          </h1>
-          <p className="text-base text-white/75 sm:text-lg">
-            Kamloops photography that fits your life — and your budget.
-          </p>
+      {/*
+       * Mobile: full-bleed image with text overlaid at bottom-left.
+       * Desktop (lg+): two-column split — text left, image right.
+       */}
+      <section className="relative overflow-hidden bg-canvas lg:flex">
+        {/* Text: overlaid on image on mobile; left column on desktop */}
+        <div className="relative z-10 flex min-h-[100svh] items-end lg:min-h-0 lg:w-1/2 lg:shrink-0 lg:items-center">
+          <div className="px-6 pb-12 sm:px-10 sm:pb-16 lg:px-16 lg:py-24">
+            <h1 className="mb-3 max-w-lg text-3xl font-semibold leading-tight text-white sm:text-4xl lg:max-w-none lg:text-5xl lg:text-ink">
+              10% off any session. Book before May 31st.
+            </h1>
+            <p className="text-base text-white/75 sm:text-lg lg:text-ink-muted">
+              Kamloops photography that fits your life — and your budget.
+            </p>
+          </div>
+        </div>
+
+        {/* Image: full-bleed background on mobile; right column on desktop */}
+        <div className="absolute inset-0 bg-sun lg:relative lg:inset-auto lg:flex-1 lg:min-h-[640px]">
+          {/*
+           * TODO: Replace with the hero image:
+           * import Image from '../components/img';
+           * <Image
+           *   src="https://res.cloudinary.com/YOUR_CLOUD/image/upload/..."
+           *   alt="Evryday Archive Co — spring sale"
+           *   fill
+           *   className="object-cover object-center"
+           *   priority
+           *   sizes="(min-width: 1024px) 50vw, 100vw"
+           * />
+           */}
+          {/* Gradient for mobile text legibility — not needed on desktop */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-transparent lg:hidden" />
         </div>
       </section>
 
