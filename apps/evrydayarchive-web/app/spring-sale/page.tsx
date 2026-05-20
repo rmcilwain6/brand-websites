@@ -61,7 +61,7 @@ export default function SpringSalePage() {
               Book before May 31st.
             </h1>
             <p className="text-base text-white/75 sm:text-lg lg:text-ink-muted">
-              TODO COME UP WITH SOMETHING
+              Everyday life deserves to be remembered.
             </p>
           </div>
         </div>
@@ -73,9 +73,10 @@ export default function SpringSalePage() {
             fill
             className="object-cover object-[30%_50%] lg:object-center"
             priority
-            sizes="(min-width: 1024px) 50vw, 100vw"
+            quality={95}
+            sizes="(min-width: 1024px) 100vw, 200vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-transparent lg:hidden" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent lg:hidden" />
         </div>
       </section>
 
