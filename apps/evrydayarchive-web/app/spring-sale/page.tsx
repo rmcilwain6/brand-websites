@@ -53,14 +53,15 @@ export default function SpringSalePage() {
        * lg+: two-column split — text left, image right.
        *   - min-h-0, image column sets height via lg:min-h-[640px].
        */}
-      <section className="relative overflow-hidden bg-canvas lg:flex">
+      <section className="relative overflow-hidden bg-black lg:bg-canvas lg:flex">
         <div className="relative z-10 flex min-h-[100svh] items-end md:min-h-[calc(100svh-4rem)] lg:min-h-0 lg:w-1/2 lg:shrink-0 lg:items-center">
           <div className="px-6 pb-28 sm:px-10 md:pb-16 lg:px-16 lg:py-24">
             <h1 className="mb-3 max-w-lg text-3xl font-semibold leading-tight text-white sm:text-4xl lg:max-w-none lg:text-5xl lg:text-ink">
-              10% off any session. Book before May 31st.
+              10% off any session. <br />
+              Book before May 31st.
             </h1>
             <p className="text-base text-white/75 sm:text-lg lg:text-ink-muted">
-              Whatever you&apos;re documenting — yourself, the people around you, your work, your events.
+              TODO COME UP WITH SOMETHING
             </p>
           </div>
         </div>
@@ -70,7 +71,7 @@ export default function SpringSalePage() {
             src="https://res.cloudinary.com/dlib7syhc/image/upload/v1774848987/galleries/jessica-and-her-toyota/mlb50mmgpcp9zonfebn1.jpg"
             alt="Evryday Archive Co — spring sale"
             fill
-            className="object-cover object-center"
+            className="object-cover object-[30%_50%] lg:object-center"
             priority
             sizes="(min-width: 1024px) 50vw, 100vw"
           />
@@ -83,7 +84,7 @@ export default function SpringSalePage() {
         <div className="mx-auto max-w-2xl">
           <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
             <span className="font-medium text-ink">10% off any package</span>, for Kamloops sessions
-            booked before May 31st. No code needed — pick the package that fits and the discount is
+            booked before May 31st. No code needed. Pick the package that fits and the discount is
             reflected in the final price.
           </p>
         </div>
