@@ -6,7 +6,7 @@ import type { LocationWindow } from '@repo/core';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const DAY_LABELS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const MONTH_NAMES = [
   'January',
   'February',
@@ -118,8 +118,8 @@ export const DatePicker = ({
 
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
-  // Map JS Sunday=0 → Monday=0 so the grid starts on Monday
-  const firstDayDow = (new Date(viewYear, viewMonth, 1).getDay() + 6) % 7;
+  // JS getDay() returns 0=Sunday … 6=Saturday — matches Sunday-first grid directly
+  const firstDayDow = new Date(viewYear, viewMonth, 1).getDay();
   const totalCells = Math.ceil((firstDayDow + daysInMonth) / 7) * 7;
   const cells = Array.from({ length: totalCells }, (_, i) => {
     const d = i - firstDayDow + 1;
