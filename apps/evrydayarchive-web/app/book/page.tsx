@@ -133,7 +133,7 @@ export default async function BookPage({ searchParams }: Props) {
       : undefined;
 
   // Spring Sale: opt-in via the package builder (sale=1 param), or auto-enabled during
-  // April and May. Date validation (must be a May date) happens client-side in BookingForm.
+  // April–June 4th. Date validation (sessions must be before June 4th) happens client-side in BookingForm.
   const springSale = (sale === '1' || isSaleAutoOptIn()) && isSaleAnnouncementActive();
 
   const backHref =

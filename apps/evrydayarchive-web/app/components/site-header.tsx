@@ -196,7 +196,7 @@ export const SiteHeader = () => {
                   <span className="inline-flex items-center whitespace-nowrap rounded-sm border border-accent/40 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-accent">
                     {SALE.name}
                   </span>
-                  Any sessions booked for May receive a 10% discount.
+                  Any sessions booked before June 4th receive a 10% discount.
                 </p>
                 <button
                   type="button"
@@ -284,7 +284,7 @@ export const SiteHeader = () => {
           >
             <div className="border-b border-border bg-sun px-4 pb-3 pt-3 text-center">
               <p className="text-sm leading-relaxed text-ink-muted">
-                Any sessions booked for May receive a 10% discount.
+                Any sessions booked before June 4th receive a 10% discount.
               </p>
             </div>
           </div>

@@ -5,7 +5,7 @@ import Image from '../components/img';
 export const metadata: Metadata = {
   title: 'Spring Sale — 10% Off Any Session | Evryday Archive Co',
   description:
-    '10% off any photography package for Kamloops sessions booked before May 31st. No code needed — pick your package and get started.',
+    '10% off any photography package for Kamloops sessions booked before June 4th. No code needed — pick your package and get started.',
   alternates: { canonical: '/spring-sale' }
 };
 
@@ -58,7 +58,7 @@ export default function SpringSalePage() {
           <div className="px-6 pb-28 sm:px-10 md:pb-16 lg:px-16 lg:py-24">
             <h1 className="mb-3 max-w-lg text-3xl font-semibold leading-tight text-white sm:text-4xl lg:max-w-none lg:text-5xl lg:text-ink">
               10% off any session. <br />
-              Book before May 31st.
+              Book before June 4th.
             </h1>
             <p className="text-base text-white/75 sm:text-lg lg:text-ink-muted">
               Everyday life deserves to be remembered.
@@ -85,7 +85,7 @@ export default function SpringSalePage() {
         <div className="mx-auto max-w-2xl">
           <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
             <span className="font-medium text-ink">10% off any package</span>, for Kamloops sessions
-            booked before May 31st. No code needed. Pick the package that fits and the discount is
+            booked before June 4th. No code needed. Pick the package that fits and the discount is
             reflected in the final price.
           </p>
         </div>
