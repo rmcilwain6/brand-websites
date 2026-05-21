@@ -373,7 +373,7 @@ const SpringSaleRow = ({ enabled, discountCents, onToggle }: SpringSaleRowProps)
         </span>
       </div>
       <p className="text-xs leading-relaxed text-ink-faint">
-        Book for May and receive 10% off — discount confirmed at checkout.
+        Book before June 4th and receive 10% off — discount confirmed at checkout.
       </p>
     </div>
     <div className="flex flex-none flex-col items-end gap-1.5">

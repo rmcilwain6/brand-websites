@@ -166,9 +166,9 @@ export const BookingForm = ({
 
   const today = new Date().toISOString().split('T')[0] as string;
 
-  // Spring Sale: active whenever the sale is running and a May date is selected.
+  // Spring Sale: active whenever the sale is running and a qualifying date is selected.
   // If the user came from the builder with sale=1 and hasn't picked a date yet, treat as pending
-  // (discount shown) — it clears as soon as they pick a non-May date.
+  // (discount shown) — it clears as soon as they pick a date outside the sale window.
   const saleAnnouncementActive = isSaleAnnouncementActive();
   const discountActive =
     saleAnnouncementActive && ((springSale && !preferredDate) || isSaleDate(preferredDate));
@@ -344,7 +344,7 @@ export const BookingForm = ({
                   )}
                   {saleAnnouncementActive && preferredDate && !discountActive && (
                     <p className="mb-2 text-xs text-ink-faint">
-                      Spring Sale applies to May sessions only.
+                      Spring Sale applies to sessions before June 4th.
                     </p>
                   )}
                   <div className="flex items-baseline justify-between">
@@ -444,9 +444,9 @@ export const BookingForm = ({
                   placeholder="Choose a date"
                   hasError={!!fieldErrors.date}
                   aria-describedby={fieldErrors.date ? 'date-error' : undefined}
-                  saleMonth={
+                  saleDateRange={
                     saleAnnouncementActive
-                      ? { year: SALE.discountYear, month: SALE.discountMonth }
+                      ? { start: SALE.discountStartDate, end: SALE.discountEndDate }
                       : undefined
                   }
                 />
@@ -693,7 +693,9 @@ const SummaryPanel = ({
             </div>
           )}
           {isSaleAnnouncementActive() && hasDate && !discountActive && (
-            <p className="text-xs text-ink-faint">Spring Sale applies to May sessions only.</p>
+            <p className="text-xs text-ink-faint">
+              Spring Sale applies to sessions before June 4th.
+            </p>
           )}
           <div className="flex items-baseline justify-between">
             <span className="text-xs text-ink-faint">Estimated total</span>
