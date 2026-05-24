@@ -25,7 +25,7 @@ const FaqPage = () => {
           <p className="mt-5 text-base leading-relaxed text-ink-muted">
             If your question isn&apos;t here,{' '}
             <Link
-              href="/inquire"
+              href="/contact"
               className="font-medium text-ink underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
               just ask
