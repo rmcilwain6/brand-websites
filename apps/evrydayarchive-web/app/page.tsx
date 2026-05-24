@@ -166,6 +166,12 @@ export default async function HomePage() {
           >
             Start a conversation
           </Link>
+          <Link
+            href="/process"
+            className="mt-5 inline-flex items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
+          >
+            See how it works →
+          </Link>
         </div>
       </section>
     </main>

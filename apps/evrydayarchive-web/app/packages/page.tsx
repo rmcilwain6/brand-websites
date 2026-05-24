@@ -48,7 +48,14 @@ const PackagesPage = async () => {
             >
               Get in touch
             </Link>{' '}
-            and we&apos;ll figure something out.
+            and we&apos;ll figure something out. Have questions about pricing or delivery?{' '}
+            <Link
+              href="/faq"
+              className="font-medium text-ink underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
+            >
+              Check the FAQ
+            </Link>
+            .
           </p>
         </div>
       </section>

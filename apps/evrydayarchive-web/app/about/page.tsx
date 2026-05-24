@@ -333,6 +333,12 @@ export default function AboutPage() {
               Get in touch
             </Link>
           </div>
+          <Link
+            href="/process"
+            className="mt-4 inline-flex items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
+          >
+            See how it works →
+          </Link>
         </section>
       </div>
 
@@ -517,6 +523,12 @@ export default function AboutPage() {
                 Get in touch
               </Link>
             </div>
+            <Link
+              href="/process"
+              className="mt-5 inline-flex items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
+            >
+              See how it works →
+            </Link>
           </div>
         </section>
       </div>
