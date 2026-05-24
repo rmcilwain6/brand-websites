@@ -41,7 +41,7 @@ const ProcessPage = () => {
           </Link>{' '}
           covers most of them. Or just{' '}
           <Link
-            href="/inquire"
+            href="/contact"
             className="font-medium text-ink underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             reach out
