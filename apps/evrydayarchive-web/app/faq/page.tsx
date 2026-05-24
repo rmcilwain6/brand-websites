@@ -38,23 +38,27 @@ const FaqPage = () => {
         <FaqAccordion />
 
         {/* CTA */}
-        <p className="mt-12 text-base text-ink-muted">
-          Ready to move forward?{' '}
-          <Link
-            href="/inquire"
-            className="font-medium text-ink underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-          >
-            Start an inquiry
-          </Link>{' '}
-          and we&apos;ll go from there. Or take a look at{' '}
-          <Link
-            href="/portfolio"
-            className="font-medium text-ink underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-          >
-            the portfolio
-          </Link>{' '}
-          to see the work first.
-        </p>
+        <div className="mt-12 space-y-1 text-base text-ink-muted">
+          <p>
+            Ready to move forward?{' '}
+            <Link
+              href="/packages"
+              className="font-medium text-ink underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            >
+              Pick the package that fits you.
+            </Link>
+          </p>
+          <p>
+            Or take a look at{' '}
+            <Link
+              href="/portfolio"
+              className="font-medium text-ink underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            >
+              the portfolio
+            </Link>{' '}
+            to see some of the work.
+          </p>
+        </div>
       </div>
     </main>
   );
