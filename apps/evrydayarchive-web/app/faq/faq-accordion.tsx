@@ -48,7 +48,7 @@ const FAQ_ITEMS = [
           breakdown on the{' '}
           <a
             href="/packages"
-            className="font-medium text-ink underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="font-medium text-ink underline underline-offset-2 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Packages
           </a>{' '}

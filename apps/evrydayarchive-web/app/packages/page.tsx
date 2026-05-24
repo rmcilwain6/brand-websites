@@ -44,14 +44,15 @@ const PackagesPage = async () => {
             Nothing quite fits?{' '}
             <Link
               href="/contact"
-              className="font-medium text-ink underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
+              className="font-medium text-ink underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
             >
               Get in touch
             </Link>{' '}
-            and we&apos;ll figure something out. Have questions about pricing or delivery?{' '}
+            and we&apos;ll figure something out. <br />
+            Have questions about pricing or delivery?{' '}
             <Link
               href="/faq"
-              className="font-medium text-ink underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
+              className="font-medium text-ink underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
             >
               Check the FAQ
             </Link>
@@ -70,7 +71,7 @@ const PackagesPage = async () => {
               </p>
               <Link
                 href="/inquire"
-                className="text-sm font-medium text-ink underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
+                className="text-sm font-medium text-ink underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:rounded-sm"
               >
                 In the meantime, reach out directly →
               </Link>

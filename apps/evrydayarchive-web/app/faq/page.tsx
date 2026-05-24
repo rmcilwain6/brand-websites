@@ -26,7 +26,7 @@ const FaqPage = () => {
             If your question isn&apos;t here,{' '}
             <Link
               href="/contact"
-              className="font-medium text-ink underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="font-medium text-ink underline underline-offset-2 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
               just ask
             </Link>
@@ -43,7 +43,7 @@ const FaqPage = () => {
             Ready to move forward?{' '}
             <Link
               href="/packages"
-              className="font-medium text-ink underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="font-medium text-ink underline underline-offset-2 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
               Pick the package that fits you.
             </Link>
@@ -52,7 +52,7 @@ const FaqPage = () => {
             Or take a look at{' '}
             <Link
               href="/portfolio"
-              className="font-medium text-ink underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="font-medium text-ink underline underline-offset-2 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
               the portfolio
             </Link>{' '}
