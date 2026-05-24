@@ -160,7 +160,7 @@ export default async function HomePage() {
             Whether you have a session in mind or just want to see if it&apos;s a fit — reach out.
             No pressure, no commitment.
           </p>
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <div className="inline-grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Link
               href="/inquire"
               className="rounded-card bg-accent px-6 py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
