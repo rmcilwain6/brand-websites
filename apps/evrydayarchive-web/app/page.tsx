@@ -160,12 +160,20 @@ export default async function HomePage() {
             Whether you have a session in mind or just want to see if it&apos;s a fit — reach out.
             No pressure, no commitment.
           </p>
-          <Link
-            href="/inquire"
-            className="inline-block rounded-card bg-accent px-8 py-4 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-          >
-            Start a conversation
-          </Link>
+          <div className="inline-grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Link
+              href="/inquire"
+              className="rounded-card bg-accent px-6 py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            >
+              Start a conversation
+            </Link>
+            <Link
+              href="/process"
+              className="rounded-card border border-border px-6 py-3 text-sm font-medium text-ink-muted transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            >
+              See how it works
+            </Link>
+          </div>
         </div>
       </section>
     </main>

@@ -328,11 +328,17 @@ export default function AboutPage() {
           <div className="mt-6">
             <Link
               href="/inquire"
-              className="block w-full rounded bg-accent py-3 text-[13px] font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="block w-full rounded-card bg-accent py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
               Get in touch
             </Link>
           </div>
+          <Link
+            href="/process"
+            className="mt-4 inline-flex items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
+          >
+            See how it works →
+          </Link>
         </section>
       </div>
 
@@ -512,11 +518,17 @@ export default function AboutPage() {
             <div className="mt-8">
               <Link
                 href="/inquire"
-                className="inline-block rounded bg-accent px-8 py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                className="inline-block rounded-card bg-accent px-8 py-3 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
                 Get in touch
               </Link>
             </div>
+            <Link
+              href="/process"
+              className="mt-5 inline-flex items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
+            >
+              See how it works →
+            </Link>
           </div>
         </section>
       </div>
