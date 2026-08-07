@@ -26,8 +26,8 @@ const imageLayoutOptions = ['MASONRY', 'GRID'] as const;
 type GalleryImageLayout = (typeof imageLayoutOptions)[number];
 
 const imageLayoutLabels: Record<GalleryImageLayout, string> = {
-  MASONRY: 'Masonry — column by column',
-  GRID: 'Grid — row by row'
+  MASONRY: 'Masonry — fill left column, then right',
+  GRID: 'Interleaved — pairs across both columns (1-2, 3-4, 5-6…)'
 };
 
 const PUBLIC_SITE_URL = 'https://www.evrydayarchive.co';

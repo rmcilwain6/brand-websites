@@ -6,7 +6,6 @@ import type { Metadata } from 'next';
 import { PublicApiError, fetchPublicGalleryDetail, type GalleryDetail } from '@repo/core';
 
 import { getServerEnv } from '../../lib/env';
-import { cn } from '../../lib/cn';
 import { Frame } from '../../components/frame';
 import { Placard } from '../../components/placard';
 import { GalleryReviews } from '../../components/gallery-reviews';
@@ -123,19 +122,25 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
             <p className="text-sm text-ink-faint">No images published yet.</p>
           </div>
         ) : (
-          <div
-            className={cn(
-              'gap-8',
-              gallery.imageLayout === 'GRID'
-                ? 'grid grid-cols-1 sm:grid-cols-2'
-                : 'columns-1 sm:columns-2'
-            )}
-          >
-            {gallery.images.map((image, index) => (
-              <figure
-                key={image.id}
-                className={cn(gallery.imageLayout === 'GRID' ? '' : 'mb-8 break-inside-avoid')}
-              >
+          <div className="columns-1 gap-8 sm:columns-2">
+            {/*
+              GRID mode reorders the feed to [evens..., odds...] (by original index)
+              before handing it to the same column-fill masonry used by MASONRY mode.
+              Column-fill naturally puts the "evens" group in column 1 and the "odds"
+              group in column 2, which reads as 1-2, 3-4, 5-6 pairs across the two
+              columns — each column still stacks at natural aspect-ratio heights, so
+              pairs can drift out of alignment as heights differ. That drift is
+              intentional, not a bug: locking shared row heights (a real CSS grid)
+              is exactly what this mode is meant to avoid.
+            */}
+            {(gallery.imageLayout === 'GRID'
+              ? [
+                  ...gallery.images.filter((_, i) => i % 2 === 0),
+                  ...gallery.images.filter((_, i) => i % 2 === 1)
+                ]
+              : gallery.images
+            ).map((image, index) => (
+              <figure key={image.id} className="mb-8 break-inside-avoid">
                 <Frame>
                   <div
                     className="relative w-full overflow-hidden rounded-sm bg-sun"
