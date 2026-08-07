@@ -19,8 +19,18 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useToast } from '../../components/Toaster';
 
-const statusOptions = ['DRAFT', 'PUBLISHED', 'ARCHIVED'] as const;
+const statusOptions = ['DRAFT', 'PUBLISHED', 'ARCHIVED', 'PRIVATE'] as const;
 type GalleryStatus = (typeof statusOptions)[number];
+
+const PUBLIC_SITE_URL = 'https://www.evrydayarchive.co';
+
+type AccessLogEntry = {
+  id: string;
+  success: boolean;
+  ipAddress: string | null;
+  userAgent: string | null;
+  createdAt: string;
+};
 
 type ImageAsset = {
   id: string;
@@ -48,6 +58,8 @@ type Gallery = {
   order: number;
   featured: boolean;
   images: GalleryImage[];
+  accessToken: string | null;
+  hasPassword: boolean;
 };
 
 type UploadItem = {
@@ -141,6 +153,10 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
   const [uploading, setUploading] = useState(false);
   const [orderDirty, setOrderDirty] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [accessLog, setAccessLog] = useState<AccessLogEntry[] | null>(null);
+  const [loadingAccessLog, setLoadingAccessLog] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor));
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -188,8 +204,62 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
       return;
     }
 
-    setGalleryState((prev) => ({ ...prev, status: payload.data.status }));
+    setGalleryState((prev) => ({
+      ...prev,
+      status: payload.data.status,
+      accessToken: payload.data.accessToken ?? prev.accessToken
+    }));
     addToast('Status updated.', 'success');
+  };
+
+  // ── Private gallery: password + access log ──────────────────────────────────
+
+  const savePassword = async () => {
+    if (!passwordInput) return;
+
+    setSavingPassword(true);
+    const response = await fetch(`/api/galleries/${gallery.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: passwordInput })
+    });
+
+    const payload = await response.json();
+    setSavingPassword(false);
+    if (!payload.ok) {
+      addToast(payload.error?.message ?? 'Unable to set password.', 'error');
+      return;
+    }
+
+    setGalleryState((prev) => ({ ...prev, hasPassword: true }));
+    setPasswordInput('');
+    addToast('Password updated.', 'success');
+  };
+
+  const generatePassword = () => {
+    const bytes = new Uint8Array(9);
+    crypto.getRandomValues(bytes);
+    const generated = btoa(String.fromCharCode(...bytes))
+      .replace(/[+/=]/g, '')
+      .slice(0, 12);
+    setPasswordInput(generated);
+  };
+
+  const copyShareUrl = async (accessToken: string) => {
+    await navigator.clipboard.writeText(`${PUBLIC_SITE_URL}/private/${accessToken}`);
+    addToast('Share URL copied.', 'success');
+  };
+
+  const loadAccessLog = async () => {
+    setLoadingAccessLog(true);
+    const response = await fetch(`/api/galleries/${gallery.id}/access-log`);
+    const payload = await response.json();
+    setLoadingAccessLog(false);
+    if (!payload.ok) {
+      addToast(payload.error?.message ?? 'Unable to load access log.', 'error');
+      return;
+    }
+    setAccessLog(payload.data);
   };
 
   // ── Upload queue ─────────────────────────────────────────────────────────────
@@ -497,6 +567,93 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
           <span className="text-sm text-slate-500">Current: {galleryState.status}</span>
         </div>
       </section>
+
+      {/* Private gallery sharing */}
+      {galleryState.status === 'PRIVATE' && (
+        <section className="rounded-lg border border-slate-200 bg-white p-6">
+          <h2 className="text-lg font-semibold text-slate-900">Private sharing</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            This gallery is only reachable at the link below, and only after the password is
+            entered. It is excluded from the public site, sitemap, and search engines.
+          </p>
+
+          {galleryState.accessToken && (
+            <div className="mt-4 flex items-center gap-2">
+              <input
+                readOnly
+                value={`${PUBLIC_SITE_URL}/private/${galleryState.accessToken}`}
+                className="flex-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"
+              />
+              <button
+                type="button"
+                onClick={() => copyShareUrl(galleryState.accessToken as string)}
+                className="rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Copy
+              </button>
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <input
+              type="text"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              placeholder={galleryState.hasPassword ? 'Set a new password' : 'Set a password'}
+              className="rounded-md border border-slate-200 px-3 py-2 text-sm"
+            />
+            <button
+              type="button"
+              onClick={generatePassword}
+              className="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Generate
+            </button>
+            <button
+              type="button"
+              onClick={savePassword}
+              disabled={!passwordInput || savingPassword}
+              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-300"
+            >
+              {savingPassword ? 'Saving…' : 'Save password'}
+            </button>
+            <span className="text-sm text-slate-500">
+              {galleryState.hasPassword ? 'Password is set.' : 'No password set yet.'}
+            </span>
+          </div>
+
+          <div className="mt-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-900">Recent access attempts</h3>
+              <button
+                type="button"
+                onClick={loadAccessLog}
+                disabled={loadingAccessLog}
+                className="text-xs font-semibold text-slate-500 hover:text-indigo-600"
+              >
+                {loadingAccessLog ? 'Loading…' : 'Refresh'}
+              </button>
+            </div>
+            {accessLog === null ? (
+              <p className="mt-2 text-sm text-slate-500">Click refresh to load access attempts.</p>
+            ) : accessLog.length === 0 ? (
+              <p className="mt-2 text-sm text-slate-500">No attempts logged yet.</p>
+            ) : (
+              <ul className="mt-2 space-y-1 text-sm">
+                {accessLog.map((entry) => (
+                  <li key={entry.id} className="flex items-center gap-3 text-slate-600">
+                    <span className={entry.success ? 'text-emerald-600' : 'text-rose-600'}>
+                      {entry.success ? 'Success' : 'Failed'}
+                    </span>
+                    <span>{new Date(entry.createdAt).toLocaleString()}</span>
+                    <span className="text-slate-400">{entry.ipAddress ?? 'unknown IP'}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Images */}
       <section className="rounded-lg border border-slate-200 bg-white p-6">

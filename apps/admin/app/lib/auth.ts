@@ -75,6 +75,75 @@ export const verifyAdminSessionToken = (token: string | undefined): boolean => {
 export const verifyAdminPassword = (password: string | null): boolean =>
   !!password && password === getAdminEnv().ADMIN_PASSWORD;
 
+const GALLERY_ACCESS_TOKEN_TTL_MS = 1000 * 60 * 60 * 24 * 90;
+
+type GalleryAccessTokenPayload = {
+  galleryId: string;
+  accessToken: string;
+  iat: number;
+  exp: number;
+};
+
+export const createGalleryAccessToken = (galleryId: string, accessToken: string): string => {
+  const env = getAdminEnv();
+  const now = Date.now();
+  const payload: GalleryAccessTokenPayload = {
+    galleryId,
+    accessToken,
+    iat: now,
+    exp: now + GALLERY_ACCESS_TOKEN_TTL_MS
+  };
+  const encodedPayload = base64UrlEncode(JSON.stringify(payload));
+  const signature = sign(encodedPayload, env.AUTH_SECRET);
+
+  return `${encodedPayload}.${signature}`;
+};
+
+export const verifyGalleryAccessToken = (
+  token: string | undefined | null,
+  accessToken: string
+): string | null => {
+  const env = getAdminEnv();
+  if (!token) {
+    return null;
+  }
+
+  const [encodedPayload, signature] = token.split('.');
+
+  if (!encodedPayload || !signature) {
+    return null;
+  }
+
+  const expectedSignature = sign(encodedPayload, env.AUTH_SECRET);
+
+  const signatureBuffer = Buffer.from(signature);
+  const expectedBuffer = Buffer.from(expectedSignature);
+
+  if (signatureBuffer.length !== expectedBuffer.length) {
+    return null;
+  }
+
+  if (!timingSafeEqual(signatureBuffer, expectedBuffer)) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(base64UrlDecode(encodedPayload)) as GalleryAccessTokenPayload;
+
+    if (Date.now() > payload.exp) {
+      return null;
+    }
+
+    if (payload.accessToken !== accessToken) {
+      return null;
+    }
+
+    return payload.galleryId;
+  } catch {
+    return null;
+  }
+};
+
 export const getSessionCookieName = (): string => SESSION_COOKIE_NAME;
 
 export const getSessionMaxAgeSeconds = (): number => Math.floor(SESSION_MAX_AGE_MS / 1000);

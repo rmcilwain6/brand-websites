@@ -4,7 +4,8 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
-      allow: '/'
+      allow: '/',
+      disallow: '/private'
     },
     host: 'https://www.evrydayarchive.co',
     sitemap: 'https://www.evrydayarchive.co/sitemap.xml'

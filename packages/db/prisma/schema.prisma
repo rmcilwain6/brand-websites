@@ -12,6 +12,7 @@ enum GalleryStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
+  PRIVATE
 }
 
 enum PackageStatus {
@@ -55,19 +56,35 @@ enum BookingRequestStatus {
 }
 
 model Gallery {
-  id          String        @id @default(cuid())
-  slug        String        @unique
-  title       String
-  description String?
-  location    String?
-  status      GalleryStatus @default(DRAFT)
-  order       Int           @default(0)
-  featured    Boolean       @default(false)
-  publishedAt DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  images      GalleryImage[]
-  reviews     Review[]
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  title        String
+  description  String?
+  location     String?
+  status       GalleryStatus @default(DRAFT)
+  order        Int           @default(0)
+  featured     Boolean       @default(false)
+  publishedAt  DateTime?
+  accessToken  String?       @unique
+  passwordHash String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  images       GalleryImage[]
+  reviews      Review[]
+  accessLogs   GalleryAccessLog[]
+}
+
+model GalleryAccessLog {
+  id        String   @id @default(cuid())
+  galleryId String
+  success   Boolean
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  gallery   Gallery  @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+
+  @@index([galleryId])
+  @@index([galleryId, createdAt])
 }
 
 model ImageAsset {

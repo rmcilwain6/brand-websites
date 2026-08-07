@@ -2,6 +2,7 @@ import { PrismaClientKnownRequestError, prisma } from '@repo/db';
 
 import { GalleryUpdateSchema, createApiError, jsonError, jsonOk, parseJson } from '@repo/core';
 import { requireAdminSession } from '../../../lib/auth';
+import { hashPassword } from '../../../lib/password';
 
 export const GET = async (
   req: Request,
@@ -26,7 +27,9 @@ export const GET = async (
     return jsonError(createApiError('NOT_FOUND', 'Gallery not found.'));
   }
 
-  return jsonOk(gallery);
+  const { passwordHash: _passwordHash, ...galleryWithoutPasswordHash } = gallery;
+
+  return jsonOk({ ...galleryWithoutPasswordHash, hasPassword: !!gallery.passwordHash });
 };
 
 export const PUT = async (
@@ -44,13 +47,20 @@ export const PUT = async (
     return jsonError(result.error);
   }
 
+  const { password, ...rest } = result.data;
+
   try {
     const gallery = await prisma.gallery.update({
       where: { id: params.id },
-      data: result.data
+      data: {
+        ...rest,
+        ...(password ? { passwordHash: hashPassword(password) } : {})
+      }
     });
 
-    return jsonOk(gallery);
+    const { passwordHash: _passwordHash, ...galleryWithoutPasswordHash } = gallery;
+
+    return jsonOk({ ...galleryWithoutPasswordHash, hasPassword: !!gallery.passwordHash });
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2025') {

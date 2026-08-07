@@ -21,6 +21,9 @@ const GalleryDetailPage = async ({ params }: { params: { id: string } }) => {
     notFound();
   }
 
+  const { passwordHash, ...galleryWithoutPasswordHash } = gallery;
+  const galleryForEditor = { ...galleryWithoutPasswordHash, hasPassword: !!passwordHash };
+
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-16">
       <header>
@@ -31,7 +34,7 @@ const GalleryDetailPage = async ({ params }: { params: { id: string } }) => {
         <p className="text-sm text-slate-500">Edit gallery settings and images.</p>
       </header>
 
-      <GalleryEditor gallery={gallery} />
+      <GalleryEditor gallery={galleryForEditor} />
     </main>
   );
 };
