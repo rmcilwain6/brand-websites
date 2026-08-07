@@ -1,8 +1,10 @@
 import {
   GalleryDetailSchema,
   GalleryListResponseSchema,
+  PrivateGalleryDetailSchema,
   type GalleryDetail,
-  type GalleryListItem
+  type GalleryListItem,
+  type PrivateGalleryDetail
 } from '../schemas/gallery';
 
 export class PublicApiError extends Error {
@@ -77,6 +79,38 @@ export const fetchPublicGalleryDetail = async (
   if (!parsed.success) {
     throw new PublicApiError(
       'Gallery detail response did not match the expected schema.',
+      response.status,
+      parsed.error.format()
+    );
+  }
+
+  return parsed.data;
+};
+
+export const fetchPrivateGallery = async (
+  baseUrl: string,
+  token: string,
+  accessToken: string,
+  init?: PublicFetchOptions
+): Promise<PrivateGalleryDetail> => {
+  const url = new URL(`/api/public/private-galleries/${encodeURIComponent(token)}`, baseUrl);
+  const response = await fetch(url, {
+    ...init,
+    method: 'GET',
+    headers: { ...init?.headers, Authorization: `Bearer ${accessToken}` }
+  });
+
+  if (!response.ok) {
+    const details = await parseJson(response).catch(() => undefined);
+    throw new PublicApiError('Failed to load private gallery.', response.status, details);
+  }
+
+  const payload = await parseJson(response);
+  const parsed = PrivateGalleryDetailSchema.safeParse(payload);
+
+  if (!parsed.success) {
+    throw new PublicApiError(
+      'Private gallery response did not match the expected schema.',
       response.status,
       parsed.error.format()
     );

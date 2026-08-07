@@ -13,8 +13,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Pass through the coming-soon page, API routes, and any static file (has a file extension)
-  if (pathname === '/coming-soon' || pathname.startsWith('/api/') || /\.\w+$/.test(pathname)) {
+  // Pass through the coming-soon page, API routes, private gallery links, and any static file
+  if (
+    pathname === '/coming-soon' ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/private/') ||
+    /\.\w+$/.test(pathname)
+  ) {
     return NextResponse.next();
   }
 

@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto';
+
 import { PrismaClientKnownRequestError, prisma } from '@repo/db';
 
 import { GalleryPublishSchema, createApiError, jsonError, jsonOk, parseJson } from '@repo/core';
@@ -20,15 +22,30 @@ export const POST = async (
 
   try {
     const publishedAt = result.data.status === 'PUBLISHED' ? new Date() : null;
+
+    let accessToken: string | undefined;
+    if (result.data.status === 'PRIVATE') {
+      const existing = await prisma.gallery.findUnique({
+        where: { id: params.id },
+        select: { accessToken: true }
+      });
+      accessToken = existing?.accessToken ?? randomBytes(9).toString('base64url');
+    }
+
     const gallery = await prisma.gallery.update({
       where: { id: params.id },
       data: {
         status: result.data.status,
-        publishedAt
+        publishedAt,
+        ...(accessToken ? { accessToken } : {})
       }
     });
 
-    return jsonOk({ status: gallery.status, publishedAt: gallery.publishedAt });
+    return jsonOk({
+      status: gallery.status,
+      publishedAt: gallery.publishedAt,
+      accessToken: gallery.accessToken
+    });
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
       return jsonError(createApiError('NOT_FOUND', 'Gallery not found.'));

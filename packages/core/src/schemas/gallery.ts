@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const GalleryStatusSchema = z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']);
+export const GalleryStatusSchema = z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED', 'PRIVATE']);
 export type GalleryStatus = z.infer<typeof GalleryStatusSchema>;
 
 export const GalleryCreateSchema = z.object({
@@ -12,7 +12,8 @@ export const GalleryCreateSchema = z.object({
   description: z.string().optional(),
   location: z.string().optional(),
   order: z.number().int().min(0).optional(),
-  featured: z.boolean().optional()
+  featured: z.boolean().optional(),
+  password: z.string().min(4).optional()
 });
 
 export const GalleryUpdateSchema = GalleryCreateSchema.partial();
@@ -84,3 +85,33 @@ export const GalleryDetailSchema = z.object({
 export type GalleryListItem = z.infer<typeof GalleryListItemSchema>;
 export type GalleryListResponse = z.infer<typeof GalleryListResponseSchema>;
 export type GalleryDetail = z.infer<typeof GalleryDetailSchema>;
+
+export const PrivateGalleryVerifySchema = z.object({
+  password: z.string().min(1)
+});
+
+export const PrivateGalleryVerifyResponseSchema = z.object({
+  token: z.string().min(1)
+});
+
+export const PrivateGalleryDetailSchema = z.object({
+  id: z.string(),
+  accessToken: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  location: z.string().nullable(),
+  images: z.array(GalleryImageSchema)
+});
+
+export type PrivateGalleryDetail = z.infer<typeof PrivateGalleryDetailSchema>;
+
+export const GalleryAccessLogEntrySchema = z.object({
+  id: z.string(),
+  success: z.boolean(),
+  ipAddress: z.string().nullable(),
+  userAgent: z.string().nullable(),
+  createdAt: z.string()
+});
+
+export const GalleryAccessLogResponseSchema = z.array(GalleryAccessLogEntrySchema);
+export type GalleryAccessLogEntry = z.infer<typeof GalleryAccessLogEntrySchema>;
