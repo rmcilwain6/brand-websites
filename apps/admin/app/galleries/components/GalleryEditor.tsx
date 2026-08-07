@@ -22,6 +22,14 @@ import { useToast } from '../../components/Toaster';
 const statusOptions = ['DRAFT', 'PUBLISHED', 'ARCHIVED', 'PRIVATE'] as const;
 type GalleryStatus = (typeof statusOptions)[number];
 
+const imageLayoutOptions = ['MASONRY', 'GRID'] as const;
+type GalleryImageLayout = (typeof imageLayoutOptions)[number];
+
+const imageLayoutLabels: Record<GalleryImageLayout, string> = {
+  MASONRY: 'Masonry — column by column',
+  GRID: 'Grid — row by row'
+};
+
 const PUBLIC_SITE_URL = 'https://www.evrydayarchive.co';
 
 type AccessLogEntry = {
@@ -60,6 +68,7 @@ type Gallery = {
   images: GalleryImage[];
   accessToken: string | null;
   hasPassword: boolean;
+  imageLayout: GalleryImageLayout;
 };
 
 type UploadItem = {
@@ -175,7 +184,8 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
         description: galleryState.description || undefined,
         location: galleryState.location || undefined,
         order: galleryState.order,
-        featured: galleryState.featured
+        featured: galleryState.featured,
+        imageLayout: galleryState.imageLayout
       })
     });
 
@@ -509,6 +519,25 @@ const GalleryEditor = ({ gallery }: { gallery: Gallery }) => {
               onChange={(e) => setGalleryState((prev) => ({ ...prev, location: e.target.value }))}
               className="rounded-md border border-slate-200 px-3 py-2 text-sm"
             />
+          </label>
+          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+            Image layout
+            <select
+              value={galleryState.imageLayout}
+              onChange={(e) =>
+                setGalleryState((prev) => ({
+                  ...prev,
+                  imageLayout: e.target.value as GalleryImageLayout
+                }))
+              }
+              className="w-64 rounded-md border border-slate-200 px-3 py-2 text-sm"
+            >
+              {imageLayoutOptions.map((option) => (
+                <option key={option} value={option}>
+                  {imageLayoutLabels[option]}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
             Display order

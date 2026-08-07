@@ -41,6 +41,7 @@ export const GET = async (
       title: gallery.title,
       description: gallery.description,
       location: gallery.location,
+      imageLayout: gallery.imageLayout,
       images: gallery.images.map((image: GalleryImageWithAsset) => ({
         id: image.id,
         order: image.order,

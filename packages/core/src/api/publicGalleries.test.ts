@@ -21,6 +21,7 @@ const galleryDetailResponse = {
   title: 'Fall Highlights',
   description: null,
   location: 'Austin, TX',
+  imageLayout: 'MASONRY',
   images: [
     {
       id: 'image-1',
