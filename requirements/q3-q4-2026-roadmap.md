@@ -12,6 +12,7 @@ This sits alongside, not instead of, existing GitHub issues/PRs — where one al
 ## Initiatives
 
 ### 1. Gallery Experience V2
+
 **Detailed spec:** [`gallery-experience-v2-roadmap.md`](./gallery-experience-v2-roadmap.md)
 **Status:** Scoping complete, no phase started
 **Size:** Largest single initiative in this roadmap — multi-PR, phased A–E
@@ -21,6 +22,7 @@ Sections, wall text, per-image captions/plaques, curated desktop layout, full-bl
 ---
 
 ### 2. Land gallery description/headline/shoot-date
+
 **Reference:** [PR #92](https://github.com/rmcilwain6/brand-websites/pull/92) — `feat/gallery-metadata`
 **Status:** Open PR, ready for review/test-plan sign-off
 **Size:** Small — already built
@@ -30,6 +32,7 @@ Surfaces `description`, adds `headline` and `shootDate` to galleries end-to-end 
 ---
 
 ### 3. Dynamic OG image generation
+
 **Reference:** [Issue #86](https://github.com/rmcilwain6/brand-websites/issues/86)
 **Status:** Scoped, not started
 **Size:** Small–medium, self-contained
@@ -41,6 +44,7 @@ Per-page Open Graph images via Next.js `ImageResponse` — gallery pages get a c
 ---
 
 ### 4. Frame wall refresh
+
 **Status:** Not started
 **Size:** Depends on how far the rework goes — treat as more than an asset swap
 
@@ -51,6 +55,7 @@ Reed's read: this isn't just dropping in newer photos. The rolling-hero mechanic
 ---
 
 ### 4a. Existing prototypes generally need a design + mechanics pass, not just wiring
+
 **Status:** Cross-cutting note
 
 A theme across Initiatives 4, 6, and 7: code existing in the repo (rolling hero, `FilingCabinet`, the `/inquire` questionnaire) is not the same as those features being finished. Each was built to a point and left — the interaction design, visual polish, and in some cases the underlying mechanics still need real evaluation and iteration, not just a data-wiring pass. Treat "already built" in the notes below as "a starting point that's been sitting," not "mostly done."
@@ -58,6 +63,7 @@ A theme across Initiatives 4, 6, and 7: code existing in the repo (rolling hero,
 ---
 
 ### 5. Home page "meet the photographer" intro
+
 **Status:** Not started
 **Size:** Small — content/design, no backend
 
@@ -66,6 +72,7 @@ Today this is the plain-text "Photographer philosophy" block (`page.tsx`, Sectio
 ---
 
 ### 6. Dynamic, interactive reviews on the home page
+
 **Status:** Not started; a candidate building block exists but isn't assumed sufficient
 **Size:** Medium — treat as a real design pass, not a drop-in
 
@@ -76,6 +83,7 @@ The home page's testimonials are a hardcoded 3-quote array (`TESTIMONIALS` in `p
 ---
 
 ### 7. `/inquire` interactive questionnaire
+
 **Status:** UI exists but isn't considered finished; recommendation engine is a stub
 **Size:** Medium–large — real UX/mechanics work plus a data-wiring dependency
 
@@ -84,6 +92,7 @@ An interactive questionnaire already exists (`questionnaire.tsx`, 686 lines, bui
 ---
 
 ### 8. Custom page view / click tracking in admin
+
 **Status:** Not started, least defined of this list
 **Size:** Unclear until scoped — could range from small to a real sub-project
 
@@ -101,21 +110,26 @@ Given the size of everything else in this quarter, this is a good candidate for 
 Grouped rather than strictly numbered — within a tier, order is genuinely interchangeable and should follow whatever Reed's actually in the mood to tackle or has fresh input on (a new photo arrives, a design idea clicks, etc.). Tiers themselves can be reshuffled too; this is the starting opinion, not the plan.
 
 **Land now / lowest friction**
+
 - PR #92 — already built, just needs the test plan closed out.
 
 **Near-term, self-contained, don't depend on anything else landing first**
+
 - Frame wall (Initiative 4) — pending Reed's read on what specifically needs to change mechanically.
 - Home page intro redesign (Initiative 5).
 - Dynamic OG images (Issue #86).
 
 **Real design/rework passes — bigger than they look from the outside**
+
 - Home page reviews (Initiative 6).
 - `/inquire` questionnaire + recommendation engine (Initiative 7), bundled with Package Builder pricing.
 
 **Anchor project — multi-quarter, start when ready**
+
 - Gallery Experience V2 (Initiative 1), Phase A.
 
 **Needs its own scoping conversation before it has a place in sequence**
+
 - Admin analytics (Initiative 8).
 
 This grouping is meant to be argued with — if something in "near-term" turns out to need real rework once Reed digs in (the way the frame wall and reviews already did), it moves down a tier without needing to renegotiate the whole document.
