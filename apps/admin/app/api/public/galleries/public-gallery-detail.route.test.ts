@@ -18,6 +18,7 @@ const makeGallery = (overrides = {}) => ({
   title: 'Fall Highlights',
   description: null,
   location: 'Austin, TX',
+  imageLayout: 'MASONRY',
   images: [
     {
       id: 'img_1',

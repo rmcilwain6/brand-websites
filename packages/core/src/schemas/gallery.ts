@@ -3,6 +3,9 @@ import { z } from 'zod';
 export const GalleryStatusSchema = z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED', 'PRIVATE']);
 export type GalleryStatus = z.infer<typeof GalleryStatusSchema>;
 
+export const GalleryImageLayoutSchema = z.enum(['MASONRY', 'GRID']);
+export type GalleryImageLayout = z.infer<typeof GalleryImageLayoutSchema>;
+
 export const GalleryCreateSchema = z.object({
   title: z.string().min(2),
   slug: z
@@ -13,7 +16,8 @@ export const GalleryCreateSchema = z.object({
   location: z.string().optional(),
   order: z.number().int().min(0).optional(),
   featured: z.boolean().optional(),
-  password: z.string().min(4).optional()
+  password: z.string().min(4).optional(),
+  imageLayout: GalleryImageLayoutSchema.optional()
 });
 
 export const GalleryUpdateSchema = GalleryCreateSchema.partial();
@@ -79,6 +83,7 @@ export const GalleryDetailSchema = z.object({
   title: z.string(),
   description: z.string().nullable(),
   location: z.string().nullable(),
+  imageLayout: GalleryImageLayoutSchema,
   images: z.array(GalleryImageSchema)
 });
 
