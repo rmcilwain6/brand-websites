@@ -32,7 +32,7 @@ export default async function HomePage() {
       <HeroSection />
 
       {/* ── Section 2: Photographer philosophy ─────────────────────────── */}
-      <section className="group px-4 py-20 sm:px-6 lg:px-8">
+      <section className="group px-6 py-20 lg:px-8">
         <div className="mx-auto max-w-4xl">
           {/* Row 1 — text (left half) + small portrait frame (right half) */}
           <div className="grid grid-cols-1 items-center gap-10 sm:grid-cols-3 sm:gap-10">
@@ -41,24 +41,26 @@ export default async function HomePage() {
               <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
                 A lifetime of photography has changed how I see life, constantly filling me with a
                 sense of gratitude for
-                <span className="block font-semibold text-accent sm:font-normal sm:text-right">
+                <span className="font-semibold text-accent sm:block sm:font-normal sm:text-right">
                   moments big and small.
                 </span>
               </p>
 
               {/* Block 2 — full width, right/left/right zigzag */}
               <div className="mt-10 text-lg leading-snug text-ink-muted sm:text-xl">
-                {/* Mobile: lines 1+2 flow as one paragraph to avoid a hard break mid-thought */}
+                {/* Mobile: the whole thought flows as one paragraph, accent phrase inline */}
                 <p className="sm:hidden">
-                  Every click of the shutter is an intentional choice to document, remember, and
+                  Every click of the shutter is an intentional choice to document, remember, and{' '}
+                  <span className="font-semibold text-accent">
+                    leave a gift for my future self.
+                  </span>
                 </p>
                 {/* Desktop: split into offset zigzag lines */}
                 <p className="hidden sm:block sm:pl-32">
                   Every click of the shutter is an intentional choice
                 </p>
                 <p className="hidden sm:block sm:pl-[100px]">to document, remember, and</p>
-                {/* Mobile: left-aligned + semi-bold. Desktop: offset left, normal weight. */}
-                <p className="font-semibold text-accent sm:pl-40 sm:font-normal sm:text-left">
+                <p className="hidden text-accent sm:block sm:pl-40">
                   leave a gift for my future self.
                 </p>
               </div>
