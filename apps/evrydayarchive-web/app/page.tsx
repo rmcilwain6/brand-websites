@@ -119,7 +119,7 @@ export default async function HomePage() {
                   />
                   <path
                     d="M 138 1 L 146 5 L 138 9 Z"
-                    className="fill-ink-muted opacity-0 [transition:opacity_700ms_ease-out,fill_120ms_ease-out] group-hover:opacity-100 group-hover:[transition:opacity_700ms_ease-out_500ms,fill_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[transition:opacity_700ms_ease-out_500ms,fill_120ms_ease-out] group-hover/cta:fill-accent"
+                    className="fill-ink-muted opacity-0 [clip-path:inset(0_100%_0_0)] [transition:opacity_900ms_ease-out,clip-path_120ms_ease-out,fill_120ms_ease-out] group-hover:opacity-100 group-hover:[clip-path:inset(0_0_0_0)] group-hover:[transition:opacity_420ms_ease-out_850ms,clip-path_420ms_ease-out_850ms,fill_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[clip-path:inset(0_0_0_0)] group-focus-within:[transition:opacity_420ms_ease-out_850ms,clip-path_420ms_ease-out_850ms,fill_120ms_ease-out] group-hover/cta:fill-accent"
                   />
                 </svg>
               </span>
