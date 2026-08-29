@@ -51,7 +51,7 @@ export default async function HomePage() {
                   Every click of the shutter is an intentional choice to document, remember, and
                 </p>
                 {/* Desktop: split into offset zigzag lines */}
-                <p className="hidden sm:block sm:pl-36">
+                <p className="hidden sm:block sm:pl-32">
                   Every click of the shutter is an intentional choice
                 </p>
                 <p className="hidden sm:block sm:pl-[100px]">to document, remember, and</p>
@@ -115,11 +115,11 @@ export default async function HomePage() {
                   <path
                     d="M 5 5 L 138 5"
                     pathLength="1"
-                    className="fill-none stroke-ink-muted opacity-0 [stroke-dasharray:1] [stroke-dashoffset:1] [stroke-linecap:round] [stroke-width:1.5] [transition:opacity_180ms_ease-out,stroke_120ms_ease-out] group-hover:opacity-100 group-hover:[stroke-dashoffset:0] group-hover:[transition:stroke-dashoffset_1400ms_cubic-bezier(0.16,1,0.3,1),opacity_300ms_ease-out,stroke_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[stroke-dashoffset:0] group-hover/cta:stroke-accent"
+                    className="fill-none stroke-ink-muted opacity-0 [stroke-dasharray:1] [stroke-dashoffset:1] [stroke-linecap:round] [stroke-width:1.5] [transition:opacity_300ms_ease-out,stroke_120ms_ease-out] group-hover:opacity-100 group-hover:[stroke-dashoffset:0] group-hover:[transition:stroke-dashoffset_1400ms_cubic-bezier(0.16,1,0.3,1),opacity_300ms_ease-out,stroke_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[stroke-dashoffset:0] group-hover/cta:stroke-accent"
                   />
                   <path
                     d="M 138 1 L 146 5 L 138 9 Z"
-                    className="fill-ink-muted opacity-0 [clip-path:inset(0_100%_0_0)] [transition:opacity_180ms_ease-out,clip-path_0ms,fill_120ms_ease-out] group-hover:opacity-100 group-hover:[clip-path:inset(0_0_0_0)] group-hover:[transition:opacity_420ms_ease-out_850ms,clip-path_420ms_ease-out_850ms,fill_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[clip-path:inset(0_0_0_0)] group-focus-within:[transition:opacity_420ms_ease-out_850ms,clip-path_420ms_ease-out_850ms,fill_120ms_ease-out] group-hover/cta:fill-accent"
+                    className="fill-ink-muted opacity-0 [clip-path:inset(0_100%_0_0)] [transition:opacity_300ms_ease-out,clip-path_0ms,fill_120ms_ease-out] group-hover:opacity-100 group-hover:[clip-path:inset(0_0_0_0)] group-hover:[transition:opacity_420ms_ease-out_850ms,clip-path_420ms_ease-out_850ms,fill_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[clip-path:inset(0_0_0_0)] group-focus-within:[transition:opacity_420ms_ease-out_850ms,clip-path_420ms_ease-out_850ms,fill_120ms_ease-out] group-hover/cta:fill-accent"
                   />
                 </svg>
               </span>
