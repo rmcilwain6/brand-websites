@@ -41,7 +41,9 @@ export default async function HomePage() {
               <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
                 A lifetime of photography has changed how I see life, constantly filling me with a
                 sense of gratitude for
-                <span className="block text-right text-accent">moments big and small.</span>
+                <span className="block font-semibold text-accent sm:font-normal sm:text-right">
+                  moments big and small.
+                </span>
               </p>
 
               {/* Block 2 — full width, right/left/right zigzag */}
@@ -55,8 +57,8 @@ export default async function HomePage() {
                   Every click of the shutter is an intentional choice
                 </p>
                 <p className="hidden sm:block sm:pl-[100px]">to document, remember, and</p>
-                {/* Both: orange breaks right on mobile, offset left on desktop */}
-                <p className="text-right text-accent sm:text-left sm:pl-40">
+                {/* Mobile: left-aligned + semi-bold. Desktop: offset left, normal weight. */}
+                <p className="font-semibold text-accent sm:pl-40 sm:font-normal sm:text-left">
                   leave a gift for my future self.
                 </p>
               </div>
@@ -103,7 +105,9 @@ export default async function HomePage() {
               href="/about"
               className="group/cta -mx-6 -my-5 inline-flex flex-col items-center px-6 py-5 text-inherit no-underline sm:-mx-24 sm:px-24 lg:-mx-40 lg:px-40"
             >
-              <span className="text-sm font-medium text-ink-muted transition-[color,transform] duration-fast group-hover:text-ink group-hover/cta:translate-x-2">
+              {/* Mobile has no hover, so the CTA ships in its "hovered" look:
+                  semi-bold, full-ink text with the orange arrow already drawn. */}
+              <span className="text-sm font-semibold text-ink transition-[color,transform] duration-fast sm:font-medium sm:text-ink-muted group-hover:text-ink group-hover/cta:translate-x-2">
                 Meet the photographer
               </span>
               <span className="mt-1.5 h-2.5 w-[150px] overflow-visible transition-transform duration-fast group-hover/cta:translate-x-2">
@@ -115,11 +119,11 @@ export default async function HomePage() {
                   <path
                     d="M 5 5 L 138 5"
                     pathLength="1"
-                    className="fill-none stroke-ink-muted opacity-0 [stroke-dasharray:1] [stroke-dashoffset:1] [stroke-linecap:round] [stroke-width:1.5] [transition:opacity_300ms_ease-out,stroke_120ms_ease-out] group-hover:opacity-100 group-hover:[stroke-dashoffset:0] group-hover:[transition:stroke-dashoffset_1400ms_cubic-bezier(0.16,1,0.3,1),opacity_300ms_ease-out,stroke_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[stroke-dashoffset:0] group-hover/cta:stroke-accent"
+                    className="fill-none stroke-accent opacity-100 [stroke-dasharray:1] [stroke-dashoffset:0] [stroke-linecap:round] [stroke-width:1.5] sm:stroke-ink-muted sm:opacity-0 sm:[stroke-dashoffset:1] [transition:opacity_300ms_ease-out,stroke_120ms_ease-out] group-hover:opacity-100 group-hover:[stroke-dashoffset:0] group-hover:[transition:stroke-dashoffset_1400ms_cubic-bezier(0.16,1,0.3,1),opacity_300ms_ease-out,stroke_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[stroke-dashoffset:0] group-hover/cta:stroke-accent"
                   />
                   <path
                     d="M 138 1 L 146 5 L 138 9 Z"
-                    className="fill-ink-muted opacity-0 [clip-path:inset(0_100%_0_0)] [transition:opacity_300ms_ease-out,clip-path_0ms,fill_120ms_ease-out] group-hover:opacity-100 group-hover:[clip-path:inset(0_0_0_0)] group-hover:[transition:opacity_420ms_ease-out_850ms,clip-path_420ms_ease-out_850ms,fill_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[clip-path:inset(0_0_0_0)] group-focus-within:[transition:opacity_420ms_ease-out_850ms,clip-path_420ms_ease-out_850ms,fill_120ms_ease-out] group-hover/cta:fill-accent"
+                    className="fill-accent opacity-100 [clip-path:inset(0_0_0_0)] sm:fill-ink-muted sm:opacity-0 sm:[clip-path:inset(0_100%_0_0)] [transition:opacity_300ms_ease-out,clip-path_0ms,fill_120ms_ease-out] group-hover:opacity-100 group-hover:[clip-path:inset(0_0_0_0)] group-hover:[transition:opacity_420ms_ease-out_850ms,clip-path_420ms_ease-out_850ms,fill_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[clip-path:inset(0_0_0_0)] group-focus-within:[transition:opacity_420ms_ease-out_850ms,clip-path_420ms_ease-out_850ms,fill_120ms_ease-out] group-hover/cta:fill-accent"
                   />
                 </svg>
               </span>
