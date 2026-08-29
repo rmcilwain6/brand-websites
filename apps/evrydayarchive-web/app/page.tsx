@@ -40,7 +40,7 @@ export default async function HomePage() {
               {/* Block 1 — long, anchored left; orange wraps and sits right */}
               <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
                 A lifetime of photography has changed how I see life, constantly filling me with a
-                sense of gratitude for
+                sense of gratitude for{' '}
                 <span className="font-semibold text-accent sm:block sm:font-normal sm:text-right">
                   moments big and small.
                 </span>
