@@ -7,6 +7,7 @@ import { fetchPublicGalleries, type GalleryListItem } from '@repo/core';
 import { getServerEnv } from './lib/env';
 import { HeroSection } from './components/hero-section';
 import { Frame } from './components/frame';
+import { Placard } from './components/placard';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/' }
@@ -31,43 +32,97 @@ export default async function HomePage() {
       <HeroSection />
 
       {/* ── Section 2: Photographer philosophy ─────────────────────────── */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl">
-          {/* Block 1 — long, anchored left; orange wraps and sits right */}
-          <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
-            A lifetime of photography has changed how I see life, constantly filling me with a sense
-            of gratitude for
-            <span className="block text-right text-accent">moments big and small.</span>
-          </p>
+      <section className="group px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl">
+          {/* Row 1 — text (left half) + small portrait frame (right half) */}
+          <div className="grid grid-cols-1 items-center gap-10 sm:grid-cols-3 sm:gap-10">
+            <div className="mx-auto w-full max-w-6xl sm:col-span-2 sm:mx-0">
+              {/* Block 1 — long, anchored left; orange wraps and sits right */}
+              <p className="text-lg leading-relaxed text-ink-muted sm:text-xl">
+                A lifetime of photography has changed how I see life, constantly filling me with a
+                sense of gratitude for
+                <span className="block text-right text-accent">moments big and small.</span>
+              </p>
 
-          {/* Block 2 — full width, right/left/right zigzag */}
-          <div className="mt-10 text-lg leading-snug text-ink-muted sm:text-xl">
-            {/* Mobile: lines 1+2 flow as one paragraph to avoid a hard break mid-thought */}
-            <p className="sm:hidden">
-              Every click of the shutter is an intentional choice to document, remember, and
-            </p>
-            {/* Desktop: split into offset zigzag lines */}
-            <p className="hidden sm:block sm:pl-36">
-              Every click of the shutter is an intentional choice
-            </p>
-            <p className="hidden sm:block sm:pl-[100px]">to document, remember, and</p>
-            {/* Both: orange breaks right on mobile, offset left on desktop */}
-            <p className="text-right text-accent sm:text-left sm:pl-40">
-              leave a gift for my future self.
-            </p>
+              {/* Block 2 — full width, right/left/right zigzag */}
+              <div className="mt-10 text-lg leading-snug text-ink-muted sm:text-xl">
+                {/* Mobile: lines 1+2 flow as one paragraph to avoid a hard break mid-thought */}
+                <p className="sm:hidden">
+                  Every click of the shutter is an intentional choice to document, remember, and
+                </p>
+                {/* Desktop: split into offset zigzag lines */}
+                <p className="hidden sm:block sm:pl-36">
+                  Every click of the shutter is an intentional choice
+                </p>
+                <p className="hidden sm:block sm:pl-[100px]">to document, remember, and</p>
+                {/* Both: orange breaks right on mobile, offset left on desktop */}
+                <p className="text-right text-accent sm:text-left sm:pl-40">
+                  leave a gift for my future self.
+                </p>
+              </div>
+
+              {/* Block 3 — right-aligned closer */}
+              <p className="mt-10 text-lg leading-relaxed text-ink-muted sm:text-xl">
+                In a life that moves this fast, I think we could all use more of that.
+              </p>
+            </div>
+
+            {/* Small oval portrait — subtle, not the focal point of the section */}
+            <div className="flex justify-center">
+              <div className="w-full max-w-[220px]">
+                <div className="aspect-[4/5] rounded-[48%] bg-surface p-1.5 shadow-frame">
+                  <div className="relative h-full w-full overflow-hidden rounded-[50%] outline outline-1 -outline-offset-1 outline-border">
+                    <Image
+                      src="/images/about/about-page-17.webp"
+                      alt="Reed McIlwain, smiling outdoors in Kamloops, BC"
+                      fill
+                      className="object-cover"
+                      // objectPosition anchors the base crop; scale zooms in past that,
+                      // and transformOrigin (kept in sync with objectPosition) picks the
+                      // point the zoom holds still on. Bump scale to zoom further in;
+                      // nudge the two percentages together to pan.
+                      style={{
+                        transform: 'scale(1.3)',
+                        transformOrigin: '50% 25%'
+                      }}
+                      sizes="148px"
+                    />
+                  </div>
+                </div>
+                <div className="mt-3.5 flex justify-center">
+                  <Placard title="Reed McIlwain" subtitle="Owner & Photographer" size="sm" />
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Block 3 — right-aligned closer */}
-          <p className="mt-10 text-lg leading-relaxed text-ink-muted sm:text-xl">
-            In a life that moves this fast, I think we could all use more of that.
-          </p>
-
-          <div className="mt-8 flex justify-end">
+          {/* Row 2 — centered CTA, independent of the columns above.
+              Hovering/focusing anywhere in the section reveals the arrow beneath it. */}
+          <div className="mt-14 flex justify-center">
             <Link
               href="/about"
-              className="inline-flex items-center gap-1 text-sm text-ink-muted transition-[color,transform] duration-fast hover:translate-x-1.5 hover:text-ink"
+              className="group/cta -mx-6 -my-5 inline-flex flex-col items-center px-6 py-5 text-inherit no-underline sm:-mx-24 sm:px-24 lg:-mx-40 lg:px-40"
             >
-              Meet the photographer →
+              <span className="text-sm font-medium text-ink-muted transition-[color,transform] duration-fast group-hover:text-ink group-hover/cta:translate-x-2">
+                Meet the photographer
+              </span>
+              <span className="mt-1.5 h-2.5 w-[150px] overflow-visible transition-transform duration-fast group-hover/cta:translate-x-2">
+                <svg
+                  viewBox="0 0 150 10"
+                  preserveAspectRatio="none"
+                  className="block h-full w-full overflow-visible"
+                >
+                  <path
+                    d="M 5 5 L 138 5"
+                    pathLength="1"
+                    className="fill-none stroke-ink-muted opacity-0 [stroke-dasharray:1] [stroke-dashoffset:1] [stroke-linecap:round] [stroke-width:1.5] [transition:opacity_900ms_ease-out,stroke_120ms_ease-out] group-hover:opacity-100 group-hover:[stroke-dashoffset:0] group-hover:[transition:stroke-dashoffset_1400ms_cubic-bezier(0.16,1,0.3,1),opacity_300ms_ease-out,stroke_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[stroke-dashoffset:0] group-hover/cta:stroke-accent"
+                  />
+                  <path
+                    d="M 138 1 L 146 5 L 138 9 Z"
+                    className="fill-ink-muted opacity-0 [transition:opacity_700ms_ease-out,fill_120ms_ease-out] group-hover:opacity-100 group-hover:[transition:opacity_700ms_ease-out_500ms,fill_120ms_ease-out] group-focus-within:opacity-100 group-focus-within:[transition:opacity_700ms_ease-out_500ms,fill_120ms_ease-out] group-hover/cta:fill-accent"
+                  />
+                </svg>
+              </span>
             </Link>
           </div>
         </div>
