@@ -105,14 +105,31 @@ const GalleryDetailPage = async ({ params }: { params: { slug: string } }) => {
 
         {/* Opening panel */}
         <header className="mb-16 max-w-2xl">
-          <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
-            {gallery.location ?? 'Gallery'}
-          </p>
-          <h1 className="mb-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+          <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <p className="text-xs font-medium uppercase tracking-widest text-ink-faint">
+              {gallery.location ?? 'Gallery'}
+            </p>
+            {gallery.shootDate && (
+              <>
+                <div className="h-1.5 w-1.5 flex-none rounded-full bg-accent/80" />
+                <p className="text-xs font-medium uppercase tracking-widest text-ink-faint">
+                  {new Date(gallery.shootDate).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </p>
+              </>
+            )}
+          </div>
+          <h1 className="text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
             {gallery.title}
           </h1>
+          {gallery.headline && (
+            <p className="mt-3 text-xl leading-snug text-ink-muted">{gallery.headline}</p>
+          )}
           {gallery.description && (
-            <p className="text-base leading-relaxed text-ink-muted">{gallery.description}</p>
+            <p className="mt-4 text-base leading-relaxed text-ink-faint">{gallery.description}</p>
           )}
         </header>
 

@@ -95,6 +95,9 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
             </p>
           )}
           <h2 className="text-3xl font-semibold tracking-tight text-ink">{gallery.title}</h2>
+          {gallery.headline && (
+            <p className="mt-2 text-base leading-snug text-ink-muted">{gallery.headline}</p>
+          )}
         </div>
 
         {/*
@@ -155,6 +158,9 @@ const GalleryEntry = ({ gallery, index }: { gallery: GalleryListItem; index: num
             <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
               {gallery.title}
             </h2>
+            {gallery.headline && (
+              <p className="mt-2 text-base leading-snug text-ink-muted">{gallery.headline}</p>
+            )}
           </div>
 
           {/* Arrow faces outward (away from image) to draw the eye to the edge */}

@@ -7,11 +7,35 @@ describe('Gallery schemas', () => {
     const result = GalleryCreateSchema.safeParse({
       title: 'Fall Highlights',
       slug: 'fall-highlights',
+      headline: 'Golden hour on the coast',
       description: 'Warm tones and family portraits.',
-      location: 'Austin, TX'
+      location: 'Austin, TX',
+      shootDate: '2024-10-15'
     });
 
     expect(result.success).toBe(true);
+  });
+
+  it('accepts a gallery create payload without optional fields', () => {
+    const result = GalleryCreateSchema.safeParse({
+      title: 'Fall Highlights',
+      slug: 'fall-highlights'
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('coerces a shootDate string to a Date', () => {
+    const result = GalleryCreateSchema.safeParse({
+      title: 'Fall Highlights',
+      slug: 'fall-highlights',
+      shootDate: '2024-10-15'
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.shootDate).toBeInstanceOf(Date);
+    }
   });
 
   it('rejects invalid gallery slugs', () => {

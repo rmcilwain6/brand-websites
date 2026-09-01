@@ -39,7 +39,9 @@ export const GET = async (
       id: gallery.id,
       slug: gallery.slug,
       title: gallery.title,
+      headline: gallery.headline,
       description: gallery.description,
+      shootDate: gallery.shootDate?.toISOString() ?? null,
       location: gallery.location,
       imageLayout: gallery.imageLayout,
       images: gallery.images.map((image: GalleryImageWithAsset) => ({
