@@ -1,19 +1,22 @@
+import type { VoucherDiscount } from './vouchers';
+
 /**
  * Referrals — the single source for the referral reward and the "how did you hear" options.
  *
- * `REFERRAL.amountCents` is stamped onto each new referral voucher and drives the
- * "$25 off" copy on /book. Change it here, not in components or email templates.
- * Vouchers already issued keep the amount they were created with.
+ * `REFERRAL.discount` is stamped onto each new referral voucher and drives the
+ * "$25 off" copy on /book. Change it here, not in components or email templates —
+ * it can be a fixed amount or a percentage. Vouchers already issued keep the
+ * discount they were created with.
  *
  * Client components should import from '@repo/core/referrals' rather than '@repo/core':
  * the package root re-exports every Zod schema, which would otherwise ship to the browser.
  */
 
-export const REFERRAL = {
-  amountCents: 2500,
+export const REFERRAL: { discount: VoucherDiscount; expiresOn: string } = {
+  discount: { discountType: 'FIXED_AMOUNT', amountCents: 2500 },
   /** Referral vouchers are valid through the end of this day. */
   expiresOn: '2027-12-31'
-} as const;
+};
 
 /** Expiry timestamp for a referral voucher created now (end of `REFERRAL.expiresOn`, UTC). */
 export const referralExpiresAt = (): Date => new Date(`${REFERRAL.expiresOn}T23:59:59.999Z`);

@@ -2,6 +2,9 @@
 CREATE TYPE "VoucherType" AS ENUM ('REFERRAL');
 
 -- CreateEnum
+CREATE TYPE "VoucherDiscountType" AS ENUM ('FIXED_AMOUNT', 'PERCENTAGE');
+
+-- CreateEnum
 CREATE TYPE "VoucherStatus" AS ENUM ('PENDING', 'ACTIVE', 'REDEEMED', 'VOID');
 
 -- AlterTable
@@ -17,7 +20,9 @@ CREATE TABLE "Voucher" (
     "code" TEXT NOT NULL,
     "type" "VoucherType" NOT NULL DEFAULT 'REFERRAL',
     "status" "VoucherStatus" NOT NULL DEFAULT 'PENDING',
-    "amountCents" INTEGER NOT NULL,
+    "discountType" "VoucherDiscountType" NOT NULL DEFAULT 'FIXED_AMOUNT',
+    "amountCents" INTEGER,
+    "percentOff" INTEGER,
     "referrerName" TEXT,
     "referrerContact" TEXT,
     "holderName" TEXT,
@@ -56,3 +61,10 @@ ALTER TABLE "Voucher" ADD CONSTRAINT "Voucher_sourceBookingId_fkey" FOREIGN KEY 
 -- AddForeignKey
 ALTER TABLE "Voucher" ADD CONSTRAINT "Voucher_redeemedBookingId_fkey" FOREIGN KEY ("redeemedBookingId") REFERENCES "BookingRequest"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
+-- AddCheckConstraint (hand-written; Prisma can't express CHECK constraints)
+-- A voucher's value matches its discount type: a positive fixed amount, or a whole percent from 1 to 100.
+-- The explicit IS NOT NULL checks matter: a CHECK that evaluates to NULL passes.
+ALTER TABLE "Voucher" ADD CONSTRAINT "Voucher_discount_value_check" CHECK (
+  ("discountType" = 'FIXED_AMOUNT' AND "amountCents" IS NOT NULL AND "amountCents" > 0 AND "percentOff" IS NULL)
+  OR ("discountType" = 'PERCENTAGE' AND "percentOff" IS NOT NULL AND "percentOff" BETWEEN 1 AND 100 AND "amountCents" IS NULL)
+);

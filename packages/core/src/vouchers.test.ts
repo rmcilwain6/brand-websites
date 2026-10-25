@@ -2,10 +2,77 @@ import { describe, expect, it } from 'vitest';
 
 import {
   VOUCHER_CODE_ALPHABET,
+  formatVoucherDiscount,
   generateVoucherCode,
   isVoucherCode,
-  normalizeVoucherCode
+  normalizeVoucherCode,
+  toVoucherDiscount,
+  voucherDiscountCents,
+  voucherDiscountColumns
 } from './vouchers';
+
+const fixed = (amountCents: number) => ({ discountType: 'FIXED_AMOUNT' as const, amountCents });
+const percent = (percentOff: number) => ({ discountType: 'PERCENTAGE' as const, percentOff });
+
+describe('toVoucherDiscount', () => {
+  it('reads fixed and percentage rows', () => {
+    expect(
+      toVoucherDiscount({ discountType: 'FIXED_AMOUNT', amountCents: 2500, percentOff: null })
+    ).toEqual(fixed(2500));
+    expect(
+      toVoucherDiscount({ discountType: 'PERCENTAGE', amountCents: null, percentOff: 15 })
+    ).toEqual(percent(15));
+  });
+
+  it('returns null for a row missing its value', () => {
+    expect(
+      toVoucherDiscount({ discountType: 'FIXED_AMOUNT', amountCents: null, percentOff: 15 })
+    ).toBeNull();
+    expect(
+      toVoucherDiscount({ discountType: 'PERCENTAGE', amountCents: 2500, percentOff: null })
+    ).toBeNull();
+  });
+});
+
+describe('voucherDiscountColumns', () => {
+  it('clears the column that does not apply', () => {
+    expect(voucherDiscountColumns(fixed(2500))).toEqual({
+      discountType: 'FIXED_AMOUNT',
+      amountCents: 2500,
+      percentOff: null
+    });
+    expect(voucherDiscountColumns(percent(15))).toEqual({
+      discountType: 'PERCENTAGE',
+      amountCents: null,
+      percentOff: 15
+    });
+  });
+});
+
+describe('formatVoucherDiscount', () => {
+  it('formats whole and part dollars, and percentages', () => {
+    expect(formatVoucherDiscount(fixed(2500))).toBe('$25');
+    expect(formatVoucherDiscount(fixed(1250))).toBe('$12.50');
+    expect(formatVoucherDiscount(percent(15))).toBe('15%');
+  });
+});
+
+describe('voucherDiscountCents', () => {
+  it('takes a fixed amount off', () => {
+    expect(voucherDiscountCents(fixed(2500), 45000)).toBe(2500);
+  });
+
+  it('takes a percentage of the total, rounded to the cent', () => {
+    expect(voucherDiscountCents(percent(15), 45000)).toBe(6750);
+    expect(voucherDiscountCents(percent(15), 33333)).toBe(5000);
+  });
+
+  it('never takes off more than the total', () => {
+    expect(voucherDiscountCents(fixed(2500), 1000)).toBe(1000);
+    expect(voucherDiscountCents(percent(100), 45000)).toBe(45000);
+    expect(voucherDiscountCents(fixed(2500), -50)).toBe(0);
+  });
+});
 
 describe('VOUCHER_CODE_ALPHABET', () => {
   it('excludes confusable characters', () => {
