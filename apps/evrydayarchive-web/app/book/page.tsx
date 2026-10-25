@@ -9,12 +9,12 @@ import {
   fetchPublicPackages,
   type LocationWindow,
   type PublicPackage,
-  type PublicPackageModifier,
   type TimeSlot
 } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
 import { BookingForm } from './booking-form';
+import type { BookingSelection } from './selection-summary';
 
 export const metadata: Metadata = {
   title: 'Book a Session | Evryday Archive Co',
@@ -83,13 +83,19 @@ export default async function BookPage({ searchParams }: Props) {
     }
   }
 
-  // Modifiers that affect this booking: required, selected, or moved off their default.
-  const selection = { selectedIds: selectedModifierIds, values: modifierValues };
-  const resolvedModifiers: PublicPackageModifier[] = pkg
-    ? activeModifiers(pkg.modifiers, selection)
-    : [];
-  const estimatedTotalCents =
-    pkg != null ? estimateTotalCents(pkg.basePriceCents, pkg.modifiers, selection) : undefined;
+  const modifierSelection = { selectedIds: selectedModifierIds, values: modifierValues };
+  const selection: BookingSelection | null = pkg
+    ? {
+        pkg,
+        modifiers: activeModifiers(pkg.modifiers, modifierSelection),
+        modifierValues,
+        estimatedTotalCents: estimateTotalCents(
+          pkg.basePriceCents,
+          pkg.modifiers,
+          modifierSelection
+        )
+      }
+    : null;
 
   const backHref =
     from === 'packages' || !pkg ? '/packages' : `/package-builder?package=${pkg.slug}`;
@@ -125,10 +131,7 @@ export default async function BookPage({ searchParams }: Props) {
         {/* Two-column layout — BookingForm owns both the form and the reactive sidebar */}
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
           <BookingForm
-            pkg={pkg ?? null}
-            resolvedModifiers={resolvedModifiers}
-            modifierValues={modifierValues}
-            estimatedTotalCents={estimatedTotalCents}
+            selection={selection}
             timeSlots={timeSlots}
             locationWindows={locationWindows}
           />
