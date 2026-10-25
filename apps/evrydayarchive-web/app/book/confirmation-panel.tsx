@@ -1,14 +1,36 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 
 export const ConfirmationPanel = ({ name }: { name: string }) => {
   const firstName = name.split(' ')[0] ?? name;
+  const panelRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  // The panel replaces the much taller form, which leaves the viewport near the bottom of the
+  // page (on mobile, below the panel). Bring the whole panel into view and move focus to its
+  // heading so screen readers announce the confirmation.
+  useEffect(() => {
+    headingRef.current?.focus({ preventScroll: true });
+    panelRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }, []);
 
   return (
-    <div className="rounded-card border border-border bg-sun px-8 py-14 text-center">
+    <div
+      ref={panelRef}
+      className="scroll-mt-6 rounded-card border border-border bg-sun px-8 py-14 text-center md:scroll-mt-24"
+    >
       <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
         Request sent
       </p>
-      <h2 className="mb-4 text-2xl font-semibold text-ink">You&apos;re all set, {firstName}.</h2>
+      <h2
+        ref={headingRef}
+        tabIndex={-1}
+        className="mb-4 text-2xl font-semibold text-ink focus:outline-none"
+      >
+        You&apos;re all set, {firstName}.
+      </h2>
       <p className="mx-auto mb-10 max-w-sm text-base leading-relaxed text-ink-muted">
         I&apos;ve got your request. I&apos;ll be in touch to confirm the date and go over any
         details.
