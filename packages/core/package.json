@@ -5,7 +5,9 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./pricing": "./src/pricing.ts"
+    "./pricing": "./src/pricing.ts",
+    "./referrals": "./src/referrals.ts",
+    "./vouchers": "./src/vouchers.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit --incremental false",
