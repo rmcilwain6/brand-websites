@@ -22,10 +22,9 @@ export const REFERRAL: { discount: VoucherDiscount; expiresOn: string } = {
 export const referralExpiresAt = (): Date => new Date(`${REFERRAL.expiresOn}T23:59:59.999Z`);
 
 export const HEARD_FROM_OPTIONS = [
-  { value: 'tagged-post', label: 'Tagged in a post' },
-  { value: 'friend', label: 'A friend' },
+  { value: 'friends-family', label: 'Friends/family' },
   { value: 'instagram', label: 'Instagram' },
-  { value: 'website', label: 'The website' },
+  { value: 'search', label: 'Internet search' },
   { value: 'other', label: 'Other' }
 ] as const;
 

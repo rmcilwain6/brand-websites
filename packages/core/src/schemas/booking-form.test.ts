@@ -21,7 +21,7 @@ describe('BookingFormSchema', () => {
       referrerName: 'Sam Patel',
       referrerContact: '@sam.makes',
       voucherCode: 'eac-ab2c',
-      heardFrom: 'friend'
+      heardFrom: 'friends-family'
     });
 
     expect(result).toMatchObject({
@@ -29,7 +29,7 @@ describe('BookingFormSchema', () => {
       referrerName: 'Sam Patel',
       referrerContact: '@sam.makes',
       voucherCode: 'eac-ab2c',
-      heardFrom: 'friend'
+      heardFrom: 'friends-family'
     });
   });
 

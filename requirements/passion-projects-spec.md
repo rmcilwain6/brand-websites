@@ -111,7 +111,7 @@ These apply to `/book` (reached from the package builder) and to the landing pag
 | Referrer name                | No       | Prompt along the lines of: "Did someone send you my way?" Inline note: "If you book, the person who sent you gets $25 off a session."                                                                                                    |
 | Referrer contact             | No       | Shown once a referrer name is entered. **Decided:** open text field, store whatever is typed (Instagram handle, email, phone). No parsing or validation.                                                                                 |
 | Voucher code                 | No       | Dedicated field, not the notes field. **Decided:** confirmation copy must not state an amount, since voucher values vary. Something like "Your voucher code will be confirmed by email." **Decided:** the price summary is not adjusted. |
-| How did you hear about this? | No       | Select: tagged in a post, a friend, Instagram, the website, other.                                                                                                                                                                       |
+| How did you hear about this? | No       | Select: friends/family, Instagram, internet search, other.                                                                                                                                                                               |
 
 The $25 in the referrer note is the current referral amount. Keep it in one easy-to-change place rather than scattered through components.
 
