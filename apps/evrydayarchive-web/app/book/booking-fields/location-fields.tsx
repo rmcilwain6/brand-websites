@@ -1,7 +1,5 @@
 'use client';
 
-import type { RefObject } from 'react';
-
 import { LocationPicker } from '../../components/location-picker';
 import type { CoreLocation } from '../../components/location-picker';
 import { FieldError, inputCls } from './field-ui';
@@ -14,17 +12,9 @@ type Props = {
   onSelectChange: (v: LocationSelectValue) => void;
   onOtherChange: (v: string) => void;
   error: string | undefined;
-  otherRef: RefObject<HTMLInputElement>;
 };
 
-export const LocationFields = ({
-  select,
-  other,
-  onSelectChange,
-  onOtherChange,
-  error,
-  otherRef
-}: Props) => (
+export const LocationFields = ({ select, other, onSelectChange, onOtherChange, error }: Props) => (
   <fieldset className="space-y-5">
     <legend className="text-sm font-semibold text-ink">Where are you based?</legend>
     <p className="text-xs leading-relaxed text-ink-faint">
@@ -49,7 +39,6 @@ export const LocationFields = ({
 
       {select === 'Other' && (
         <input
-          ref={otherRef}
           id="location-other"
           type="text"
           placeholder="e.g. Tofino, Whistler, Victoria area…"

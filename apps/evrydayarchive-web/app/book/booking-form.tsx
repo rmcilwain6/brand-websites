@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import type { LocationWindow, TimeSlot } from '@repo/core';
 
@@ -71,11 +71,6 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
 
   const [unavailableDates] = useState(() => buildUnavailableDates(timeSlots));
 
-  const nameRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const phoneRef = useRef<HTMLInputElement>(null);
-  const locationOtherRef = useRef<HTMLInputElement>(null);
-
   const today = new Date().toISOString().split('T')[0] as string;
 
   const { name, email, phone } = contact;
@@ -125,6 +120,23 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
     }
   };
 
+  // Fields in page order, so the first error focused is the one highest on the page.
+  const focusFirstError = (errs: FieldErrors) => {
+    const fieldIds: [keyof FieldErrors, string][] = [
+      ['location', locationSelect === 'Other' ? 'location-other' : 'location-select'],
+      ['date', 'preferred-date'],
+      ['name', 'name'],
+      ['email', 'email'],
+      ['phone', 'phone']
+    ];
+    const first = fieldIds.find(([field]) => errs[field]);
+    const el = first && document.getElementById(first[1]);
+    if (!el) return;
+    // Centre it so the sticky desktop header can't cover it.
+    el.focus({ preventScroll: true });
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  };
+
   // ── Submit ──────────────────────────────────────────────────────────────────
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -134,10 +146,7 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setFieldErrors(errs);
-      if (errs.name) nameRef.current?.focus();
-      else if (errs.email) emailRef.current?.focus();
-      else if (errs.phone) phoneRef.current?.focus();
-      else if (errs.location && locationSelect === 'Other') locationOtherRef.current?.focus();
+      focusFirstError(errs);
       return;
     }
 
@@ -208,7 +217,6 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
               clearError('location');
             }}
             error={fieldErrors.location}
-            otherRef={locationOtherRef}
           />
 
           <DateTimeFields
@@ -232,7 +240,6 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
               clearError(field);
             }}
             errors={fieldErrors}
-            refs={{ name: nameRef, email: emailRef, phone: phoneRef }}
           />
 
           <NotesField value={notes} onChange={setNotes} />

@@ -1,7 +1,5 @@
 'use client';
 
-import type { RefObject } from 'react';
-
 import { FieldError, inputCls } from './field-ui';
 
 export type ContactValues = { name: string; email: string; phone: string };
@@ -11,10 +9,9 @@ type Props = {
   values: ContactValues;
   onChange: (field: ContactField, value: string) => void;
   errors: Partial<Record<ContactField, string>>;
-  refs: Record<ContactField, RefObject<HTMLInputElement>>;
 };
 
-export const ContactFields = ({ values, onChange, errors, refs }: Props) => (
+export const ContactFields = ({ values, onChange, errors }: Props) => (
   <fieldset className="space-y-5">
     <legend className="text-sm font-semibold text-ink">Your details</legend>
 
@@ -27,7 +24,6 @@ export const ContactFields = ({ values, onChange, errors, refs }: Props) => (
         </span>
       </label>
       <input
-        ref={refs.name}
         id="name"
         type="text"
         autoComplete="name"
@@ -50,7 +46,6 @@ export const ContactFields = ({ values, onChange, errors, refs }: Props) => (
         </span>
       </label>
       <input
-        ref={refs.email}
         id="email"
         type="email"
         autoComplete="email"
@@ -70,7 +65,6 @@ export const ContactFields = ({ values, onChange, errors, refs }: Props) => (
         Phone <span className="text-xs font-normal text-ink-faint">(optional)</span>
       </label>
       <input
-        ref={refs.phone}
         id="phone"
         type="tel"
         autoComplete="tel"
