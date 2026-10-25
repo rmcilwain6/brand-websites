@@ -10,6 +10,7 @@ export * from './schemas/package-builder';
 export * from './schemas/public-packages';
 export * from './schemas/review';
 export * from './schemas/schedule';
+export * from './schemas/voucher';
 
 export const newsletterSignupSchema = z.object({
   email: z.string().email(),
