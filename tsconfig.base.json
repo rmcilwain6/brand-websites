@@ -18,6 +18,7 @@
     "paths": {
       "@repo/ui": ["packages/ui/src"],
       "@repo/core": ["packages/core/src"],
+      "@repo/core/*": ["packages/core/src/*"],
       "@repo/db": ["packages/db/src"]
     }
   }

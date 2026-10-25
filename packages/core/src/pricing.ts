@@ -6,6 +6,9 @@ import type { IncrementerConfig, SliderConfig, ToggleConfig } from './schemas/ad
  * Used by the package builder (live price), /book (estimated total + summary lines),
  * and the admin (booking receipt, emails, resend). Pure functions only, so the same
  * rules run on the server and the client.
+ *
+ * Client components should import from '@repo/core/pricing' rather than '@repo/core':
+ * the package root re-exports every Zod schema, which would otherwise ship to the browser.
  */
 
 /** The fields pricing needs. Satisfied by public API modifiers and Prisma rows alike. */
