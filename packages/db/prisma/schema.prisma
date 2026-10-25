@@ -60,6 +60,17 @@ enum BookingRequestStatus {
   CANCELLED
 }
 
+enum VoucherType {
+  REFERRAL
+}
+
+enum VoucherStatus {
+  PENDING
+  ACTIVE
+  REDEEMED
+  VOID
+}
+
 model Gallery {
   id           String             @id @default(cuid())
   slug         String             @unique
@@ -239,24 +250,64 @@ model LocationWindow {
 }
 
 model BookingRequest {
-  id              String               @id @default(cuid())
-  inquiryId       String?              @unique
-  packageId       String?
-  timeSlotId      String?
-  status          BookingRequestStatus @default(PENDING)
-  guestCount      Int?
-  requestedAt     DateTime?
-  notes           String?
-  selectedOptions Json?
-  emailSentAt     DateTime?
-  emailError      String?
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  inquiry         Inquiry?             @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
-  package         Package?             @relation(fields: [packageId], references: [id], onDelete: SetNull)
-  timeSlot        TimeSlot?            @relation(fields: [timeSlotId], references: [id], onDelete: SetNull)
+  id                 String               @id @default(cuid())
+  inquiryId          String?              @unique
+  packageId          String?
+  timeSlotId         String?
+  status             BookingRequestStatus @default(PENDING)
+  guestCount         Int?
+  requestedAt        DateTime?
+  notes              String?
+  selectedOptions    Json?
+  emailSentAt        DateTime?
+  emailError         String?
+  // Referral fields (Passion Projects spec §4.2). Free text as entered by the booker.
+  locationIdeas      String?
+  referrerName       String?
+  referrerContact    String?
+  voucherCodeEntered String?
+  heardFrom          String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  inquiry            Inquiry?             @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+  package            Package?             @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  timeSlot           TimeSlot?            @relation(fields: [timeSlotId], references: [id], onDelete: SetNull)
+  referralVoucher    Voucher?             @relation("VoucherSource")
+  redeemedVouchers   Voucher[]            @relation("VoucherRedeemed")
 
   @@index([packageId])
   @@index([status])
   @@index([timeSlotId])
+}
+
+/// One row per voucher; referrer details live on the row (no separate referrers table).
+model Voucher {
+  id                String          @id @default(cuid())
+  /// EAC-XXXX, see generateVoucherCode in @repo/core.
+  code              String          @unique
+  type              VoucherType     @default(REFERRAL)
+  status            VoucherStatus   @default(PENDING)
+  amountCents       Int
+  referrerName      String?
+  referrerContact   String?
+  /// Defaults to the referrer; edited when a voucher is transferred.
+  holderName        String?
+  holderContact     String?
+  /// The booking that named the referrer. Deleting it deletes the voucher.
+  sourceBookingId   String?         @unique
+  /// The booking the voucher was used on. Deleting it keeps the voucher REDEEMED.
+  redeemedBookingId String?
+  expiresAt         DateTime?
+  activatedAt       DateTime?
+  redeemedAt        DateTime?
+  voidedAt          DateTime?
+  notes             String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  sourceBooking     BookingRequest? @relation("VoucherSource", fields: [sourceBookingId], references: [id], onDelete: Cascade)
+  redeemedBooking   BookingRequest? @relation("VoucherRedeemed", fields: [redeemedBookingId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([type])
+  @@index([redeemedBookingId])
 }
