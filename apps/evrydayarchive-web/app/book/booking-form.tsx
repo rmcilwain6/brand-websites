@@ -16,7 +16,6 @@ import { LocationPicker } from '../components/location-picker';
 import type { CoreLocation } from '../components/location-picker';
 import { DatePicker } from './date-picker';
 import { TimePicker } from './time-picker';
-import { SALE, applyDiscount, isSaleAnnouncementActive, isSaleDate } from '../lib/sale';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -25,8 +24,6 @@ type Props = {
   resolvedModifiers: PublicPackageModifier[];
   modifierValues: Record<string, number>;
   estimatedTotalCents: number | undefined;
-  /** True when the user opted into the Spring Sale in the package builder (sale=1 param). */
-  springSale: boolean;
   timeSlots: TimeSlot[];
   locationWindows: LocationWindow[];
 };
@@ -139,7 +136,6 @@ export const BookingForm = ({
   resolvedModifiers,
   modifierValues,
   estimatedTotalCents,
-  springSale,
   timeSlots,
   locationWindows
 }: Props) => {
@@ -165,16 +161,6 @@ export const BookingForm = ({
   const locationOtherRef = useRef<HTMLInputElement>(null);
 
   const today = new Date().toISOString().split('T')[0] as string;
-
-  // Spring Sale: active whenever the sale is running and a qualifying date is selected.
-  // If the user came from the builder with sale=1 and hasn't picked a date yet, treat as pending
-  // (discount shown) — it clears as soon as they pick a date outside the sale window.
-  const saleAnnouncementActive = isSaleAnnouncementActive();
-  const discountActive =
-    saleAnnouncementActive && ((springSale && !preferredDate) || isSaleDate(preferredDate));
-  const discountedTotalCents =
-    discountActive && estimatedTotalCents != null ? applyDiscount(estimatedTotalCents) : undefined;
-  const effectiveTotalCents = discountedTotalCents ?? estimatedTotalCents;
 
   // ── Derived location value ──────────────────────────────────────────────────
 
@@ -251,10 +237,7 @@ export const BookingForm = ({
       packageName: pkg?.name,
       modifierIds: resolvedModifiers.filter((m) => !m.isRequired).map((m) => m.id),
       modifierValues: Object.keys(modifierValues).length > 0 ? modifierValues : undefined,
-      springSale: springSale || undefined,
-      // Reflects the discounted total when Spring Sale is active so the booking record
-      // shows what the customer was actually quoted.
-      estimatedTotalCents: effectiveTotalCents
+      estimatedTotalCents
     };
 
     try {
@@ -331,34 +314,11 @@ export const BookingForm = ({
               )}
               {estimatedTotalCents != null && (
                 <div className="mt-3 border-t border-border pt-3">
-                  {discountActive && (
-                    <div className="mb-2 flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs tracking-widest text-accent">{SALE.name}</span>
-                        <span className="text-xs text-accent">{SALE.discountLabel}</span>
-                      </div>
-                      <span className="flex-none text-xs tabular-nums text-accent">
-                        −{formatPrice(estimatedTotalCents - applyDiscount(estimatedTotalCents))}
-                      </span>
-                    </div>
-                  )}
-                  {saleAnnouncementActive && preferredDate && !discountActive && (
-                    <p className="mb-2 text-xs text-ink-faint">
-                      Spring Sale applies to sessions before June 4th.
-                    </p>
-                  )}
                   <div className="flex items-baseline justify-between">
                     <span className="text-xs text-ink-faint">Estimated total</span>
-                    <div className="flex items-baseline gap-2">
-                      {discountedTotalCents != null && (
-                        <span className="text-xs tabular-nums text-ink-faint line-through">
-                          {formatPrice(estimatedTotalCents)}
-                        </span>
-                      )}
-                      <span className="text-sm font-semibold text-ink">
-                        {formatPrice(effectiveTotalCents ?? estimatedTotalCents)}
-                      </span>
-                    </div>
+                    <span className="text-sm font-semibold text-ink">
+                      {formatPrice(estimatedTotalCents)}
+                    </span>
                   </div>
                 </div>
               )}
@@ -444,11 +404,6 @@ export const BookingForm = ({
                   placeholder="Choose a date"
                   hasError={!!fieldErrors.date}
                   aria-describedby={fieldErrors.date ? 'date-error' : undefined}
-                  saleDateRange={
-                    saleAnnouncementActive
-                      ? { start: SALE.discountStartDate, end: SALE.discountEndDate }
-                      : undefined
-                  }
                 />
                 <FieldError id="date-error" message={fieldErrors.date} />
               </div>
@@ -591,8 +546,6 @@ export const BookingForm = ({
             resolvedModifiers={resolvedModifiers}
             modifierValues={modifierValues}
             estimatedTotalCents={estimatedTotalCents}
-            discountActive={discountActive}
-            hasDate={!!preferredDate}
           />
           <div className="mt-6 px-1">
             <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
@@ -616,22 +569,14 @@ type SummaryPanelProps = {
   resolvedModifiers: PublicPackageModifier[];
   modifierValues: Record<string, number>;
   estimatedTotalCents: number | undefined;
-  discountActive: boolean;
-  hasDate: boolean;
 };
 
 const SummaryPanel = ({
   pkg,
   resolvedModifiers,
   modifierValues,
-  estimatedTotalCents,
-  discountActive,
-  hasDate
+  estimatedTotalCents
 }: SummaryPanelProps) => {
-  const discountedTotal =
-    discountActive && estimatedTotalCents != null ? applyDiscount(estimatedTotalCents) : undefined;
-  const effectiveTotal = discountedTotal ?? estimatedTotalCents;
-
   return (
     <div className="rounded-card border border-border bg-sun px-5 py-6">
       <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
@@ -678,37 +623,12 @@ const SummaryPanel = ({
       )}
 
       {estimatedTotalCents != null && (
-        <div className="mt-4 space-y-2 border-t border-border pt-4">
-          {discountActive && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-accent/80">
-                  {SALE.name}
-                </span>
-                <span className="text-xs text-accent">{SALE.discountLabel}</span>
-              </div>
-              <span className="flex-none text-xs tabular-nums text-accent">
-                −{formatPrice(estimatedTotalCents - applyDiscount(estimatedTotalCents))}
-              </span>
-            </div>
-          )}
-          {isSaleAnnouncementActive() && hasDate && !discountActive && (
-            <p className="text-xs text-ink-faint">
-              Spring Sale applies to sessions before June 4th.
-            </p>
-          )}
+        <div className="mt-4 border-t border-border pt-4">
           <div className="flex items-baseline justify-between">
             <span className="text-xs text-ink-faint">Estimated total</span>
-            <div className="flex items-baseline gap-2">
-              {discountedTotal != null && (
-                <span className="text-xs tabular-nums text-ink-faint line-through">
-                  {formatPrice(estimatedTotalCents)}
-                </span>
-              )}
-              <span className="text-sm font-semibold text-ink">
-                {formatPrice(effectiveTotal ?? estimatedTotalCents)}
-              </span>
-            </div>
+            <span className="text-sm font-semibold text-ink">
+              {formatPrice(estimatedTotalCents)}
+            </span>
           </div>
         </div>
       )}

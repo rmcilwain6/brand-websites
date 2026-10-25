@@ -34,8 +34,6 @@ type Props = {
   placeholder?: string;
   hasError?: boolean;
   'aria-describedby'?: string;
-  /** When set, days within this range (inclusive, YYYY-MM-DD) are highlighted with a sale tint. */
-  saleDateRange?: { start: string; end: string };
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -60,8 +58,7 @@ export const DatePicker = ({
   locationWindows,
   placeholder = 'Select a date',
   hasError = false,
-  'aria-describedby': ariaDescribedby,
-  saleDateRange
+  'aria-describedby': ariaDescribedby
 }: Props) => {
   const today = new Date();
 
@@ -140,18 +137,6 @@ export const DatePicker = ({
 
   const isToday = (day: number) =>
     today.getFullYear() === viewYear && today.getMonth() === viewMonth && today.getDate() === day;
-
-  // True when a specific day in the current view falls within the sale date range
-  const isSaleDay = (day: number) => {
-    if (!saleDateRange) return false;
-    const ymd = toYMD(viewYear, viewMonth, day);
-    return ymd >= saleDateRange.start && ymd <= saleDateRange.end;
-  };
-  // True when any day in the current view month is within the sale range (drives legend)
-  const hasAnySaleDay =
-    !!saleDateRange &&
-    toYMD(viewYear, viewMonth, 1) <= saleDateRange.end &&
-    toYMD(viewYear, viewMonth, daysInMonth) >= saleDateRange.start;
 
   // ── Schedule panel ───────────────────────────────────────────────────────
 
@@ -356,13 +341,9 @@ export const DatePicker = ({
                               ? 'cursor-not-allowed text-ink-faint opacity-30'
                               : unavailable
                                 ? 'cursor-not-allowed bg-red-100 text-red-500 dark:bg-red-950/40 dark:text-red-500'
-                                : isSaleDay(day) && todayCell
-                                  ? 'font-medium bg-accent/10 text-accent ring-1 ring-inset ring-accent/30 hover:bg-accent/20'
-                                  : isSaleDay(day)
-                                    ? 'bg-accent/10 text-accent hover:bg-accent/20'
-                                    : todayCell
-                                      ? 'font-medium text-ink ring-1 ring-inset ring-border hover:bg-sun'
-                                      : 'text-ink-muted hover:bg-sun hover:text-ink'
+                                : todayCell
+                                  ? 'font-medium text-ink ring-1 ring-inset ring-border hover:bg-sun'
+                                  : 'text-ink-muted hover:bg-sun hover:text-ink'
                         ].join(' ')}
                       >
                         {day}
@@ -380,14 +361,6 @@ export const DatePicker = ({
                   </span>
                   Unavailable
                 </span>
-                {hasAnySaleDay && (
-                  <span className="flex items-center gap-1.5 text-[10px] text-ink-faint">
-                    <span className="inline-flex h-4 w-4 items-center justify-center rounded bg-accent/10 text-[9px] text-accent">
-                      ✦
-                    </span>
-                    Spring Sale
-                  </span>
-                )}
               </div>
             </div>
           </div>
