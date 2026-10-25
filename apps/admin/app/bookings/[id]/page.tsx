@@ -1,8 +1,8 @@
+import { buildModifierLineItems } from '@repo/core';
 import { prisma } from '@repo/db';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { buildModifierLineItems } from '../../lib/modifiers';
 import BookingActions from './BookingActions';
 
 export const dynamic = 'force-dynamic';
@@ -61,11 +61,10 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
 
   const modifierLineItems =
     booking.package && selectedOptions
-      ? buildModifierLineItems(
-          booking.package.modifiers,
-          selectedOptions.modifierIds ?? [],
-          selectedOptions.modifierValues ?? {}
-        )
+      ? buildModifierLineItems(booking.package.modifiers, {
+          selectedIds: selectedOptions.modifierIds ?? [],
+          values: selectedOptions.modifierValues ?? {}
+        })
       : null;
 
   const emailStatus = booking.emailSentAt

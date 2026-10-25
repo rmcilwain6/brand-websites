@@ -2,14 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import {
+  activeModifiers,
+  estimateTotalCents,
   fetchPublicAvailability,
   fetchPublicSchedule,
   fetchPublicPackages,
-  type IncrementerConfig,
   type LocationWindow,
   type PublicPackage,
   type PublicPackageModifier,
-  type SliderConfig,
   type TimeSlot
 } from '@repo/core';
 
@@ -32,25 +32,6 @@ type Props = {
     modifierValues?: string;
     from?: string;
   }>;
-};
-
-// ── Price helpers ─────────────────────────────────────────────────────────────
-
-const computeModifierDelta = (m: PublicPackageModifier, values: Record<string, number>): number => {
-  if (m.type === 'SLIDER') {
-    const cfg = m.config as SliderConfig | null;
-    if (!cfg) return 0;
-    const value = values[m.id] ?? cfg.defaultValue;
-    const steps = Math.round((value - cfg.defaultValue) / cfg.step);
-    return steps * cfg.pricePerStep;
-  }
-  if (m.type === 'INCREMENTER') {
-    const cfg = m.config as IncrementerConfig | null;
-    if (!cfg) return 0;
-    const count = values[m.id] ?? cfg.defaultValue;
-    return (count - cfg.defaultValue) * cfg.pricePerUnit;
-  }
-  return m.priceDeltaCents ?? 0;
 };
 
 export default async function BookPage({ searchParams }: Props) {
@@ -102,32 +83,13 @@ export default async function BookPage({ searchParams }: Props) {
     }
   }
 
-  // Resolved modifiers for display: required, explicitly selected, or slider/incrementer
-  // with a non-zero delta (i.e. moved off their default).
+  // Modifiers that affect this booking: required, selected, or moved off their default.
+  const selection = { selectedIds: selectedModifierIds, values: modifierValues };
   const resolvedModifiers: PublicPackageModifier[] = pkg
-    ? pkg.modifiers.filter((m) => {
-        if (m.isRequired) return true;
-        if (selectedModifierIds.includes(m.id)) return true;
-        if (m.type === 'SLIDER' || m.type === 'INCREMENTER') {
-          return computeModifierDelta(m, modifierValues) !== 0;
-        }
-        return false;
-      })
+    ? activeModifiers(pkg.modifiers, selection)
     : [];
-
-  // Total: base + correct delta for every modifier type
   const estimatedTotalCents =
-    pkg != null
-      ? (pkg.basePriceCents ?? 0) +
-        pkg.modifiers.reduce((sum, m) => {
-          if (m.isRequired) return sum + computeModifierDelta(m, modifierValues);
-          if (selectedModifierIds.includes(m.id))
-            return sum + computeModifierDelta(m, modifierValues);
-          if (m.type === 'SLIDER' || m.type === 'INCREMENTER')
-            return sum + computeModifierDelta(m, modifierValues);
-          return sum;
-        }, 0)
-      : undefined;
+    pkg != null ? estimateTotalCents(pkg.basePriceCents, pkg.modifiers, selection) : undefined;
 
   const backHref =
     from === 'packages' || !pkg ? '/packages' : `/package-builder?package=${pkg.slug}`;

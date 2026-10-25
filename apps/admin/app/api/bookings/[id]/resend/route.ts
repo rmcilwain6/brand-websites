@@ -1,9 +1,8 @@
-import { createApiError, jsonError, jsonOk } from '@repo/core';
+import { buildModifierLineItems, createApiError, jsonError, jsonOk } from '@repo/core';
 import { prisma } from '@repo/db';
 
 import { requireAdminSession } from '../../../../lib/auth';
 import { sendBookingConfirmation, sendBookingNotification } from '../../../../lib/email';
-import { buildModifierLineItems } from '../../../../lib/modifiers';
 
 type BookingPayload = {
   location?: string;
@@ -45,11 +44,10 @@ export const POST = async (
 
   const modifierLineItems =
     booking.package && selectedOptions
-      ? buildModifierLineItems(
-          booking.package.modifiers,
-          selectedOptions.modifierIds ?? [],
-          selectedOptions.modifierValues ?? {}
-        )
+      ? buildModifierLineItems(booking.package.modifiers, {
+          selectedIds: selectedOptions.modifierIds ?? [],
+          values: selectedOptions.modifierValues ?? {}
+        })
       : undefined;
 
   const emailData = {
