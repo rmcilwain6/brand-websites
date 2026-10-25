@@ -8,6 +8,7 @@ import { ContactFields, type ContactValues } from './booking-fields/contact-fiel
 import { DateTimeFields } from './booking-fields/date-time-fields';
 import { LocationFields, type LocationSelectValue } from './booking-fields/location-fields';
 import { NotesField } from './booking-fields/notes-field';
+import { ReferralFields, type ReferralValues } from './booking-fields/referral-fields';
 import { ConfirmationPanel } from './confirmation-panel';
 import { SelectionSummary, type BookingSelection } from './selection-summary';
 
@@ -61,13 +62,23 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
   const [serverError, setServerError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submittedName, setSubmittedName] = useState('');
+  const [submittedVoucher, setSubmittedVoucher] = useState(false);
 
   const [contact, setContact] = useState<ContactValues>({ name: '', email: '', phone: '' });
   const [locationSelect, setLocationSelect] = useState<LocationSelectValue>('');
   const [locationOther, setLocationOther] = useState('');
+  const [locationIdeas, setLocationIdeas] = useState('');
   const [preferredDate, setPreferredDate] = useState('');
   const [preferredTime, setPreferredTime] = useState('');
   const [notes, setNotes] = useState('');
+  const [referral, setReferral] = useState<ReferralValues>({
+    heardFrom: '',
+    referrerName: '',
+    referrerContact: '',
+    voucherCode: ''
+  });
+  // Honeypot: hidden from people; only bots fill it in. The admin API drops those requests.
+  const [website, setWebsite] = useState('');
 
   const [unavailableDates] = useState(() => buildUnavailableDates(timeSlots));
 
@@ -153,6 +164,8 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
     setStatus('submitting');
 
     const modifierValues = selection?.modifierValues ?? {};
+    const referrerName = referral.referrerName.trim();
+    const voucherCode = referral.voucherCode.trim();
     const payload = {
       name,
       email,
@@ -161,6 +174,13 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
       preferredDate,
       preferredTime: preferredTime || undefined,
       notes: notes || undefined,
+      locationIdeas: locationIdeas.trim() || undefined,
+      heardFrom: referral.heardFrom || undefined,
+      referrerName: referrerName || undefined,
+      // The contact field is only shown with a name, so drop a contact left behind by a cleared name.
+      referrerContact: (referrerName && referral.referrerContact.trim()) || undefined,
+      voucherCode: voucherCode || undefined,
+      website: website || undefined,
       packageId: selection?.pkg.id,
       packageName: selection?.pkg.name,
       modifierIds: (selection?.modifiers ?? []).filter((m) => !m.isRequired).map((m) => m.id),
@@ -184,6 +204,7 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
       }
 
       setSubmittedName(name);
+      setSubmittedVoucher(!!voucherCode);
       setStatus('success');
     } catch {
       setServerError('Unable to reach the server. Please check your connection and try again.');
@@ -192,7 +213,7 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
   };
 
   if (status === 'success') {
-    return <ConfirmationPanel name={submittedName} />;
+    return <ConfirmationPanel name={submittedName} voucherEntered={submittedVoucher} />;
   }
 
   return (
@@ -217,6 +238,8 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
               clearError('location');
             }}
             error={fieldErrors.location}
+            ideas={locationIdeas}
+            onIdeasChange={setLocationIdeas}
           />
 
           <DateTimeFields
@@ -242,7 +265,26 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
             errors={fieldErrors}
           />
 
+          <ReferralFields
+            values={referral}
+            onChange={(field, value) => setReferral((prev) => ({ ...prev, [field]: value }))}
+          />
+
           <NotesField value={notes} onChange={setNotes} />
+
+          {/* Honeypot — off-screen and skipped by keyboard and screen readers. */}
+          <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              name="website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </div>
 
           {/* Server error */}
           {status === 'error' && (

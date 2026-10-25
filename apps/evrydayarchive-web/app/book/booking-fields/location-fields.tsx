@@ -12,9 +12,20 @@ type Props = {
   onSelectChange: (v: LocationSelectValue) => void;
   onOtherChange: (v: string) => void;
   error: string | undefined;
+  /** Optional "Anywhere in mind?" spot ideas, shown under the city. */
+  ideas: string;
+  onIdeasChange: (v: string) => void;
 };
 
-export const LocationFields = ({ select, other, onSelectChange, onOtherChange, error }: Props) => (
+export const LocationFields = ({
+  select,
+  other,
+  onSelectChange,
+  onOtherChange,
+  error,
+  ideas,
+  onIdeasChange
+}: Props) => (
   <fieldset className="space-y-5">
     <legend className="text-sm font-semibold text-ink">Where are you based?</legend>
     <p className="text-xs leading-relaxed text-ink-faint">
@@ -52,6 +63,21 @@ export const LocationFields = ({ select, other, onSelectChange, onOtherChange, e
       )}
 
       <FieldError id="location-error" message={error} />
+    </div>
+
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor="location-ideas" className="text-sm font-medium text-ink-muted">
+        Anywhere in mind? <span className="text-xs font-normal text-ink-faint">(optional)</span>
+      </label>
+      <input
+        id="location-ideas"
+        type="text"
+        maxLength={500}
+        placeholder="A market, your studio, a park, your home…"
+        value={ideas}
+        onChange={(e) => onIdeasChange(e.target.value)}
+        className={inputCls()}
+      />
     </div>
   </fieldset>
 );
