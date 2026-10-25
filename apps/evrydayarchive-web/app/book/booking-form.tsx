@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 
-import type {
-  IncrementerConfig,
-  LocationWindow,
-  PublicPackage,
-  PublicPackageModifier,
-  SliderConfig,
-  TimeSlot
+import {
+  modifierDeltaCents,
+  modifierDisplayValue,
+  type LocationWindow,
+  type PublicPackage,
+  type PublicPackageModifier,
+  type TimeSlot
 } from '@repo/core';
 
 import { LocationPicker } from '../components/location-picker';
@@ -26,43 +26,6 @@ type Props = {
   estimatedTotalCents: number | undefined;
   timeSlots: TimeSlot[];
   locationWindows: LocationWindow[];
-};
-
-const modifierDisplayValue = (
-  m: PublicPackageModifier,
-  values: Record<string, number>
-): string | null => {
-  if (m.type === 'SLIDER') {
-    const cfg = m.config as SliderConfig | null;
-    if (!cfg) return null;
-    return `${values[m.id] ?? cfg.defaultValue}${cfg.unit}`;
-  }
-  if (m.type === 'INCREMENTER') {
-    const cfg = m.config as IncrementerConfig | null;
-    if (!cfg) return null;
-    const v = values[m.id] ?? cfg.defaultValue;
-    return `${v}${cfg.unit ? ` ${cfg.unit}` : ''}`;
-  }
-  return null;
-};
-
-// Computes the price delta for a single modifier given current slider/incrementer values.
-// Mirrors the same helper in book/page.tsx (used server-side for the estimated total).
-const computeModifierDelta = (m: PublicPackageModifier, values: Record<string, number>): number => {
-  if (m.type === 'SLIDER') {
-    const cfg = m.config as SliderConfig | null;
-    if (!cfg) return 0;
-    const value = values[m.id] ?? cfg.defaultValue;
-    const steps = Math.round((value - cfg.defaultValue) / cfg.step);
-    return steps * cfg.pricePerStep;
-  }
-  if (m.type === 'INCREMENTER') {
-    const cfg = m.config as IncrementerConfig | null;
-    if (!cfg) return 0;
-    const count = values[m.id] ?? cfg.defaultValue;
-    return (count - cfg.defaultValue) * cfg.pricePerUnit;
-  }
-  return m.priceDeltaCents ?? 0;
 };
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
@@ -289,7 +252,7 @@ export const BookingForm = ({
                 <ul className="mt-2 space-y-1">
                   {resolvedModifiers.map((m) => {
                     const displayVal = modifierDisplayValue(m, modifierValues);
-                    const delta = computeModifierDelta(m, modifierValues);
+                    const delta = modifierDeltaCents(m, modifierValues);
                     return (
                       <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
                         <span className="text-ink-muted">
@@ -598,7 +561,7 @@ const SummaryPanel = ({
         <ul className="mt-4 space-y-2 border-t border-border pt-4">
           {resolvedModifiers.map((m) => {
             const displayVal = modifierDisplayValue(m, modifierValues);
-            const delta = computeModifierDelta(m, modifierValues);
+            const delta = modifierDeltaCents(m, modifierValues);
             return (
               <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
                 <span className="text-ink-muted">

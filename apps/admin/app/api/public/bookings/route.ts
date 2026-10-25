@@ -1,9 +1,14 @@
-import { BookingFormSchema, jsonError, jsonOk, parseJson } from '@repo/core';
+import {
+  BookingFormSchema,
+  buildModifierLineItems,
+  jsonError,
+  jsonOk,
+  parseJson,
+  type ModifierLineItem
+} from '@repo/core';
 import { prisma } from '@repo/db';
 
 import { sendBookingConfirmation, sendBookingNotification } from '../../../lib/email';
-import { buildModifierLineItems } from '../../../lib/modifiers';
-import type { ModifierLineItem } from '../../../lib/email';
 
 // TODO: Rate limiting — add per-IP limits when infrastructure supports it.
 
@@ -92,11 +97,10 @@ export const POST = async (req: Request): Promise<Response> => {
       .catch(() => null);
 
     if (pkgRecord) {
-      modifierLineItems = buildModifierLineItems(
-        pkgRecord.modifiers,
-        modifierIds ?? [],
-        modifierValues ?? {}
-      );
+      modifierLineItems = buildModifierLineItems(pkgRecord.modifiers, {
+        selectedIds: modifierIds ?? [],
+        values: modifierValues ?? {}
+      });
     }
   }
 

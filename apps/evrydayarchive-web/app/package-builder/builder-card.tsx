@@ -3,14 +3,18 @@
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 
-import type {
-  IncrementerConfig,
-  ModifierType,
-  PublicModifierConfig,
-  PublicPackage,
-  PublicPackageModifier,
-  SliderConfig,
-  ToggleConfig
+import {
+  activeModifierDeltaCents,
+  estimateTotalCents,
+  type IncrementerConfig,
+  type ModifierSelection,
+  type ModifierType,
+  type PricedModifier,
+  type PublicModifierConfig,
+  type PublicPackage,
+  type PublicPackageModifier,
+  type SliderConfig,
+  type ToggleConfig
 } from '@repo/core';
 
 // ── Control type definitions ────────────────────────────────────────────────
@@ -49,27 +53,38 @@ const formatDelta = (cents: number): string => {
   return `${sign}${formatPrice(Math.abs(cents))}`;
 };
 
-const itemPriceDelta = (item: BuilderItem): number => {
-  const { control, priceDeltaCents, config } = item;
+// Pricing rules live in @repo/core; these adapt builder control state to them.
 
-  if (item.isRequired) return priceDeltaCents ?? 0;
+const toPricedModifier = (item: BuilderItem): PricedModifier => ({
+  id: item.id,
+  name: item.name,
+  type: item.modifierType,
+  isRequired: item.isRequired,
+  priceDeltaCents: item.priceDeltaCents,
+  config: item.config
+});
 
-  switch (control.type) {
-    case 'checkbox':
-      return control.checked ? (priceDeltaCents ?? 0) : 0;
-    case 'toggle':
-      return control.altSelected ? (priceDeltaCents ?? 0) : 0;
-    case 'slider': {
-      const cfg = config as SliderConfig;
-      const steps = Math.round((control.value - cfg.defaultValue) / cfg.step);
-      return steps * cfg.pricePerStep;
+// Checked checkboxes and alt-selected toggles are "selected"; sliders and
+// incrementers report their values. Same shape /book receives in the URL.
+const toSelection = (items: BuilderItem[]): ModifierSelection => {
+  const selectedIds: string[] = [];
+  const values: Record<string, number> = {};
+  for (const item of items) {
+    const { control } = item;
+    if (control.type === 'checkbox' && control.checked && !item.isRequired) {
+      selectedIds.push(item.id);
     }
-    case 'incrementer': {
-      const cfg = config as IncrementerConfig;
-      return (control.count - cfg.defaultValue) * cfg.pricePerUnit;
+    if (control.type === 'toggle' && control.altSelected && !item.isRequired) {
+      selectedIds.push(item.id);
     }
+    if (control.type === 'slider') values[item.id] = control.value;
+    if (control.type === 'incrementer') values[item.id] = control.count;
   }
+  return { selectedIds, values };
 };
+
+const itemPriceDelta = (item: BuilderItem): number =>
+  activeModifierDeltaCents(toPricedModifier(item), toSelection([item]));
 
 // ── Cross-modifier constraints ────────────────────────────────────────────────
 // If any "location" modifier is active, the first time-unit SLIDER must be >= 90 min.
@@ -160,42 +175,29 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
     });
   }, []);
 
+  const selection = useMemo(() => toSelection(items), [items]);
+
   const total = useMemo(
-    () => (pkg.basePriceCents ?? 0) + items.reduce((sum, item) => sum + itemPriceDelta(item), 0),
-    [items, pkg.basePriceCents]
+    () => estimateTotalCents(pkg.basePriceCents, items.map(toPricedModifier), selection),
+    [items, selection, pkg.basePriceCents]
   );
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams({ package: pkg.slug });
+    const { selectedIds, values } = selection;
 
-    const selectedIds = items
-      .filter((item) => {
-        if (item.isRequired) return false;
-        const { control } = item;
-        if (control.type === 'checkbox') return control.checked;
-        if (control.type === 'toggle') return control.altSelected;
-        return false;
-      })
-      .map((item) => item.id);
     if (selectedIds.length > 0) params.set('modifiers', selectedIds.join(','));
-
-    const modifierValues: Record<string, number> = {};
-    for (const item of items) {
-      const { control } = item;
-      if (control.type === 'slider') modifierValues[item.id] = control.value;
-      if (control.type === 'incrementer') modifierValues[item.id] = control.count;
-    }
-    if (Object.keys(modifierValues).length > 0) {
+    if (Object.keys(values).length > 0) {
       params.set(
         'modifierValues',
-        Object.entries(modifierValues)
+        Object.entries(values)
           .map(([id, val]) => `${id}:${val}`)
           .join(',')
       );
     }
 
     return `?${params.toString()}`;
-  }, [items, pkg.slug]);
+  }, [selection, pkg.slug]);
 
   return (
     <div className="mx-auto w-full max-w-3xl">

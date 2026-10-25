@@ -1,7 +1,7 @@
 import { Link, Text } from '@react-email/components';
 import * as React from 'react';
 
-import type { ModifierLineItem } from '../app/lib/email';
+import type { ModifierLineItem } from '@repo/core';
 import { EmailLayout, tokens } from './layout';
 
 type Props = {

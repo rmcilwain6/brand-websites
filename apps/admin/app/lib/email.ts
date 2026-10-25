@@ -1,4 +1,5 @@
 import { render } from '@react-email/render';
+import type { ModifierLineItem } from '@repo/core';
 import { Resend } from 'resend';
 
 import { BookingConfirmation } from '../../emails/booking-confirmation';
@@ -14,12 +15,6 @@ const getResend = () => {
     resend = new Resend(getEmailEnv().RESEND_API_KEY);
   }
   return resend;
-};
-
-export type ModifierLineItem = {
-  name: string;
-  displayValue?: string;
-  priceDeltaCents: number | null;
 };
 
 type BookingEmailData = {
