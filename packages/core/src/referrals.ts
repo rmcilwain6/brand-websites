@@ -4,7 +4,7 @@ import type { VoucherDiscount } from './vouchers';
  * Referrals — the single source for the referral reward and the "how did you hear" options.
  *
  * `REFERRAL.discount` is stamped onto each new referral voucher and drives the
- * "$25 off" copy on /book. Change it here, not in components or email templates —
+ * "$15 off" copy on /book. Change it here, not in components or email templates —
  * it can be a fixed amount or a percentage. Vouchers already issued keep the
  * discount they were created with.
  *
@@ -13,7 +13,7 @@ import type { VoucherDiscount } from './vouchers';
  */
 
 export const REFERRAL: { discount: VoucherDiscount; expiresOn: string } = {
-  discount: { discountType: 'FIXED_AMOUNT', amountCents: 2500 },
+  discount: { discountType: 'FIXED_AMOUNT', amountCents: 1500 },
   /** Referral vouchers are valid through the end of this day. */
   expiresOn: '2027-12-31'
 };

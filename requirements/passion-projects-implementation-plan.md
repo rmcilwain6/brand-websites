@@ -91,7 +91,7 @@ These are permanent, site-wide features (the spec: "Referrals are a permanent si
   - `BookingRequest`: `locationIdeas`, `referrerName`, `referrerContact`, `voucherCodeEntered`, `heardFrom` (`String?` columns).
   - `Voucher` model: `code` (unique, `EAC-XXXX`), `type` (`VoucherType` enum, `REFERRAL` only for now), `amountCents`, `status` (`PENDING`/`ACTIVE`/`REDEEMED`/`VOID`), `activatedAt`/`redeemedAt`/`voidedAt`, `expiresAt`, `referrerName`/`referrerContact`, `holderName`/`holderContact`, `sourceBookingId` (unique → BookingRequest, **`onDelete: Cascade`**), `redeemedBookingId` (→ BookingRequest, `SetNull`), `notes`, timestamps.
 - `packages/core`:
-  - `referrals.ts`: `REFERRAL = { amountCents: 2500, expiresAt: '2027-12-31' }`, the single source for the "$25" UI copy and the amount stamped on new vouchers. Also `HEARD_FROM_OPTIONS`.
+  - `referrals.ts`: `REFERRAL = { amountCents: 1500, expiresAt: '2027-12-31' }`, the single source for the "$15" UI copy and the amount stamped on new vouchers. Also `HEARD_FROM_OPTIONS`.
   - `vouchers.ts`: `generateVoucherCode()` (alphabet without 0/O/1/I/L, `crypto.randomInt`), `normalizeVoucherCode()`.
   - `BookingFormSchema`: the new optional fields plus a honeypot. Voucher admin schemas.
 - Tests: schema validation, code format/alphabet.

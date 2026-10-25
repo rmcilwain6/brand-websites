@@ -108,12 +108,12 @@ These apply to `/book` (reached from the package builder) and to the landing pag
 | Field                        | Required | Notes                                                                                                                                                                                                                                    |
 | ---------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Location ideas               | No       | Sits directly under city. Prompt along the lines of: "Anywhere in mind? A market, your studio, a park, your home."                                                                                                                       |
-| Referrer name                | No       | Prompt along the lines of: "Did someone send you my way?" Inline note: "If you book, the person who sent you gets $25 off a session."                                                                                                    |
+| Referrer name                | No       | Prompt along the lines of: "Did someone send you my way?" Inline note: "If you book, the person who sent you gets $15 off a session."                                                                                                    |
 | Referrer contact             | No       | Shown once a referrer name is entered. **Decided:** open text field, store whatever is typed (Instagram handle, email, phone). No parsing or validation.                                                                                 |
 | Voucher code                 | No       | Dedicated field, not the notes field. **Decided:** confirmation copy must not state an amount, since voucher values vary. Something like "Your voucher code will be confirmed by email." **Decided:** the price summary is not adjusted. |
 | How did you hear about this? | No       | Select: friends/family, Instagram, internet search, other.                                                                                                                                                                               |
 
-The $25 in the referrer note is the current referral amount. Keep it in one easy-to-change place rather than scattered through components.
+The $15 in the referrer note is the current referral amount. Keep it in one easy-to-change place rather than scattered through components.
 
 ### 4.3 Passion Projects fields (shown only when the apply toggle is on)
 
@@ -170,7 +170,7 @@ Each voucher needs:
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | Code                               | **Decided:** format `EAC-XXXX`, 4 random characters. Exclude confusable characters (0/O, 1/I/L). Must be unique.                 |
 | Type                               | e.g. `referral`. Other types are created manually later.                                                                         |
-| Amount                             | **Decided:** stored per voucher, never hardcoded in UI or email copy. Referral vouchers are $25 (2500 cents).                    |
+| Amount                             | **Decided:** stored per voucher, never hardcoded in UI or email copy. Referral vouchers are $15 (1500 cents).                    |
 | Original referrer name and contact | For referral vouchers.                                                                                                           |
 | Current holder name and contact    | Defaults to the referrer. Editable when a voucher is transferred.                                                                |
 | Source booking                     | **Decided:** link to the booking that named the referrer, so every referral voucher traces back to the booking that produced it. |
@@ -268,7 +268,7 @@ Suggested structure (adjust if a different order reads better, and note why):
 1. **Hero.** Image slot plus the campaign line ("I need your help.") and a short version of the core idea.
 2. **What this is.** Who Reed is looking for, with a few specific examples (makers, musicians, market vendors, people building small businesses, other photographers, people who love their work).
 3. **How it works.** Book a session, a conversation while shooting, a story on the site and Instagram, review before it goes live. Features are chosen for variety; everyone who applies gets photographed either way. Reed replies within 24 to 48 hours, usually with a short call.
-4. **Referrals.** If you send someone and they book, you get $25 off a session.
+4. **Referrals.** If you send someone and they book, you get $15 off a session.
 5. **Features.** Section that will list published features. For now an empty state, e.g. "First features coming this winter."
 6. **Apply / book.** The combined form (below).
 
