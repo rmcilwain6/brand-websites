@@ -1,9 +1,6 @@
-import {
-  modifierDeltaCents,
-  modifierDisplayValue,
-  type PublicPackage,
-  type PublicPackageModifier
-} from '@repo/core';
+import type { PublicPackage, PublicPackageModifier } from '@repo/core';
+// Subpath import keeps the core package's Zod schemas out of the client bundle.
+import { modifierDeltaCents, modifierDisplayValue } from '@repo/core/pricing';
 
 import { cn } from '../lib/cn';
 

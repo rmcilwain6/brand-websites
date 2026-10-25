@@ -3,19 +3,22 @@
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 
+import type {
+  IncrementerConfig,
+  ModifierType,
+  PublicModifierConfig,
+  PublicPackage,
+  PublicPackageModifier,
+  SliderConfig,
+  ToggleConfig
+} from '@repo/core';
+// Subpath import keeps the core package's Zod schemas out of the client bundle.
 import {
   activeModifierDeltaCents,
   estimateTotalCents,
-  type IncrementerConfig,
   type ModifierSelection,
-  type ModifierType,
-  type PricedModifier,
-  type PublicModifierConfig,
-  type PublicPackage,
-  type PublicPackageModifier,
-  type SliderConfig,
-  type ToggleConfig
-} from '@repo/core';
+  type PricedModifier
+} from '@repo/core/pricing';
 
 // ── Control type definitions ────────────────────────────────────────────────
 
