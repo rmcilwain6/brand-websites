@@ -118,13 +118,12 @@ BookingConfirmation.PreviewProps = {
   preferredDate: '2026-07-12',
   preferredTime: '10:00',
   packageName: 'Full Day',
-  estimatedTotalCents: 85500,
+  estimatedTotalCents: 96000,
   notes: 'Looking for a mix of candid and a few posed shots in the park.',
   modifierLineItems: [
     { name: 'Session length', displayValue: '4 hr', priceDeltaCents: null },
     { name: 'Studio backdrop', priceDeltaCents: 7500 },
-    { name: 'Rush editing', displayValue: 'Rush (7 days)', priceDeltaCents: 15000 },
-    { name: 'Spring Sale (10% off)', priceDeltaCents: -10500 }
+    { name: 'Rush editing', displayValue: 'Rush (7 days)', priceDeltaCents: 15000 }
   ]
 } satisfies Props;
 

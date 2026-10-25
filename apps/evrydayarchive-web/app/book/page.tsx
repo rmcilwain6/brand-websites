@@ -14,7 +14,6 @@ import {
 } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
-import { isSaleAnnouncementActive, isSaleAutoOptIn } from '../lib/sale';
 import { BookingForm } from './booking-form';
 
 export const metadata: Metadata = {
@@ -32,7 +31,6 @@ type Props = {
     modifiers?: string;
     modifierValues?: string;
     from?: string;
-    sale?: string;
   }>;
 };
 
@@ -60,8 +58,7 @@ export default async function BookPage({ searchParams }: Props) {
     package: packageSlug,
     modifiers: modifiersParam,
     modifierValues: modifierValuesParam,
-    from,
-    sale
+    from
   } = await searchParams;
   const { ADMIN_API_BASE_URL } = getServerEnv();
 
@@ -132,10 +129,6 @@ export default async function BookPage({ searchParams }: Props) {
         }, 0)
       : undefined;
 
-  // Spring Sale: opt-in via the package builder (sale=1 param), or auto-enabled during
-  // April–June 4th. Date validation (sessions must be before June 4th) happens client-side in BookingForm.
-  const springSale = (sale === '1' || isSaleAutoOptIn()) && isSaleAnnouncementActive();
-
   const backHref =
     from === 'packages' || !pkg ? '/packages' : `/package-builder?package=${pkg.slug}`;
   const backLabel = from === 'packages' || !pkg ? '← Back to packages' : '← Back to builder';
@@ -174,7 +167,6 @@ export default async function BookPage({ searchParams }: Props) {
             resolvedModifiers={resolvedModifiers}
             modifierValues={modifierValues}
             estimatedTotalCents={estimatedTotalCents}
-            springSale={springSale}
             timeSlots={timeSlots}
             locationWindows={locationWindows}
           />

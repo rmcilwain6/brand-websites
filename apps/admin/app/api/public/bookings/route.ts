@@ -26,7 +26,6 @@ export const POST = async (req: Request): Promise<Response> => {
     packageName,
     modifierIds,
     modifierValues,
-    springSale,
     estimatedTotalCents
   } = result.data;
 
@@ -77,7 +76,6 @@ export const POST = async (req: Request): Promise<Response> => {
       .findUnique({
         where: { id: packageId },
         select: {
-          basePriceCents: true,
           modifiers: {
             select: {
               id: true,
@@ -99,19 +97,6 @@ export const POST = async (req: Request): Promise<Response> => {
         modifierIds ?? [],
         modifierValues ?? {}
       );
-
-      if (springSale && estimatedTotalCents != null) {
-        const preSaleTotal =
-          (pkgRecord.basePriceCents ?? 0) +
-          modifierLineItems.reduce((sum, item) => sum + (item.priceDeltaCents ?? 0), 0);
-        const discountCents = preSaleTotal - estimatedTotalCents;
-        if (discountCents > 0) {
-          modifierLineItems.push({
-            name: 'Spring Sale (10% off)',
-            priceDeltaCents: -discountCents
-          });
-        }
-      }
     }
   }
 

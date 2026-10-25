@@ -23,7 +23,11 @@ const nextConfig = {
     return config;
   },
   async redirects() {
-    return [{ source: '/inquire', destination: '/packages', permanent: false }];
+    return [
+      { source: '/inquire', destination: '/packages', permanent: false },
+      // Spring Sale (Meta ad landing page) ended June 2026; keep old ad/story links working.
+      { source: '/spring-sale', destination: '/packages', permanent: true }
+    ];
   },
   images: {
     loader: 'custom',

@@ -15,7 +15,6 @@ export const BookingFormSchema = z.object({
   packageName: z.string().optional(),
   modifierIds: z.array(z.string()).default([]),
   modifierValues: z.record(z.number()).optional(),
-  springSale: z.boolean().optional(),
   estimatedTotalCents: z.number().int().nonnegative().optional()
 });
 
