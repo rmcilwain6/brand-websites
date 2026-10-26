@@ -85,8 +85,10 @@ export const BookingStep = ({
   return (
     <section
       className={cn(
-        'rounded-frame border border-border transition-shadow duration-standard',
-        open ? 'bg-surface shadow-warm' : 'bg-transparent'
+        'rounded-frame border transition-colors duration-standard',
+        // The open step matches the "Your selection" card, with an accent outline. The ring
+        // thickens the border without changing its width, so nothing shifts when steps open.
+        open ? 'border-accent bg-sun ring-1 ring-accent' : 'border-border bg-transparent'
       )}
     >
       <h2 id={stepHeadingId(index)} tabIndex={-1} className="scroll-mt-24 outline-none">

@@ -12,70 +12,72 @@ type Props = {
 };
 
 export const ContactFields = ({ values, onChange, errors }: Props) => (
-  <fieldset className="space-y-5">
+  // Spacing lives on an inner wrapper so the visually hidden legend doesn't add a gap on top.
+  <fieldset>
     <legend className="sr-only">Your details</legend>
+    <div className="space-y-5">
+      {/* Name */}
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="name" className="text-sm font-medium text-ink-muted">
+          Full name{' '}
+          <span className="text-accent" aria-hidden="true">
+            *
+          </span>
+        </label>
+        <input
+          id="name"
+          type="text"
+          autoComplete="name"
+          placeholder="Jane Smith"
+          value={values.name}
+          onChange={(e) => onChange('name', e.target.value)}
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? 'name-error' : undefined}
+          className={inputCls(!!errors.name)}
+        />
+        <FieldError id="name-error" message={errors.name} />
+      </div>
 
-    {/* Name */}
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor="name" className="text-sm font-medium text-ink-muted">
-        Full name{' '}
-        <span className="text-accent" aria-hidden="true">
-          *
-        </span>
-      </label>
-      <input
-        id="name"
-        type="text"
-        autoComplete="name"
-        placeholder="Jane Smith"
-        value={values.name}
-        onChange={(e) => onChange('name', e.target.value)}
-        aria-invalid={!!errors.name}
-        aria-describedby={errors.name ? 'name-error' : undefined}
-        className={inputCls(!!errors.name)}
-      />
-      <FieldError id="name-error" message={errors.name} />
-    </div>
+      {/* Email */}
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="email" className="text-sm font-medium text-ink-muted">
+          Email{' '}
+          <span className="text-accent" aria-hidden="true">
+            *
+          </span>
+        </label>
+        <input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={values.email}
+          onChange={(e) => onChange('email', e.target.value)}
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? 'email-error' : undefined}
+          className={inputCls(!!errors.email)}
+        />
+        <FieldError id="email-error" message={errors.email} />
+      </div>
 
-    {/* Email */}
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor="email" className="text-sm font-medium text-ink-muted">
-        Email{' '}
-        <span className="text-accent" aria-hidden="true">
-          *
-        </span>
-      </label>
-      <input
-        id="email"
-        type="email"
-        autoComplete="email"
-        placeholder="you@example.com"
-        value={values.email}
-        onChange={(e) => onChange('email', e.target.value)}
-        aria-invalid={!!errors.email}
-        aria-describedby={errors.email ? 'email-error' : undefined}
-        className={inputCls(!!errors.email)}
-      />
-      <FieldError id="email-error" message={errors.email} />
-    </div>
-
-    {/* Phone */}
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor="phone" className="text-sm font-medium text-ink-muted">
-        Phone <span className="text-xs font-normal text-ink-faint">(optional)</span>
-      </label>
-      <input
-        id="phone"
-        type="tel"
-        autoComplete="tel"
-        placeholder="+1 (613) 555-0100"
-        value={values.phone}
-        onChange={(e) => onChange('phone', e.target.value)}
-        aria-invalid={!!errors.phone}
-        aria-describedby={errors.phone ? 'phone-error' : undefined}
-        className={inputCls(!!errors.phone)}
-      />
-      <FieldError id="phone-error" message={errors.phone} />
+      {/* Phone */}
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="phone" className="text-sm font-medium text-ink-muted">
+          Phone <span className="text-xs font-normal text-ink-faint">(optional)</span>
+        </label>
+        <input
+          id="phone"
+          type="tel"
+          autoComplete="tel"
+          placeholder="+1 (613) 555-0100"
+          value={values.phone}
+          onChange={(e) => onChange('phone', e.target.value)}
+          aria-invalid={!!errors.phone}
+          aria-describedby={errors.phone ? 'phone-error' : undefined}
+          className={inputCls(!!errors.phone)}
+        />
+        <FieldError id="phone-error" message={errors.phone} />
+      </div>
     </div>
   </fieldset>
 );
