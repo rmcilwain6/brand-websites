@@ -41,7 +41,7 @@ export const BookingStep = ({
         aria-hidden="true"
         className={cn(
           'flex h-8 w-8 flex-none items-center justify-center rounded-full text-sm font-semibold',
-          open && 'bg-ink text-canvas',
+          open && 'border border-ink-muted bg-sun text-ink',
           status === 'done' && 'bg-accent text-white',
           status === 'upcoming' && 'border border-border text-ink-faint'
         )}
@@ -85,10 +85,9 @@ export const BookingStep = ({
   return (
     <section
       className={cn(
-        'rounded-frame border transition-colors duration-standard',
-        // The open step matches the "Your selection" card, with an accent outline. The ring
-        // thickens the border without changing its width, so nothing shifts when steps open.
-        open ? 'border-accent bg-sun ring-1 ring-accent' : 'border-border bg-transparent'
+        'rounded-frame border border-border transition-colors duration-standard',
+        // The open step takes the sand background of the "Your selection" card; the others stay clear.
+        open ? 'bg-sun' : 'bg-transparent'
       )}
     >
       <h2 id={stepHeadingId(index)} tabIndex={-1} className="scroll-mt-24 outline-none">
