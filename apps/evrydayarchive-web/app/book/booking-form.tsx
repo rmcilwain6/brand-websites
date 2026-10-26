@@ -132,7 +132,14 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
 
   const [unavailableDates] = useState(() => buildUnavailableDates(timeSlots));
 
-  const today = new Date().toISOString().split('T')[0] as string;
+  // The visitor's local date. toISOString() would give the UTC date, which in the evening in
+  // BC is already tomorrow, wrongly marking today as past in the date picker.
+  const now = new Date();
+  const today = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0')
+  ].join('-');
 
   const { name, email, phone } = contact;
 

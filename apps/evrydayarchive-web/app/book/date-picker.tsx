@@ -70,6 +70,9 @@ export const DatePicker = ({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const dayRefs = useRef<Record<number, HTMLButtonElement | null>>({});
+  // Set when the tab-stop day should also take DOM focus on the next render (on open, and on
+  // arrow keys), but not when the month changes, so focus stays on the month buttons.
+  const focusDayOnRender = useRef(false);
 
   // ── Close on outside click ──────────────────────────────────────────────
 
@@ -83,33 +86,6 @@ export const DatePicker = ({
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
-
-  // ── Focus management ────────────────────────────────────────────────────
-
-  // When calendar opens, focus the selected day (or today, or first valid day)
-  useEffect(() => {
-    if (!open) return;
-    const selectedDate = value ? parseLocal(value) : null;
-    const inView =
-      selectedDate &&
-      selectedDate.getFullYear() === viewYear &&
-      selectedDate.getMonth() === viewMonth;
-
-    const initial = inView
-      ? selectedDate!.getDate()
-      : viewYear === today.getFullYear() && viewMonth === today.getMonth()
-        ? today.getDate()
-        : 1;
-
-    setFocusedDay(initial);
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Move DOM focus when focusedDay changes
-  useEffect(() => {
-    if (focusedDay !== null && open) {
-      dayRefs.current[focusedDay]?.focus();
-    }
-  }, [focusedDay, open]);
 
   // ── Calendar grid logic ──────────────────────────────────────────────────
 
@@ -138,6 +114,33 @@ export const DatePicker = ({
   const isToday = (day: number) =>
     today.getFullYear() === viewYear && today.getMonth() === viewMonth && today.getDate() === day;
 
+  // ── Keyboard focus ───────────────────────────────────────────────────────
+  // Roving tab stop: exactly one day in the grid is reachable with Tab, and the arrow keys move
+  // it. It must always be a day that can take focus. Disabled (past) days can't, so a stop on
+  // one of them, or on a day number this month doesn't have, would leave no way into the grid.
+
+  const canFocus = (day: number | null): day is number =>
+    day !== null && day >= 1 && day <= daysInMonth && !isDisabled(day);
+
+  const firstEnabledDay = Array.from({ length: daysInMonth }, (_, i) => i + 1).find(
+    (day) => !isDisabled(day)
+  );
+
+  const selectedDay =
+    value && value.startsWith(toYMD(viewYear, viewMonth, 1).slice(0, 8))
+      ? parseLocal(value).getDate()
+      : null;
+  const todayDay = isToday(today.getDate()) ? today.getDate() : null;
+
+  /** The day Tab lands on: the last one moved to, else selected, else today, else the first open day. */
+  const tabStopDay = [focusedDay, selectedDay, todayDay, firstEnabledDay ?? null].find(canFocus);
+
+  useEffect(() => {
+    if (!open || !focusDayOnRender.current || tabStopDay === undefined) return;
+    focusDayOnRender.current = false;
+    dayRefs.current[tabStopDay]?.focus();
+  });
+
   // ── Schedule panel ───────────────────────────────────────────────────────
 
   const showSchedulePanel = !!locationWindows && locationWindows.length > 0;
@@ -160,7 +163,9 @@ export const DatePicker = ({
     setOpen(false);
   };
 
+  // A new month starts from its default tab stop, rather than the day number from the last one.
   const prevMonth = () => {
+    setFocusedDay(null);
     if (viewMonth === 0) {
       setViewYear((y) => y - 1);
       setViewMonth(11);
@@ -170,6 +175,7 @@ export const DatePicker = ({
   };
 
   const nextMonth = () => {
+    setFocusedDay(null);
     if (viewMonth === 11) {
       setViewYear((y) => y + 1);
       setViewMonth(0);
@@ -179,26 +185,27 @@ export const DatePicker = ({
   };
 
   const handleGridKeyDown = (e: React.KeyboardEvent) => {
-    if (focusedDay === null) return;
+    if (tabStopDay === undefined) return;
 
-    let next = focusedDay;
+    const current = tabStopDay;
+    let next = current;
 
     switch (e.key) {
       case 'ArrowRight':
         e.preventDefault();
-        next = Math.min(daysInMonth, focusedDay + 1);
+        next = Math.min(daysInMonth, current + 1);
         break;
       case 'ArrowLeft':
         e.preventDefault();
-        next = Math.max(1, focusedDay - 1);
+        next = Math.max(1, current - 1);
         break;
       case 'ArrowDown':
         e.preventDefault();
-        next = Math.min(daysInMonth, focusedDay + 7);
+        next = Math.min(daysInMonth, current + 7);
         break;
       case 'ArrowUp':
         e.preventDefault();
-        next = Math.max(1, focusedDay - 7);
+        next = Math.max(1, current - 7);
         break;
       case 'Home':
         e.preventDefault();
@@ -216,7 +223,9 @@ export const DatePicker = ({
         return;
     }
 
-    setFocusedDay(next);
+    // Past days are always at the start of the month, so stop at the first open one.
+    setFocusedDay(Math.max(next, firstEnabledDay ?? next));
+    focusDayOnRender.current = true;
   };
 
   // ── Display value ────────────────────────────────────────────────────────
@@ -238,7 +247,13 @@ export const DatePicker = ({
       <button
         id={id}
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          if (!open) {
+            setFocusedDay(null);
+            focusDayOnRender.current = true;
+          }
+          setOpen((o) => !o);
+        }}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-describedby={ariaDescribedby}
@@ -328,7 +343,7 @@ export const DatePicker = ({
                         type="button"
                         disabled={disabled}
                         onClick={() => selectDay(day)}
-                        tabIndex={focusedDay === day ? 0 : -1}
+                        tabIndex={tabStopDay === day ? 0 : -1}
                         aria-label={`${MONTH_NAMES[viewMonth]} ${day}, ${viewYear}${selected ? ' (selected)' : ''}${unavailable ? ' (not available)' : ''}`}
                         aria-pressed={selected}
                         aria-disabled={disabled || unavailable}
