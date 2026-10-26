@@ -24,6 +24,7 @@ const voucher = (overrides: Record<string, unknown> = {}) => ({
   holderContact: null,
   expiresAt: new Date('2099-12-31T23:59:59.999Z'),
   activatedAt: null,
+  sourceBooking: { inquiry: { name: 'Sarah Holloway' } },
   ...overrides
 });
 
@@ -65,6 +66,7 @@ describe('POST /api/vouchers/[id]/send', () => {
     expect(res.status).toBe(200);
     expect(mocks.sendReferralVoucher).toHaveBeenCalledWith('sam@example.com', {
       holderName: 'Sam Patel',
+      referredName: 'Sarah Holloway',
       code: 'EAC-7KQ2',
       discountLabel: '$15',
       expiresOn: '2099-12-31'

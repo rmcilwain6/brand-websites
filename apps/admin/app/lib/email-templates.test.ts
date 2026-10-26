@@ -121,6 +121,8 @@ describe('referral voucher email', () => {
     const out = await text(render(ReferralVoucher(ReferralVoucher.PreviewProps)));
 
     expect(out).toContain('Thank you, Sam.');
+    expect(out).toContain('Thanks for sending Sarah my way.');
+    expect(out).not.toContain('A thank-you');
     expect(out).toContain('EAC-7KQ2');
     expect(out).toContain('$15 off a session');
     expect(out).toContain('Good until Friday, December 31, 2027');
@@ -141,6 +143,7 @@ describe('referral voucher email', () => {
     );
 
     expect(out).toContain('Thank you.');
+    expect(out).toContain('Thanks for sending someone my way.');
     expect(out).toContain('20% off a session');
     expect(out).not.toContain('Good until');
   });

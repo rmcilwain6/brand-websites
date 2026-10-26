@@ -2,12 +2,14 @@ import { Section, Text } from '@react-email/components';
 import * as React from 'react';
 
 import { formatDateLong } from './components/format';
-import { Card, Eyebrow, Hint, PrimaryButton, SectionTitle, StepList, s } from './components/ui';
+import { Card, Hint, PrimaryButton, SectionTitle, StepList, s } from './components/ui';
 import { EmailLayout, SITE_URL } from './layout';
 
 export type ReferralVoucherEmailData = {
   /** Who the code is for: the voucher's current holder. */
   holderName: string;
+  /** The person they referred: the name on the booking that created the voucher, if any. */
+  referredName?: string;
   code: string;
   /** "$15", "15%". */
   discountLabel: string;
@@ -18,21 +20,24 @@ export type ReferralVoucherEmailData = {
 /** Sent from the admin to a referrer: a thank-you and their voucher code. */
 export const ReferralVoucher = ({
   holderName,
+  referredName,
   code,
   discountLabel,
   expiresOn
 }: ReferralVoucherEmailData) => {
   const firstName = holderName.trim().split(/\s+/)[0];
+  const referredFirstName = referredName?.trim().split(/\s+/)[0] || 'someone';
 
   return (
     <EmailLayout
-      preview={`A thank-you for sending someone my way: ${discountLabel} off a session.`}
+      preview={`Thanks for sending ${referredFirstName} my way. Here’s ${discountLabel} off a session.`}
     >
-      <Eyebrow>A thank-you</Eyebrow>
-      <Text style={s.heading}>{firstName ? `Thank you, ${firstName}.` : 'Thank you.'}</Text>
+      <Text style={{ ...s.heading, margin: '0 0 16px' }}>
+        {firstName ? `Thank you, ${firstName}.` : 'Thank you.'}
+      </Text>
       <Text style={s.body}>
-        Thanks so much for sending someone my way. Word of mouth means a lot to a small business
-        like mine, so here’s a little thank-you from me.
+        Thanks for sending {referredFirstName} my way. Word of mouth means a lot to a small business
+        like mine, so here’s a little thank-you.
       </Text>
 
       <Card>
@@ -70,6 +75,7 @@ export const ReferralVoucher = ({
 
 ReferralVoucher.PreviewProps = {
   holderName: 'Sam Patel',
+  referredName: 'Sarah Holloway',
   code: 'EAC-7KQ2',
   discountLabel: '$15',
   expiresOn: '2027-12-31'

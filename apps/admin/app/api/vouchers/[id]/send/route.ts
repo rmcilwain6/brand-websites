@@ -28,7 +28,11 @@ export const POST = async (
   if (!result.ok) return jsonError(result.error);
   const { to } = result.data;
 
-  const voucher = await prisma.voucher.findUnique({ where: { id: params.id } });
+  const voucher = await prisma.voucher.findUnique({
+    where: { id: params.id },
+    // The booking that named the referrer, so the email can thank them for sending that person.
+    include: { sourceBooking: { include: { inquiry: { select: { name: true } } } } }
+  });
   if (!voucher) {
     return jsonError(createApiError('NOT_FOUND', 'Voucher not found.'), 404);
   }
@@ -50,6 +54,7 @@ export const POST = async (
   try {
     await sendReferralVoucher(to, {
       holderName: voucher.holderName ?? '',
+      referredName: voucher.sourceBooking?.inquiry?.name,
       code: voucher.code,
       discountLabel: formatVoucherDiscount(discount),
       expiresOn: voucher.expiresAt ? voucher.expiresAt.toISOString().slice(0, 10) : null
