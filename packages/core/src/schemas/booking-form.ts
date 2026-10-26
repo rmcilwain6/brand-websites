@@ -34,7 +34,11 @@ export const BookingFormSchema = z.object({
   referrerContact: optionalText(200),
   /** Raw voucher code as entered; matched against the table with normalizeVoucherCode. */
   voucherCode: optionalText(50),
-  heardFrom: z.preprocess((v) => (v === '' ? undefined : v), z.enum(HEARD_FROM_VALUES).optional()),
+  /** An unselected <select> sends '', which counts as not answered. */
+  heardFrom: z
+    .union([z.enum(HEARD_FROM_VALUES), z.literal('')])
+    .optional()
+    .transform((v) => v || undefined),
   /** Honeypot: hidden from people, so any value means a bot. The admin route drops these. */
   website: z.string().max(500).optional()
 });
