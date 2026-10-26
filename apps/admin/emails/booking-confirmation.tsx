@@ -1,33 +1,16 @@
 import { Text } from '@react-email/components';
 import * as React from 'react';
 
-import type { ModifierLineItem } from '@repo/core';
-import { EmailLayout, tokens } from './layout';
+import { formatDateLong, formatTime } from './components/format';
+import type { BookingEmailData } from './components/types';
+import { Card, DetailTable, Eyebrow, Hint, PriceTable, SectionTitle, s } from './components/ui';
+import { EmailLayout } from './layout';
 
-type Props = {
-  name: string;
-  location: string;
-  preferredDate: string;
-  preferredTime?: string;
-  packageName?: string;
-  estimatedTotalCents?: number;
-  notes?: string;
-  modifierLineItems?: ModifierLineItem[];
-};
-
-const formatCurrency = (cents: number) =>
-  new Intl.NumberFormat('en-CA', {
-    style: 'currency',
-    currency: 'CAD',
-    maximumFractionDigits: 0
-  }).format(cents / 100);
-
-const formatDelta = (cents: number | null): string => {
-  if (cents === null || cents === 0) return 'Included';
-  if (cents > 0) return `+${formatCurrency(cents)}`;
-  return `−${formatCurrency(Math.abs(cents))}`;
-};
-
+/**
+ * Sent to the person who made the request. Only booker-facing details: never the referral
+ * voucher, the voucher match, or any voucher amount (voucher values vary, so the spec keeps
+ * amounts out of client copy).
+ */
 export const BookingConfirmation = ({
   name,
   location,
@@ -36,217 +19,82 @@ export const BookingConfirmation = ({
   packageName,
   estimatedTotalCents,
   notes,
-  modifierLineItems
-}: Props) => {
-  const firstName = name.split(' ')[0] ?? name;
-  const dateDisplay = preferredTime ? `${preferredDate} at ${preferredTime}` : preferredDate;
-  const hasModifiers = modifierLineItems && modifierLineItems.length > 0;
+  modifierLineItems,
+  locationIdeas,
+  voucherEntered
+}: BookingEmailData) => {
+  const firstName = name.trim().split(/\s+/)[0] ?? name;
 
   return (
-    <EmailLayout preview="Booking request received — I'll be in touch soon.">
-      <Text style={styles.label}>Booking request received</Text>
-      <Text style={styles.heading}>Hi {firstName}.</Text>
-      <Text style={styles.body}>
-        Thanks for submitting a booking request. I&apos;ve received your details and I&apos;ll be in
-        touch soon to confirm everything.
+    <EmailLayout preview="Your booking request is in. I’ll be in touch soon to confirm.">
+      <Eyebrow>Booking request received</Eyebrow>
+      <Text style={s.heading}>Hi {firstName},</Text>
+      <Text style={s.body}>
+        Thanks for your booking request. It’s come through, and I’ll be in touch soon to confirm the
+        date and talk through the details. Nothing is booked until we’ve confirmed it together.
       </Text>
 
-      <table style={styles.table}>
-        <tbody>
-          {packageName && (
-            <tr>
-              <td style={styles.fieldLabel}>Package</td>
-              <td style={styles.fieldValue}>{packageName}</td>
-            </tr>
-          )}
-          <tr>
-            <td style={styles.fieldLabel}>Location</td>
-            <td style={styles.fieldValue}>{location}</td>
-          </tr>
-          <tr>
-            <td style={styles.fieldLabel}>Preferred date</td>
-            <td style={styles.fieldValue}>{dateDisplay}</td>
-          </tr>
-          {!hasModifiers && estimatedTotalCents != null && (
-            <tr>
-              <td style={styles.fieldLabel}>Est. total</td>
-              <td style={styles.fieldValue}>{formatCurrency(estimatedTotalCents)}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <Card>
+        <Text style={{ ...s.eyebrow, margin: '0 0 12px' }}>Your request</Text>
+        <DetailTable
+          rows={[
+            ['Package', packageName],
+            ['Date', formatDateLong(preferredDate)],
+            ['Time', preferredTime && formatTime(preferredTime)],
+            ['Location', location],
+            ['Spots in mind', locationIdeas],
+            [
+              'Voucher code',
+              voucherEntered && `${voucherEntered.entered} (I’ll confirm it with you by email)`
+            ]
+          ]}
+        />
+        <PriceTable items={modifierLineItems} totalCents={estimatedTotalCents} />
+        {estimatedTotalCents != null && (
+          <Hint>This is an estimate. I’ll confirm the final price with you.</Hint>
+        )}
+      </Card>
 
-      {hasModifiers && (
+      {notes && (
         <>
-          <Text style={styles.sectionLabel}>Package modifiers</Text>
-          <table style={styles.modifierTable}>
-            <tbody>
-              {modifierLineItems!.map((item, i) => (
-                <tr key={i}>
-                  <td style={styles.modifierName}>{item.name}</td>
-                  <td style={styles.modifierValue}>{item.displayValue ?? ''}</td>
-                  <td style={styles.modifierPrice}>{formatDelta(item.priceDeltaCents)}</td>
-                </tr>
-              ))}
-              {estimatedTotalCents != null && (
-                <tr>
-                  <td colSpan={2} style={styles.totalLabel}>
-                    Estimated total
-                  </td>
-                  <td style={styles.totalPrice}>{formatCurrency(estimatedTotalCents)}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <SectionTitle>Your notes</SectionTitle>
+          <Text style={s.quote}>{notes}</Text>
         </>
       )}
 
-      {notes && <Text style={styles.notes}>Your notes: {notes}</Text>}
+      <SectionTitle>What happens next</SectionTitle>
+      <DetailTable
+        rows={[
+          ['1', 'I’ll check my calendar and confirm the date and time with you.'],
+          ['2', 'We’ll sort out the details: the spot, timing, and anything you have in mind.'],
+          ['3', 'Once we’ve both confirmed, your session is booked.']
+        ]}
+      />
 
-      <Text style={styles.body}>
-        If anything changes or you have questions in the meantime, feel free to reply to this email.
+      <Text style={{ ...s.body, margin: '20px 0 8px' }}>
+        If anything changes or you have questions in the meantime, just reply to this email.
       </Text>
-
-      <Text style={styles.signature}>— Reed</Text>
+      <Text style={{ ...s.body, margin: 0, color: s.heading.color }}>— Reed</Text>
     </EmailLayout>
   );
 };
 
 BookingConfirmation.PreviewProps = {
   name: 'Sarah Holloway',
-  location: 'Vancouver',
-  preferredDate: '2026-07-12',
+  email: 'sarah@example.com',
+  location: 'Victoria',
+  preferredDate: '2026-11-14',
   preferredTime: '10:00',
-  packageName: 'Full Day',
-  estimatedTotalCents: 96000,
-  notes: 'Looking for a mix of candid and a few posed shots in the park.',
+  packageName: 'Evryday',
+  estimatedTotalCents: 22500,
+  notes: 'Looking for a mix of candid and a few posed shots. My dog will be there too!',
+  inquiryId: 'clz1abc2def3ghi4',
   modifierLineItems: [
-    { name: 'Session length', displayValue: '4 hr', priceDeltaCents: null },
-    { name: 'Studio backdrop', priceDeltaCents: 7500 },
-    { name: 'Rush editing', displayValue: 'Rush (7 days)', priceDeltaCents: 15000 }
-  ]
-} satisfies Props;
+    { name: 'Session length', displayValue: '60 min', priceDeltaCents: 2500 },
+    { name: 'Extra photos', displayValue: '10', priceDeltaCents: 5000 }
+  ],
+  locationIdeas: 'The farmers market, or Beacon Hill Park',
+  voucherEntered: { entered: 'EAC-AB2C', check: { verdict: 'unknown', code: 'EAC-AB2C' } }
+} satisfies BookingEmailData;
 
 export default BookingConfirmation;
-
-const styles = {
-  label: {
-    color: tokens.inkFaint,
-    fontSize: '11px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    letterSpacing: '0.1em',
-    margin: '0 0 20px',
-    textTransform: 'uppercase' as const
-  },
-  heading: {
-    color: tokens.ink,
-    fontSize: '24px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    fontWeight: '400',
-    margin: '0 0 20px',
-    lineHeight: '1.3'
-  },
-  body: {
-    color: tokens.inkMuted,
-    fontSize: '15px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    lineHeight: '1.7',
-    margin: '0 0 24px'
-  },
-  table: {
-    borderCollapse: 'collapse' as const,
-    marginBottom: '24px',
-    width: '100%'
-  },
-  fieldLabel: {
-    color: tokens.inkFaint,
-    fontSize: '12px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    paddingBottom: '8px',
-    paddingRight: '20px',
-    verticalAlign: 'top' as const,
-    whiteSpace: 'nowrap' as const,
-    width: '120px'
-  },
-  fieldValue: {
-    color: tokens.inkMuted,
-    fontSize: '14px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    paddingBottom: '8px',
-    verticalAlign: 'top' as const
-  },
-  sectionLabel: {
-    color: tokens.inkFaint,
-    fontSize: '11px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    letterSpacing: '0.08em',
-    margin: '0 0 12px',
-    textTransform: 'uppercase' as const
-  },
-  modifierTable: {
-    borderCollapse: 'collapse' as const,
-    marginBottom: '24px',
-    width: '100%'
-  },
-  modifierName: {
-    color: tokens.inkMuted,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    paddingBottom: '7px',
-    paddingRight: '16px',
-    verticalAlign: 'top' as const
-  },
-  modifierValue: {
-    color: tokens.inkFaint,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    paddingBottom: '7px',
-    paddingRight: '16px',
-    verticalAlign: 'top' as const,
-    width: '100px'
-  },
-  modifierPrice: {
-    color: tokens.inkMuted,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    paddingBottom: '7px',
-    textAlign: 'right' as const,
-    verticalAlign: 'top' as const,
-    whiteSpace: 'nowrap' as const
-  },
-  totalLabel: {
-    borderTop: `1px solid ${tokens.border}`,
-    color: tokens.ink,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    fontWeight: '600',
-    paddingTop: '10px'
-  },
-  totalPrice: {
-    borderTop: `1px solid ${tokens.border}`,
-    color: tokens.ink,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    fontWeight: '600',
-    paddingTop: '10px',
-    textAlign: 'right' as const,
-    whiteSpace: 'nowrap' as const
-  },
-  notes: {
-    backgroundColor: tokens.canvas,
-    borderLeft: `3px solid ${tokens.border}`,
-    color: tokens.inkFaint,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    fontStyle: 'italic' as const,
-    lineHeight: '1.6',
-    margin: '0 0 24px',
-    padding: '10px 14px'
-  },
-  signature: {
-    color: tokens.ink,
-    fontSize: '15px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    margin: '0'
-  }
-} as const;

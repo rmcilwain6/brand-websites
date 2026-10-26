@@ -17,7 +17,8 @@ export const tokens = {
   sun: '#f3ede2',
   ink: '#1a1814',
   inkMuted: '#2b2b2b',
-  inkFaint: '#8a7f74',
+  // 5.5:1 on white and 5:1 on canvas, so small secondary text stays readable.
+  inkFaint: '#6b6259',
   border: '#e0d9cf',
   accent: '#F06F42'
 };
