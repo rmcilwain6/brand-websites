@@ -88,6 +88,26 @@
   }
 }
 
+@layer base {
+  /*
+   * Browser and password-manager autofill paints fields a pale blue that clashes with the
+   * paper palette. Paint over it with the normal input colours instead. An inset shadow is used
+   * because browsers don't let pages override the autofill background-color. The filled-in text
+   * itself is still the indication that a field was autofilled.
+   * Kept as separate rules: an unsupported selector would void a combined list.
+   */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--color-canvas) inset;
+    -webkit-text-fill-color: var(--color-ink);
+    caret-color: var(--color-ink);
+  }
+  input:autofill {
+    box-shadow: 0 0 0 1000px var(--color-canvas) inset;
+  }
+}
+
 @layer utilities {
   /* Hide scrollbars while keeping scroll functionality (gallery carousels) */
   .scrollbar-none {
