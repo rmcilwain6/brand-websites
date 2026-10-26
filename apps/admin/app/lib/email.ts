@@ -10,6 +10,9 @@ import { getEmailEnv } from './env';
 
 const FROM = 'Reed from Evryday Archive Co <reed@evrydayarchive.co>';
 
+/** Reed gets a copy of every client-facing email, so he can reply from his own mail app. */
+const CLIENT_COPY_BCC = 'reed@evrydayarchive.co';
+
 let resend: Resend | null = null;
 
 const getResend = () => {
@@ -42,6 +45,7 @@ export const sendBookingConfirmation = async (data: BookingEmailData) => {
   await getResend().emails.send({
     from: FROM,
     to: data.email,
+    bcc: CLIENT_COPY_BCC,
     subject: "Booking request received \u2014 I'll be in touch soon",
     html
   });
@@ -70,6 +74,7 @@ export const sendReferralVoucher = async (to: string, data: ReferralVoucherEmail
   await getResend().emails.send({
     from: FROM,
     to,
+    bcc: CLIENT_COPY_BCC,
     subject: `Thank you for the referral — here’s ${data.discountLabel} off a session`,
     html
   });
