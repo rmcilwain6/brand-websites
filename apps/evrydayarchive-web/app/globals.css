@@ -13,6 +13,8 @@
     --color-ink: #000000;
     --color-ink-muted: #2b2b2b;
     --color-ink-faint: rgba(43, 35, 26, 0.45);
+    /* Secondary text that must stay readable (form help, hints): 65% passes 4.5:1 on canvas and sun. */
+    --color-ink-soft: rgba(43, 35, 26, 0.65);
     --color-border: rgba(43, 35, 26, 0.12);
 
     /* Scrollbar — warm-tinted, matches the paper canvas palette */
@@ -31,6 +33,7 @@
     --color-ink: #ffffff;
     --color-ink-muted: #faf6ef;
     --color-ink-faint: rgba(250, 246, 239, 0.45);
+    --color-ink-soft: rgba(250, 246, 239, 0.65);
     --color-border: rgba(250, 246, 239, 0.1);
 
     /* Scrollbar — lighter warm tint for dark canvas */
