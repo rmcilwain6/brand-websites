@@ -1,17 +1,16 @@
 import {
   BookingFormSchema,
   REFERRAL,
-  buildModifierLineItems,
   generateVoucherCode,
   jsonError,
   jsonOk,
   parseJson,
   referralExpiresAt,
-  voucherDiscountColumns,
-  type ModifierLineItem
+  voucherDiscountColumns
 } from '@repo/core';
 import { PrismaClientKnownRequestError, prisma } from '@repo/db';
 
+import { loadBookingEmailData } from '../../../lib/booking-email-data';
 import { sendBookingConfirmation, sendBookingNotification } from '../../../lib/email';
 
 // TODO: Rate limiting — add per-IP limits when infrastructure supports it.
@@ -138,56 +137,17 @@ export const POST = async (req: Request): Promise<Response> => {
     return jsonError({ code: 'INTERNAL', message: 'Failed to save booking request.' });
   }
 
-  // ── Build modifier line items for the email receipt ───────────────────────
-  let modifierLineItems: ModifierLineItem[] | undefined;
-
-  if (packageId) {
-    const pkgRecord = await prisma.package
-      .findUnique({
-        where: { id: packageId },
-        select: {
-          modifiers: {
-            select: {
-              id: true,
-              name: true,
-              type: true,
-              isRequired: true,
-              priceDeltaCents: true,
-              config: true
-            },
-            orderBy: { sortOrder: 'asc' }
-          }
-        }
-      })
-      .catch(() => null);
-
-    if (pkgRecord) {
-      modifierLineItems = buildModifierLineItems(pkgRecord.modifiers, {
-        selectedIds: modifierIds ?? [],
-        values: modifierValues ?? {}
-      });
-    }
-  }
-
   // ── Emails ────────────────────────────────────────────────────────────────
-  const emailData = {
-    name,
-    email,
-    phone: phone ?? undefined,
-    location,
-    preferredDate,
-    preferredTime: preferredTime ?? undefined,
-    packageName: packageName ?? undefined,
-    estimatedTotalCents: estimatedTotalCents ?? undefined,
-    notes: notes ?? undefined,
-    inquiryId: inquiry.id,
-    modifierLineItems
-  };
+  // Built from the saved booking (the same path a resend from the admin takes), so they show
+  // the referral voucher just created and what any entered voucher code matches.
+  const bookingId = inquiry.bookingRequest!.id;
 
   try {
+    const emailData = await loadBookingEmailData(bookingId, new URL(req.url).origin);
+    if (!emailData) throw new Error('Booking not found after saving it.');
     await Promise.all([sendBookingConfirmation(emailData), sendBookingNotification(emailData)]);
     await prisma.bookingRequest.update({
-      where: { id: inquiry.bookingRequest!.id },
+      where: { id: bookingId },
       data: { emailSentAt: new Date() }
     });
   } catch (err) {
@@ -195,7 +155,7 @@ export const POST = async (req: Request): Promise<Response> => {
     console.error('[bookings] Email send failed', { inquiryId: inquiry.id, err });
     await prisma.bookingRequest
       .update({
-        where: { id: inquiry.bookingRequest!.id },
+        where: { id: bookingId },
         data: { emailError: errorMsg }
       })
       .catch(() => {});

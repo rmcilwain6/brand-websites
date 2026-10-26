@@ -1,9 +1,10 @@
 import { render } from '@react-email/render';
-import type { ModifierLineItem } from '@repo/core';
 import { Resend } from 'resend';
 
 import { BookingConfirmation } from '../../emails/booking-confirmation';
 import { BookingNotification } from '../../emails/booking-notification';
+import { formatDateShort } from '../../emails/components/format';
+import type { BookingEmailData } from '../../emails/components/types';
 import { getEmailEnv } from './env';
 
 const FROM = 'Reed from Evryday Archive Co <reed@evrydayarchive.co>';
@@ -17,19 +18,20 @@ const getResend = () => {
   return resend;
 };
 
-type BookingEmailData = {
-  name: string;
-  email: string;
-  phone?: string;
-  location: string;
-  preferredDate: string;
-  preferredTime?: string;
-  packageName?: string;
-  estimatedTotalCents?: number;
-  notes?: string;
-  inquiryId: string;
-  modifierLineItems?: ModifierLineItem[];
-};
+/**
+ * "New booking: Sarah Holloway · Evryday · Sat, Nov 14 · Referral · Voucher", so the inbox
+ * shows who, what, when, and whether there's referral work to do, without opening it.
+ */
+export const bookingNotificationSubject = (data: BookingEmailData) =>
+  [
+    `New booking: ${data.name}`,
+    data.packageName,
+    formatDateShort(data.preferredDate),
+    data.referrer && 'Referral',
+    data.voucherEntered && 'Voucher'
+  ]
+    .filter(Boolean)
+    .join(' · ');
 
 // ── Booking: confirmation to the client ──────────────────────────────────────
 
@@ -54,7 +56,7 @@ export const sendBookingNotification = async (data: BookingEmailData) => {
     from: FROM,
     to: NOTIFICATION_EMAIL,
     replyTo: data.email,
-    subject: `Booking request received, ${data.name} \u2014 I'll be in touch soon`,
+    subject: bookingNotificationSubject(data),
     html
   });
 };

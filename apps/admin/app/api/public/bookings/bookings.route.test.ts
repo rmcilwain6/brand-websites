@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   inquiryCreate: vi.fn(),
-  packageFindUnique: vi.fn(),
   bookingRequestUpdate: vi.fn(),
+  loadBookingEmailData: vi.fn(),
   sendBookingConfirmation: vi.fn(),
   sendBookingNotification: vi.fn()
 }));
@@ -11,6 +11,10 @@ const mocks = vi.hoisted(() => ({
 vi.mock('../../../lib/email', () => ({
   sendBookingConfirmation: mocks.sendBookingConfirmation,
   sendBookingNotification: mocks.sendBookingNotification
+}));
+
+vi.mock('../../../lib/booking-email-data', () => ({
+  loadBookingEmailData: mocks.loadBookingEmailData
 }));
 
 vi.mock('@repo/db', () => {
@@ -28,7 +32,6 @@ vi.mock('@repo/db', () => {
   return {
     prisma: {
       inquiry: { create: mocks.inquiryCreate },
-      package: { findUnique: mocks.packageFindUnique },
       bookingRequest: { update: mocks.bookingRequestUpdate }
     },
     PrismaClientKnownRequestError
@@ -41,6 +44,8 @@ const booking = {
   location: 'Calgary',
   preferredDate: '2026-11-14'
 };
+
+const emailData = { name: 'Jordan Lee', email: 'jordan@example.com', inquiryId: 'inq_1' };
 
 const post = async (body: unknown) => {
   const { POST } = await import('./route');
@@ -71,8 +76,8 @@ describe('POST /api/public/bookings', () => {
     vi.clearAllMocks();
     vi.resetModules();
     mocks.inquiryCreate.mockResolvedValue({ id: 'inq_1', bookingRequest: { id: 'br_1' } });
-    mocks.packageFindUnique.mockResolvedValue(null);
     mocks.bookingRequestUpdate.mockResolvedValue({});
+    mocks.loadBookingEmailData.mockResolvedValue(emailData);
     mocks.sendBookingConfirmation.mockResolvedValue(undefined);
     mocks.sendBookingNotification.mockResolvedValue(undefined);
     vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -210,6 +215,43 @@ describe('POST /api/public/bookings', () => {
     expect(mocks.inquiryCreate).not.toHaveBeenCalled();
     expect(mocks.sendBookingConfirmation).not.toHaveBeenCalled();
     expect(mocks.sendBookingNotification).not.toHaveBeenCalled();
+  });
+
+  it('builds both emails from the saved booking, with a link back to the admin', async () => {
+    await post(booking);
+
+    expect(mocks.loadBookingEmailData).toHaveBeenCalledWith('br_1', 'http://localhost');
+    expect(mocks.sendBookingConfirmation).toHaveBeenCalledWith(emailData);
+    expect(mocks.sendBookingNotification).toHaveBeenCalledWith(emailData);
+    expect(mocks.bookingRequestUpdate).toHaveBeenCalledWith({
+      where: { id: 'br_1' },
+      data: { emailSentAt: expect.any(Date) }
+    });
+  });
+
+  it('still succeeds, and records the error, when the emails fail', async () => {
+    mocks.sendBookingNotification.mockRejectedValueOnce(new Error('Resend is down'));
+
+    const res = await post(booking);
+
+    expect(res.status).toBe(200);
+    expect(mocks.bookingRequestUpdate).toHaveBeenCalledWith({
+      where: { id: 'br_1' },
+      data: { emailError: 'Resend is down' }
+    });
+  });
+
+  it('sends nothing, and records why, if the saved booking cannot be loaded', async () => {
+    mocks.loadBookingEmailData.mockResolvedValueOnce(null);
+
+    const res = await post(booking);
+
+    expect(res.status).toBe(200);
+    expect(mocks.sendBookingConfirmation).not.toHaveBeenCalled();
+    expect(mocks.bookingRequestUpdate).toHaveBeenCalledWith({
+      where: { id: 'br_1' },
+      data: { emailError: 'Booking not found after saving it.' }
+    });
   });
 
   it('rejects an invalid booking', async () => {
