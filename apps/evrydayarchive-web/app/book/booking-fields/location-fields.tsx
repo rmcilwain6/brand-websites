@@ -1,10 +1,14 @@
 'use client';
 
-import { LocationPicker } from '../../components/location-picker';
-import type { CoreLocation } from '../../components/location-picker';
-import { FieldError, inputCls } from './field-ui';
+import { CORE_LOCATIONS, type CoreLocation } from '../../components/location-picker';
+import { FieldError, FollowUp, chipCls, inputCls } from './field-ui';
 
 export type LocationSelectValue = CoreLocation | 'Other' | '';
+
+const OPTIONS: { value: CoreLocation | 'Other'; label: string }[] = [
+  ...CORE_LOCATIONS.map((loc) => ({ value: loc, label: loc })),
+  { value: 'Other', label: 'Other / not sure' }
+];
 
 type Props = {
   select: LocationSelectValue;
@@ -12,46 +16,104 @@ type Props = {
   onSelectChange: (v: LocationSelectValue) => void;
   onOtherChange: (v: string) => void;
   error: string | undefined;
+  /** Optional "Anywhere in mind?" spot ideas, shown under the city. */
+  ideas: string;
+  onIdeasChange: (v: string) => void;
 };
 
-export const LocationFields = ({ select, other, onSelectChange, onOtherChange, error }: Props) => (
-  <fieldset className="space-y-5">
-    <legend className="text-sm font-semibold text-ink">Where are you based?</legend>
-    <p className="text-xs leading-relaxed text-ink-faint">
-      I travel regularly between Vancouver Island and the mainland. Let me know which area
-      you&apos;re in so I can confirm I&apos;ll be there.
-    </p>
+export const LocationFields = ({
+  select,
+  other,
+  onSelectChange,
+  onOtherChange,
+  error,
+  ideas,
+  onIdeasChange
+}: Props) => {
+  const otherSelected = select === 'Other';
+  // The error belongs to the chips until "Other" is picked, then to its text box.
+  const chipError = error && !otherSelected ? error : undefined;
+  const otherError = error && otherSelected ? error : undefined;
 
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor="location-select" className="text-sm font-medium text-ink-muted">
-        Location{' '}
-        <span className="text-accent" aria-hidden="true">
-          *
-        </span>
-      </label>
-      <LocationPicker
-        id="location-select"
-        value={select}
-        onChange={onSelectChange}
-        hasError={!!error && select !== 'Other'}
-        aria-describedby={error && select !== 'Other' ? 'location-error' : undefined}
-      />
+  return (
+    <div className="space-y-6">
+      <fieldset
+        className="space-y-3"
+        aria-describedby={chipError ? 'location-note location-error' : 'location-note'}
+      >
+        <legend className="text-sm font-medium text-ink-muted sm:text-[15px]">
+          Where are you based?{' '}
+          <span className="text-accent" aria-hidden="true">
+            *
+          </span>
+        </legend>
+        <p id="location-note" className="text-[13px] leading-relaxed text-ink-soft sm:text-sm">
+          I travel regularly between Vancouver Island and the mainland. Let me know which area
+          you&apos;re in so I can confirm I&apos;ll be there.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {OPTIONS.map((opt, i) => (
+            <label key={opt.value} className={chipCls(select === opt.value)}>
+              <input
+                // The first chip is where focus goes when the location is missing.
+                id={i === 0 ? 'location-select' : undefined}
+                type="radio"
+                name="location"
+                value={opt.value}
+                checked={select === opt.value}
+                onChange={() => onSelectChange(opt.value)}
+                className="sr-only"
+              />
+              {opt.label}
+            </label>
+          ))}
+        </div>
+        <FieldError id="location-error" message={chipError} />
 
-      {select === 'Other' && (
+        {otherSelected && (
+          <FollowUp>
+            <label
+              htmlFor="location-other"
+              className="text-sm font-medium text-ink-muted sm:text-[15px]"
+            >
+              Where, roughly?{' '}
+              <span className="text-accent" aria-hidden="true">
+                *
+              </span>
+            </label>
+            <input
+              id="location-other"
+              type="text"
+              placeholder="e.g. Tofino, Whistler, Victoria area…"
+              value={other}
+              onChange={(e) => onOtherChange(e.target.value)}
+              aria-invalid={!!otherError}
+              aria-describedby={otherError ? 'location-other-error' : undefined}
+              className={inputCls(!!otherError)}
+            />
+            <FieldError id="location-other-error" message={otherError} />
+          </FollowUp>
+        )}
+      </fieldset>
+
+      <div className="flex flex-col gap-1.5">
+        <label
+          htmlFor="location-ideas"
+          className="text-sm font-medium text-ink-muted sm:text-[15px]"
+        >
+          Anywhere in mind?{' '}
+          <span className="text-[13px] font-normal text-ink-soft">(optional)</span>
+        </label>
         <input
-          id="location-other"
+          id="location-ideas"
           type="text"
-          placeholder="e.g. Tofino, Whistler, Victoria area…"
-          value={other}
-          onChange={(e) => onOtherChange(e.target.value)}
-          aria-label="Describe your location"
-          aria-invalid={!!error}
-          aria-describedby={error ? 'location-error' : undefined}
-          className={inputCls(!!error)}
+          maxLength={500}
+          placeholder="A market, your studio, a park, your home…"
+          value={ideas}
+          onChange={(e) => onIdeasChange(e.target.value)}
+          className={inputCls()}
         />
-      )}
-
-      <FieldError id="location-error" message={error} />
+      </div>
     </div>
-  </fieldset>
-);
+  );
+};

@@ -3,7 +3,13 @@
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
-export const ConfirmationPanel = ({ name }: { name: string }) => {
+type Props = {
+  name: string;
+  /** The booker entered a voucher code. No amount is shown: values vary and are checked by hand. */
+  voucherEntered?: boolean;
+};
+
+export const ConfirmationPanel = ({ name, voucherEntered = false }: Props) => {
   const firstName = name.split(' ')[0] ?? name;
   const panelRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -21,7 +27,7 @@ export const ConfirmationPanel = ({ name }: { name: string }) => {
       ref={panelRef}
       className="scroll-mt-6 rounded-card border border-border bg-sun px-8 py-14 text-center md:scroll-mt-24"
     >
-      <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
+      <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-soft">
         Request sent
       </p>
       <h2
@@ -35,6 +41,11 @@ export const ConfirmationPanel = ({ name }: { name: string }) => {
         I&apos;ve got your request. I&apos;ll be in touch to confirm the date and go over any
         details.
       </p>
+      {voucherEntered && (
+        <p className="mx-auto -mt-6 mb-10 max-w-sm text-sm leading-relaxed text-ink-muted">
+          Your voucher code will be confirmed by email.
+        </p>
+      )}
       <div className="flex flex-wrap items-center justify-center gap-3">
         <Link
           href="/portfolio"

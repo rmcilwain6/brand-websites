@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { HEARD_FROM_OPTIONS, REFERRAL, heardFromLabel, referralExpiresAt } from './referrals';
 
 describe('REFERRAL', () => {
-  it('is $25 off and expires at the end of 2027', () => {
-    expect(REFERRAL.discount).toEqual({ discountType: 'FIXED_AMOUNT', amountCents: 2500 });
+  it('is $15 off and expires at the end of 2027', () => {
+    expect(REFERRAL.discount).toEqual({ discountType: 'FIXED_AMOUNT', amountCents: 1500 });
     expect(referralExpiresAt().toISOString()).toBe('2027-12-31T23:59:59.999Z');
   });
 });

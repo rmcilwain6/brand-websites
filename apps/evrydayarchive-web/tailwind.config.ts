@@ -20,6 +20,7 @@ const config: Config = {
         ink: 'var(--color-ink)',
         'ink-muted': 'var(--color-ink-muted)',
         'ink-faint': 'var(--color-ink-faint)',
+        'ink-soft': 'var(--color-ink-soft)',
         border: 'var(--color-border)'
       },
       fontFamily: {

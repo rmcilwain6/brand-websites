@@ -70,6 +70,9 @@ export const DatePicker = ({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const dayRefs = useRef<Record<number, HTMLButtonElement | null>>({});
+  // Set when the tab-stop day should also take DOM focus on the next render (on open, and on
+  // arrow keys), but not when the month changes, so focus stays on the month buttons.
+  const focusDayOnRender = useRef(false);
 
   // ── Close on outside click ──────────────────────────────────────────────
 
@@ -83,33 +86,6 @@ export const DatePicker = ({
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
-
-  // ── Focus management ────────────────────────────────────────────────────
-
-  // When calendar opens, focus the selected day (or today, or first valid day)
-  useEffect(() => {
-    if (!open) return;
-    const selectedDate = value ? parseLocal(value) : null;
-    const inView =
-      selectedDate &&
-      selectedDate.getFullYear() === viewYear &&
-      selectedDate.getMonth() === viewMonth;
-
-    const initial = inView
-      ? selectedDate!.getDate()
-      : viewYear === today.getFullYear() && viewMonth === today.getMonth()
-        ? today.getDate()
-        : 1;
-
-    setFocusedDay(initial);
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Move DOM focus when focusedDay changes
-  useEffect(() => {
-    if (focusedDay !== null && open) {
-      dayRefs.current[focusedDay]?.focus();
-    }
-  }, [focusedDay, open]);
 
   // ── Calendar grid logic ──────────────────────────────────────────────────
 
@@ -138,6 +114,33 @@ export const DatePicker = ({
   const isToday = (day: number) =>
     today.getFullYear() === viewYear && today.getMonth() === viewMonth && today.getDate() === day;
 
+  // ── Keyboard focus ───────────────────────────────────────────────────────
+  // Roving tab stop: exactly one day in the grid is reachable with Tab, and the arrow keys move
+  // it. It must always be a day that can take focus. Disabled (past) days can't, so a stop on
+  // one of them, or on a day number this month doesn't have, would leave no way into the grid.
+
+  const canFocus = (day: number | null): day is number =>
+    day !== null && day >= 1 && day <= daysInMonth && !isDisabled(day);
+
+  const firstEnabledDay = Array.from({ length: daysInMonth }, (_, i) => i + 1).find(
+    (day) => !isDisabled(day)
+  );
+
+  const selectedDay =
+    value && value.startsWith(toYMD(viewYear, viewMonth, 1).slice(0, 8))
+      ? parseLocal(value).getDate()
+      : null;
+  const todayDay = isToday(today.getDate()) ? today.getDate() : null;
+
+  /** The day Tab lands on: the last one moved to, else selected, else today, else the first open day. */
+  const tabStopDay = [focusedDay, selectedDay, todayDay, firstEnabledDay ?? null].find(canFocus);
+
+  useEffect(() => {
+    if (!open || !focusDayOnRender.current || tabStopDay === undefined) return;
+    focusDayOnRender.current = false;
+    dayRefs.current[tabStopDay]?.focus();
+  });
+
   // ── Schedule panel ───────────────────────────────────────────────────────
 
   const showSchedulePanel = !!locationWindows && locationWindows.length > 0;
@@ -160,7 +163,9 @@ export const DatePicker = ({
     setOpen(false);
   };
 
+  // A new month starts from its default tab stop, rather than the day number from the last one.
   const prevMonth = () => {
+    setFocusedDay(null);
     if (viewMonth === 0) {
       setViewYear((y) => y - 1);
       setViewMonth(11);
@@ -170,6 +175,7 @@ export const DatePicker = ({
   };
 
   const nextMonth = () => {
+    setFocusedDay(null);
     if (viewMonth === 11) {
       setViewYear((y) => y + 1);
       setViewMonth(0);
@@ -179,26 +185,27 @@ export const DatePicker = ({
   };
 
   const handleGridKeyDown = (e: React.KeyboardEvent) => {
-    if (focusedDay === null) return;
+    if (tabStopDay === undefined) return;
 
-    let next = focusedDay;
+    const current = tabStopDay;
+    let next = current;
 
     switch (e.key) {
       case 'ArrowRight':
         e.preventDefault();
-        next = Math.min(daysInMonth, focusedDay + 1);
+        next = Math.min(daysInMonth, current + 1);
         break;
       case 'ArrowLeft':
         e.preventDefault();
-        next = Math.max(1, focusedDay - 1);
+        next = Math.max(1, current - 1);
         break;
       case 'ArrowDown':
         e.preventDefault();
-        next = Math.min(daysInMonth, focusedDay + 7);
+        next = Math.min(daysInMonth, current + 7);
         break;
       case 'ArrowUp':
         e.preventDefault();
-        next = Math.max(1, focusedDay - 7);
+        next = Math.max(1, current - 7);
         break;
       case 'Home':
         e.preventDefault();
@@ -216,7 +223,9 @@ export const DatePicker = ({
         return;
     }
 
-    setFocusedDay(next);
+    // Past days are always at the start of the month, so stop at the first open one.
+    setFocusedDay(Math.max(next, firstEnabledDay ?? next));
+    focusDayOnRender.current = true;
   };
 
   // ── Display value ────────────────────────────────────────────────────────
@@ -238,19 +247,23 @@ export const DatePicker = ({
       <button
         id={id}
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          if (!open) {
+            setFocusedDay(null);
+            focusDayOnRender.current = true;
+          }
+          setOpen((o) => !o);
+        }}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-describedby={ariaDescribedby}
         className={[
-          'flex w-full items-center justify-between rounded-card border bg-canvas px-4 py-3 text-left text-sm transition-colors duration-fast focus:outline-none',
+          'flex w-full items-center justify-between rounded-card border bg-canvas px-4 py-3 text-left text-base transition-colors duration-fast focus:outline-none',
           hasError ? 'border-red-300 focus:border-red-400' : 'border-border focus:border-ink-muted'
         ].join(' ')}
       >
-        <span className={value ? 'text-ink' : 'text-ink-faint/70'}>
-          {displayValue || placeholder}
-        </span>
-        <CalendarIcon className="ml-2 h-4 w-4 flex-none text-ink-faint" />
+        <span className={value ? 'text-ink' : 'text-ink-faint'}>{displayValue || placeholder}</span>
+        <CalendarIcon className="ml-2 h-4 w-4 flex-none text-ink-soft" />
       </button>
 
       {/* Calendar panel */}
@@ -269,7 +282,7 @@ export const DatePicker = ({
                 type="button"
                 onClick={prevMonth}
                 aria-label="Previous month"
-                className="flex h-7 w-7 items-center justify-center rounded-placard border border-border text-ink-faint transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                className="flex h-7 w-7 items-center justify-center rounded-placard border border-border text-ink-soft transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
               </button>
@@ -282,7 +295,7 @@ export const DatePicker = ({
                 type="button"
                 onClick={nextMonth}
                 aria-label="Next month"
-                className="flex h-7 w-7 items-center justify-center rounded-placard border border-border text-ink-faint transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                className="flex h-7 w-7 items-center justify-center rounded-placard border border-border text-ink-soft transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
                 <ChevronRight className="h-3.5 w-3.5" />
               </button>
@@ -295,7 +308,7 @@ export const DatePicker = ({
                 {DAY_LABELS.map((d) => (
                   <div
                     key={d}
-                    className="py-1 text-center text-[10px] font-medium uppercase tracking-wider text-ink-faint"
+                    className="py-1 text-center text-xs font-medium uppercase tracking-wider text-ink-soft"
                   >
                     {d}
                   </div>
@@ -328,7 +341,7 @@ export const DatePicker = ({
                         type="button"
                         disabled={disabled}
                         onClick={() => selectDay(day)}
-                        tabIndex={focusedDay === day ? 0 : -1}
+                        tabIndex={tabStopDay === day ? 0 : -1}
                         aria-label={`${MONTH_NAMES[viewMonth]} ${day}, ${viewYear}${selected ? ' (selected)' : ''}${unavailable ? ' (not available)' : ''}`}
                         aria-pressed={selected}
                         aria-disabled={disabled || unavailable}
@@ -355,8 +368,8 @@ export const DatePicker = ({
 
               {/* Legend */}
               <div className="mt-3 flex items-center gap-3 border-t border-border pt-2.5">
-                <span className="flex items-center gap-1.5 text-[10px] text-ink-faint">
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded bg-red-100 text-[9px] text-red-500 dark:bg-red-950/40">
+                <span className="flex items-center gap-1.5 text-xs text-ink-soft">
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded bg-red-100 text-[10px] text-red-500 dark:bg-red-950/40">
                     ✕
                   </span>
                   Unavailable
@@ -368,11 +381,11 @@ export const DatePicker = ({
           {/* Schedule panel — below calendar on mobile, attached to the right on md+ */}
           {showSchedulePanel && (
             <div className="flex-none border-t border-border p-4 md:w-44 md:border-l md:border-t-0">
-              <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-ink-faint">
+              <p className="mb-3 text-xs font-medium uppercase tracking-wider text-ink-soft">
                 Where I&apos;ll be
               </p>
               {monthWindows.length === 0 ? (
-                <p className="text-xs leading-relaxed text-ink-faint">
+                <p className="text-[13px] leading-relaxed text-ink-soft sm:text-sm">
                   No schedule set for this month.
                 </p>
               ) : (
@@ -380,11 +393,11 @@ export const DatePicker = ({
                   {monthWindows.map((w) => (
                     <li key={w.id}>
                       <p className="text-xs font-medium text-ink">{w.location.name}</p>
-                      <p className="mt-0.5 text-[11px] leading-snug text-ink-faint">
+                      <p className="mt-0.5 text-xs leading-snug text-ink-soft">
                         {fmtWindowDate(w.startDate)} – {fmtWindowDate(w.endDate)}
                       </p>
                       {w.notes && (
-                        <p className="mt-0.5 text-[11px] leading-snug text-ink-faint">{w.notes}</p>
+                        <p className="mt-0.5 text-xs leading-snug text-ink-soft">{w.notes}</p>
                       )}
                     </li>
                   ))}

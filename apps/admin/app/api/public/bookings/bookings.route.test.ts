@@ -127,7 +127,7 @@ describe('POST /api/public/bookings', () => {
       type: 'REFERRAL',
       status: 'PENDING',
       discountType: 'FIXED_AMOUNT',
-      amountCents: 2500,
+      amountCents: 1500,
       percentOff: null,
       referrerName: 'Sam Patel',
       referrerContact: '@sam.makes',
