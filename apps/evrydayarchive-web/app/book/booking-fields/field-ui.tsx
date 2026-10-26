@@ -2,7 +2,7 @@
 
 export const inputCls = (hasError = false) =>
   [
-    'w-full rounded-card border bg-canvas px-4 py-3 text-sm text-ink',
+    'w-full rounded-card border bg-canvas px-4 py-3 text-base text-ink',
     'placeholder:text-ink-faint transition-colors duration-fast focus:outline-none',
     hasError ? 'border-red-300 focus:border-red-400' : 'border-border focus:border-ink-muted'
   ].join(' ');
@@ -10,7 +10,7 @@ export const inputCls = (hasError = false) =>
 /** A pill-shaped option: a visually hidden radio inside a styled label. */
 export const chipCls = (checked: boolean) =>
   [
-    'cursor-pointer rounded-full border px-4 py-2 text-sm transition-colors duration-fast',
+    'cursor-pointer rounded-full border px-4 py-2 text-base transition-colors duration-fast',
     'has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent',
     checked
       ? 'border-accent bg-accent font-medium text-white'
@@ -30,7 +30,7 @@ export const FollowUp = ({ children }: { children: React.ReactNode }) => (
 export const FieldError = ({ id, message }: { id: string; message: string | undefined }) => {
   if (!message) return null;
   return (
-    <p id={id} role="alert" className="flex items-center gap-1 text-xs text-red-600">
+    <p id={id} role="alert" className="flex items-center gap-1 text-[13px] text-red-600">
       <ErrorIcon />
       {message}
     </p>

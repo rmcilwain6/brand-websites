@@ -38,7 +38,7 @@ type Props = {
 export const SelectionSummary = ({ selection, variant, className }: Props) =>
   variant === 'full' ? (
     <div className={cn('rounded-card border border-border bg-sun px-5 py-6', className)}>
-      <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-faint">
+      <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-soft">
         Your selection
       </p>
       <SelectionDetails selection={selection} full />
@@ -68,7 +68,7 @@ const CollapsibleSummary = ({
         className="flex w-full items-center gap-3 rounded-card px-5 py-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
       >
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-xs font-medium uppercase tracking-widest text-ink-faint">
+          <span className="text-xs font-medium uppercase tracking-widest text-ink-soft">
             Your selection
           </span>
           <span className="truncate text-base font-semibold text-ink">{pkg.name}</span>
@@ -76,14 +76,14 @@ const CollapsibleSummary = ({
         {headlineCents != null && (
           <span className="flex-none text-sm font-semibold tabular-nums text-ink">
             {estimatedTotalCents != null && (
-              <span className="mr-1 text-xs font-normal text-ink-faint">Est.</span>
+              <span className="mr-1 text-[13px] font-normal text-ink-soft">Est.</span>
             )}
             {formatPrice(headlineCents)}
           </span>
         )}
         <ChevronDown
           className={cn(
-            'h-3 w-3 flex-none text-ink-faint transition-transform duration-fast',
+            'h-3 w-3 flex-none text-ink-soft transition-transform duration-fast',
             open && 'rotate-180'
           )}
         />
@@ -126,15 +126,13 @@ const SelectionDetails = ({ selection, full }: { selection: BookingSelection; fu
               <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
                 <span className="text-ink-muted">
                   {m.name}
-                  {displayVal && (
-                    <span className="ml-1 text-xs text-ink-faint">({displayVal})</span>
-                  )}
+                  {displayVal && <span className="ml-1 text-xs text-ink-soft">({displayVal})</span>}
                   {m.isRequired && !displayVal && (
-                    <span className="ml-1 text-xs text-ink-faint">(included)</span>
+                    <span className="ml-1 text-xs text-ink-soft">(included)</span>
                   )}
                 </span>
                 {delta !== 0 && (
-                  <span className="flex-none text-xs tabular-nums text-ink-faint">
+                  <span className="flex-none text-xs tabular-nums text-ink-soft">
                     {delta > 0 ? '+' : ''}
                     {formatPrice(delta)}
                   </span>
@@ -150,7 +148,7 @@ const SelectionDetails = ({ selection, full }: { selection: BookingSelection; fu
           className={full ? 'mt-4 border-t border-border pt-4' : 'mt-3 border-t border-border pt-3'}
         >
           <div className="flex items-baseline justify-between">
-            <span className="text-xs text-ink-faint">Estimated total</span>
+            <span className="text-xs text-ink-soft">Estimated total</span>
             <span className="text-sm font-semibold text-ink">
               {formatPrice(estimatedTotalCents)}
             </span>

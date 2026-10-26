@@ -82,12 +82,12 @@ export const TimePicker = ({ id, value, onChange }: Props) => {
           aria-expanded={open === 'hour'}
           aria-label="Hour"
           onKeyDown={(e) => e.key === 'Escape' && setOpen(null)}
-          className="flex w-full items-center justify-between py-3 pl-4 pr-2 text-sm focus:outline-none"
+          className="flex w-full items-center justify-between py-3 pl-4 pr-2 text-base focus:outline-none"
         >
-          <span className={hour ? 'text-ink' : 'text-ink-faint/60'}>{hour || 'hh'}</span>
+          <span className={hour ? 'text-ink' : 'text-ink-faint'}>{hour || 'hh'}</span>
           <ChevronDown
             className={[
-              'h-3 w-3 text-ink-faint transition-transform duration-fast',
+              'h-3 w-3 text-ink-soft transition-transform duration-fast',
               open === 'hour' ? 'rotate-180' : ''
             ].join(' ')}
           />
@@ -111,7 +111,7 @@ export const TimePicker = ({ id, value, onChange }: Props) => {
       </div>
 
       {/* ── Separator ───────────────────────────────────────────────────────── */}
-      <span className="select-none text-sm font-medium text-ink-faint" aria-hidden="true">
+      <span className="select-none text-base font-medium text-ink-soft" aria-hidden="true">
         :
       </span>
 
@@ -124,12 +124,12 @@ export const TimePicker = ({ id, value, onChange }: Props) => {
           aria-expanded={open === 'minute'}
           aria-label="Minute"
           onKeyDown={(e) => e.key === 'Escape' && setOpen(null)}
-          className="flex w-full items-center justify-between py-3 pl-3 pr-2 text-sm focus:outline-none"
+          className="flex w-full items-center justify-between py-3 pl-3 pr-2 text-base focus:outline-none"
         >
-          <span className={minute ? 'text-ink' : 'text-ink-faint/60'}>{minute || 'mm'}</span>
+          <span className={minute ? 'text-ink' : 'text-ink-faint'}>{minute || 'mm'}</span>
           <ChevronDown
             className={[
-              'h-3 w-3 text-ink-faint transition-transform duration-fast',
+              'h-3 w-3 text-ink-soft transition-transform duration-fast',
               open === 'minute' ? 'rotate-180' : ''
             ].join(' ')}
           />
@@ -165,8 +165,8 @@ export const TimePicker = ({ id, value, onChange }: Props) => {
             onClick={() => emit(hour || '12', minute || '00', p)}
             aria-pressed={period === p}
             className={[
-              'rounded-placard px-2 py-1 text-xs font-medium transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
-              period === p ? 'bg-ink text-canvas' : 'text-ink-faint hover:text-ink-muted'
+              'rounded-placard px-2 py-1 text-sm font-medium transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
+              period === p ? 'bg-ink text-canvas' : 'text-ink-soft hover:text-ink-muted'
             ].join(' ')}
           >
             {p}

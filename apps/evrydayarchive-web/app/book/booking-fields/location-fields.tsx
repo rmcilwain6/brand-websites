@@ -41,13 +41,13 @@ export const LocationFields = ({
         className="space-y-3"
         aria-describedby={chipError ? 'location-note location-error' : 'location-note'}
       >
-        <legend className="text-sm font-medium text-ink-muted">
+        <legend className="text-sm font-medium text-ink-muted sm:text-[15px]">
           Where are you based?{' '}
           <span className="text-accent" aria-hidden="true">
             *
           </span>
         </legend>
-        <p id="location-note" className="text-xs leading-relaxed text-ink-faint">
+        <p id="location-note" className="text-[13px] leading-relaxed text-ink-soft sm:text-sm">
           I travel regularly between Vancouver Island and the mainland. Let me know which area
           you&apos;re in so I can confirm I&apos;ll be there.
         </p>
@@ -72,7 +72,10 @@ export const LocationFields = ({
 
         {otherSelected && (
           <FollowUp>
-            <label htmlFor="location-other" className="text-sm font-medium text-ink-muted">
+            <label
+              htmlFor="location-other"
+              className="text-sm font-medium text-ink-muted sm:text-[15px]"
+            >
               Where, roughly?{' '}
               <span className="text-accent" aria-hidden="true">
                 *
@@ -94,8 +97,12 @@ export const LocationFields = ({
       </fieldset>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="location-ideas" className="text-sm font-medium text-ink-muted">
-          Anywhere in mind? <span className="text-xs font-normal text-ink-faint">(optional)</span>
+        <label
+          htmlFor="location-ideas"
+          className="text-sm font-medium text-ink-muted sm:text-[15px]"
+        >
+          Anywhere in mind?{' '}
+          <span className="text-[13px] font-normal text-ink-soft">(optional)</span>
         </label>
         <input
           id="location-ideas"

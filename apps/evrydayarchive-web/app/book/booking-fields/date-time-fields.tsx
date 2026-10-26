@@ -35,7 +35,10 @@ export const DateTimeFields = ({
     <div className="space-y-3">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="preferred-date" className="text-sm font-medium text-ink-muted">
+          <label
+            htmlFor="preferred-date"
+            className="text-sm font-medium text-ink-muted sm:text-[15px]"
+          >
             Preferred date{' '}
             <span className="text-accent" aria-hidden="true">
               *
@@ -55,13 +58,16 @@ export const DateTimeFields = ({
           <FieldError id="date-error" message={dateError} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="preferred-time" className="text-sm font-medium text-ink-muted">
-            Preferred time <span className="text-xs font-normal text-ink-faint">(optional)</span>
+          <label
+            htmlFor="preferred-time"
+            className="text-sm font-medium text-ink-muted sm:text-[15px]"
+          >
+            Preferred time <span className="text-[13px] font-normal text-ink-soft">(optional)</span>
           </label>
           <TimePicker id="preferred-time" value={time} onChange={onTimeChange} />
         </div>
       </div>
-      <p className="text-xs leading-relaxed text-ink-faint">
+      <p className="text-[13px] leading-relaxed text-ink-soft sm:text-sm">
         This is a preference, not a confirmed slot. I&apos;ll reach out to confirm availability.
         Dates shown in red are unavailable.
       </p>

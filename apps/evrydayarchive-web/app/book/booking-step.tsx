@@ -43,7 +43,7 @@ export const BookingStep = ({
           'flex h-8 w-8 flex-none items-center justify-center rounded-full text-sm font-semibold',
           open && 'border border-ink-muted bg-sun text-ink',
           status === 'done' && 'bg-accent text-white',
-          status === 'upcoming' && 'border border-border text-ink-faint'
+          status === 'upcoming' && 'border border-border text-ink-soft'
         )}
       >
         {status === 'done' ? <CheckIcon /> : index + 1}
@@ -58,14 +58,16 @@ export const BookingStep = ({
           <span className="sr-only">Step {index + 1}: </span>
           {title}
           {optional && (
-            <span className="ml-2 align-middle text-xs font-normal text-ink-faint">(optional)</span>
+            <span className="ml-2 align-middle text-[13px] font-normal text-ink-soft">
+              (optional)
+            </span>
           )}
         </span>
         {!open && (
           <span
             className={cn(
               'truncate text-sm',
-              status === 'done' ? 'text-ink-muted' : 'text-ink-faint'
+              status === 'done' ? 'text-ink-muted' : 'text-ink-soft'
             )}
           >
             {subtitle}

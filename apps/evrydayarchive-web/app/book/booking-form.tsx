@@ -436,7 +436,7 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
               >
                 {status === 'submitting' ? 'Sending…' : 'Send request'}
               </button>
-              <p className="text-xs leading-relaxed text-ink-faint">
+              <p className="text-[13px] leading-relaxed text-ink-soft sm:text-sm">
                 No commitment. I&apos;ll be in touch soon.
               </p>
             </div>
@@ -462,7 +462,7 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
         <aside className="hidden lg:block lg:w-80 lg:flex-none lg:sticky lg:top-8">
           <SelectionSummary selection={selection} variant="full" />
           <div className="mt-6 px-1">
-            <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">
+            <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-soft">
               What happens next
             </p>
             <p className="text-sm leading-relaxed text-ink-muted">

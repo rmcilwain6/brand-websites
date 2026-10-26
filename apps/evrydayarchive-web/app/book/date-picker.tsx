@@ -258,14 +258,12 @@ export const DatePicker = ({
         aria-expanded={open}
         aria-describedby={ariaDescribedby}
         className={[
-          'flex w-full items-center justify-between rounded-card border bg-canvas px-4 py-3 text-left text-sm transition-colors duration-fast focus:outline-none',
+          'flex w-full items-center justify-between rounded-card border bg-canvas px-4 py-3 text-left text-base transition-colors duration-fast focus:outline-none',
           hasError ? 'border-red-300 focus:border-red-400' : 'border-border focus:border-ink-muted'
         ].join(' ')}
       >
-        <span className={value ? 'text-ink' : 'text-ink-faint/70'}>
-          {displayValue || placeholder}
-        </span>
-        <CalendarIcon className="ml-2 h-4 w-4 flex-none text-ink-faint" />
+        <span className={value ? 'text-ink' : 'text-ink-faint'}>{displayValue || placeholder}</span>
+        <CalendarIcon className="ml-2 h-4 w-4 flex-none text-ink-soft" />
       </button>
 
       {/* Calendar panel */}
@@ -284,7 +282,7 @@ export const DatePicker = ({
                 type="button"
                 onClick={prevMonth}
                 aria-label="Previous month"
-                className="flex h-7 w-7 items-center justify-center rounded-placard border border-border text-ink-faint transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                className="flex h-7 w-7 items-center justify-center rounded-placard border border-border text-ink-soft transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
               </button>
@@ -297,7 +295,7 @@ export const DatePicker = ({
                 type="button"
                 onClick={nextMonth}
                 aria-label="Next month"
-                className="flex h-7 w-7 items-center justify-center rounded-placard border border-border text-ink-faint transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                className="flex h-7 w-7 items-center justify-center rounded-placard border border-border text-ink-soft transition-colors duration-fast hover:border-ink-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
                 <ChevronRight className="h-3.5 w-3.5" />
               </button>
@@ -310,7 +308,7 @@ export const DatePicker = ({
                 {DAY_LABELS.map((d) => (
                   <div
                     key={d}
-                    className="py-1 text-center text-[10px] font-medium uppercase tracking-wider text-ink-faint"
+                    className="py-1 text-center text-xs font-medium uppercase tracking-wider text-ink-soft"
                   >
                     {d}
                   </div>
@@ -370,8 +368,8 @@ export const DatePicker = ({
 
               {/* Legend */}
               <div className="mt-3 flex items-center gap-3 border-t border-border pt-2.5">
-                <span className="flex items-center gap-1.5 text-[10px] text-ink-faint">
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded bg-red-100 text-[9px] text-red-500 dark:bg-red-950/40">
+                <span className="flex items-center gap-1.5 text-xs text-ink-soft">
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded bg-red-100 text-[10px] text-red-500 dark:bg-red-950/40">
                     ✕
                   </span>
                   Unavailable
@@ -383,11 +381,11 @@ export const DatePicker = ({
           {/* Schedule panel — below calendar on mobile, attached to the right on md+ */}
           {showSchedulePanel && (
             <div className="flex-none border-t border-border p-4 md:w-44 md:border-l md:border-t-0">
-              <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-ink-faint">
+              <p className="mb-3 text-xs font-medium uppercase tracking-wider text-ink-soft">
                 Where I&apos;ll be
               </p>
               {monthWindows.length === 0 ? (
-                <p className="text-xs leading-relaxed text-ink-faint">
+                <p className="text-[13px] leading-relaxed text-ink-soft sm:text-sm">
                   No schedule set for this month.
                 </p>
               ) : (
@@ -395,11 +393,11 @@ export const DatePicker = ({
                   {monthWindows.map((w) => (
                     <li key={w.id}>
                       <p className="text-xs font-medium text-ink">{w.location.name}</p>
-                      <p className="mt-0.5 text-[11px] leading-snug text-ink-faint">
+                      <p className="mt-0.5 text-xs leading-snug text-ink-soft">
                         {fmtWindowDate(w.startDate)} – {fmtWindowDate(w.endDate)}
                       </p>
                       {w.notes && (
-                        <p className="mt-0.5 text-[11px] leading-snug text-ink-faint">{w.notes}</p>
+                        <p className="mt-0.5 text-xs leading-snug text-ink-soft">{w.notes}</p>
                       )}
                     </li>
                   ))}

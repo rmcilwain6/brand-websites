@@ -20,7 +20,7 @@ type Props = {
 
 const referralReward = `${formatVoucherDiscount(REFERRAL.discount)} off a session`;
 
-const Optional = () => <span className="text-xs font-normal text-ink-faint">(optional)</span>;
+const Optional = () => <span className="text-[13px] font-normal text-ink-soft">(optional)</span>;
 
 export const ReferralFields = ({ values, onChange }: Props) => {
   const referrerFirstName = values.referrerName.trim().split(/\s+/)[0] ?? '';
@@ -29,7 +29,7 @@ export const ReferralFields = ({ values, onChange }: Props) => {
     <div className="space-y-6">
       {/* How did you hear */}
       <div className="flex flex-col gap-2">
-        <p id="heard-from-label" className="text-sm font-medium text-ink-muted">
+        <p id="heard-from-label" className="text-sm font-medium text-ink-muted sm:text-[15px]">
           How did you hear about Evryday Archive Co? <Optional />
         </p>
         <div role="radiogroup" aria-labelledby="heard-from-label" className="flex flex-wrap gap-2">
@@ -56,7 +56,10 @@ export const ReferralFields = ({ values, onChange }: Props) => {
 
       {/* Referrer, with a follow-up for how to reach them once a name is typed */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="referrer-name" className="text-sm font-medium text-ink-muted">
+        <label
+          htmlFor="referrer-name"
+          className="text-sm font-medium text-ink-muted sm:text-[15px]"
+        >
           Did someone send you my way? <Optional />
         </label>
         <input
@@ -70,13 +73,16 @@ export const ReferralFields = ({ values, onChange }: Props) => {
           aria-describedby="referrer-note"
           className={inputCls()}
         />
-        <p id="referrer-note" className="text-xs leading-relaxed text-ink-faint">
+        <p id="referrer-note" className="text-[13px] leading-relaxed text-ink-soft sm:text-sm">
           If you book, the person who sent you gets {referralReward}.
         </p>
 
         {referrerFirstName && (
           <FollowUp>
-            <label htmlFor="referrer-contact" className="text-sm font-medium text-ink-muted">
+            <label
+              htmlFor="referrer-contact"
+              className="text-sm font-medium text-ink-muted sm:text-[15px]"
+            >
               How can I reach {referrerFirstName}? <Optional />
             </label>
             <input
@@ -90,7 +96,10 @@ export const ReferralFields = ({ values, onChange }: Props) => {
               aria-describedby="referrer-contact-note"
               className={inputCls()}
             />
-            <p id="referrer-contact-note" className="text-xs leading-relaxed text-ink-faint">
+            <p
+              id="referrer-contact-note"
+              className="text-[13px] leading-relaxed text-ink-soft sm:text-sm"
+            >
               So I can send them their code.
             </p>
           </FollowUp>
@@ -99,7 +108,7 @@ export const ReferralFields = ({ values, onChange }: Props) => {
 
       {/* Voucher code */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="voucher-code" className="text-sm font-medium text-ink-muted">
+        <label htmlFor="voucher-code" className="text-sm font-medium text-ink-muted sm:text-[15px]">
           Have a voucher code? <Optional />
         </label>
         <input
@@ -115,7 +124,7 @@ export const ReferralFields = ({ values, onChange }: Props) => {
           aria-describedby="voucher-code-note"
           className={inputCls()}
         />
-        <p id="voucher-code-note" className="text-xs leading-relaxed text-ink-faint">
+        <p id="voucher-code-note" className="text-[13px] leading-relaxed text-ink-soft sm:text-sm">
           I&apos;ll confirm it by email.
         </p>
       </div>

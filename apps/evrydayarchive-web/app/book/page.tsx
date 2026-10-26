@@ -108,7 +108,7 @@ export default async function BookPage({ searchParams }: Props) {
         <div className="mb-10">
           <Link
             href={backHref}
-            className="text-sm text-ink-faint transition-colors duration-fast hover:text-ink"
+            className="text-sm text-ink-soft transition-colors duration-fast hover:text-ink"
           >
             {backLabel}
           </Link>
@@ -116,7 +116,7 @@ export default async function BookPage({ searchParams }: Props) {
 
         {/* Page header */}
         <header className="mb-12 max-w-xl">
-          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
+          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-soft">
             Booking request
           </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">

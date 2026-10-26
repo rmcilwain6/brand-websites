@@ -27,7 +27,7 @@ export const ConfirmationPanel = ({ name, voucherEntered = false }: Props) => {
       ref={panelRef}
       className="scroll-mt-6 rounded-card border border-border bg-sun px-8 py-14 text-center md:scroll-mt-24"
     >
-      <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
+      <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-soft">
         Request sent
       </p>
       <h2

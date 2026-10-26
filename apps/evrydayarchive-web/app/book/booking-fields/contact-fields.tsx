@@ -18,7 +18,7 @@ export const ContactFields = ({ values, onChange, errors }: Props) => (
     <div className="space-y-5">
       {/* Name */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="name" className="text-sm font-medium text-ink-muted">
+        <label htmlFor="name" className="text-sm font-medium text-ink-muted sm:text-[15px]">
           Full name{' '}
           <span className="text-accent" aria-hidden="true">
             *
@@ -40,7 +40,7 @@ export const ContactFields = ({ values, onChange, errors }: Props) => (
 
       {/* Email */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="email" className="text-sm font-medium text-ink-muted">
+        <label htmlFor="email" className="text-sm font-medium text-ink-muted sm:text-[15px]">
           Email{' '}
           <span className="text-accent" aria-hidden="true">
             *
@@ -62,8 +62,8 @@ export const ContactFields = ({ values, onChange, errors }: Props) => (
 
       {/* Phone */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="phone" className="text-sm font-medium text-ink-muted">
-          Phone <span className="text-xs font-normal text-ink-faint">(optional)</span>
+        <label htmlFor="phone" className="text-sm font-medium text-ink-muted sm:text-[15px]">
+          Phone <span className="text-[13px] font-normal text-ink-soft">(optional)</span>
         </label>
         <input
           id="phone"
