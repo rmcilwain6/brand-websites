@@ -30,7 +30,7 @@ export const ReferralFields = ({ values, onChange }: Props) => {
       {/* How did you hear */}
       <div className="flex flex-col gap-2">
         <p id="heard-from-label" className="text-sm font-medium text-ink-muted">
-          How did you hear about this? <Optional />
+          How did you hear about Evryday Archive Co? <Optional />
         </p>
         <div role="radiogroup" aria-labelledby="heard-from-label" className="flex flex-wrap gap-2">
           {HEARD_FROM_OPTIONS.map((opt) => {
