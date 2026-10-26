@@ -13,7 +13,7 @@ type Props = {
 
 export const ContactFields = ({ values, onChange, errors }: Props) => (
   <fieldset className="space-y-5">
-    <legend className="text-sm font-semibold text-ink">Your details</legend>
+    <legend className="sr-only">Your details</legend>
 
     {/* Name */}
     <div className="flex flex-col gap-1.5">

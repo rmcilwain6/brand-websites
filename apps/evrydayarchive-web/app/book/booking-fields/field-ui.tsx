@@ -7,6 +7,26 @@ export const inputCls = (hasError = false) =>
     hasError ? 'border-red-300 focus:border-red-400' : 'border-border focus:border-ink-muted'
   ].join(' ');
 
+/** A pill-shaped option: a visually hidden radio inside a styled label. */
+export const chipCls = (checked: boolean) =>
+  [
+    'cursor-pointer rounded-full border px-4 py-2 text-sm transition-colors duration-fast',
+    'has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent',
+    checked
+      ? 'border-accent bg-accent font-medium text-white'
+      : 'border-border bg-canvas text-ink-muted hover:border-ink-muted hover:text-ink'
+  ].join(' ');
+
+/**
+ * A question that only appears because of an earlier answer. The indent and accent rule tie it
+ * visually to the question above it.
+ */
+export const FollowUp = ({ children }: { children: React.ReactNode }) => (
+  <div className="ml-3 flex animate-fade-in flex-col gap-1.5 border-l-2 border-accent/50 py-1 pl-4">
+    {children}
+  </div>
+);
+
 export const FieldError = ({ id, message }: { id: string; message: string | undefined }) => {
   if (!message) return null;
   return (

@@ -4,8 +4,7 @@
 import { HEARD_FROM_OPTIONS, REFERRAL, type HeardFrom } from '@repo/core/referrals';
 import { formatVoucherDiscount } from '@repo/core/vouchers';
 
-import { cn } from '../../lib/cn';
-import { inputCls } from './field-ui';
+import { FollowUp, chipCls, inputCls } from './field-ui';
 
 export type ReferralValues = {
   heardFrom: HeardFrom | '';
@@ -24,12 +23,10 @@ const referralReward = `${formatVoucherDiscount(REFERRAL.discount)} off a sessio
 const Optional = () => <span className="text-xs font-normal text-ink-faint">(optional)</span>;
 
 export const ReferralFields = ({ values, onChange }: Props) => {
-  const hasReferrer = values.referrerName.trim() !== '';
+  const referrerFirstName = values.referrerName.trim().split(/\s+/)[0] ?? '';
 
   return (
-    <fieldset className="space-y-5">
-      <legend className="text-sm font-semibold text-ink">How you found me</legend>
-
+    <div className="space-y-6">
       {/* How did you hear */}
       <div className="flex flex-col gap-2">
         <p id="heard-from-label" className="text-sm font-medium text-ink-muted">
@@ -39,16 +36,7 @@ export const ReferralFields = ({ values, onChange }: Props) => {
           {HEARD_FROM_OPTIONS.map((opt) => {
             const checked = values.heardFrom === opt.value;
             return (
-              <label
-                key={opt.value}
-                className={cn(
-                  'cursor-pointer rounded-full border px-3.5 py-1.5 text-sm transition-colors duration-fast',
-                  'has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent',
-                  checked
-                    ? 'border-accent bg-accent font-medium text-white'
-                    : 'border-border text-ink-muted hover:border-ink-muted hover:text-ink'
-                )}
-              >
+              <label key={opt.value} className={chipCls(checked)}>
                 <input
                   type="radio"
                   name="heard-from"
@@ -66,7 +54,7 @@ export const ReferralFields = ({ values, onChange }: Props) => {
         </div>
       </div>
 
-      {/* Referrer */}
+      {/* Referrer, with a follow-up for how to reach them once a name is typed */}
       <div className="flex flex-col gap-1.5">
         <label htmlFor="referrer-name" className="text-sm font-medium text-ink-muted">
           Did someone send you my way? <Optional />
@@ -85,29 +73,29 @@ export const ReferralFields = ({ values, onChange }: Props) => {
         <p id="referrer-note" className="text-xs leading-relaxed text-ink-faint">
           If you book, the person who sent you gets {referralReward}.
         </p>
-      </div>
 
-      {hasReferrer && (
-        <div className="flex animate-fade-in flex-col gap-1.5">
-          <label htmlFor="referrer-contact" className="text-sm font-medium text-ink-muted">
-            How can I reach them? <Optional />
-          </label>
-          <input
-            id="referrer-contact"
-            type="text"
-            maxLength={200}
-            autoComplete="off"
-            placeholder="Instagram handle, email, or phone"
-            value={values.referrerContact}
-            onChange={(e) => onChange('referrerContact', e.target.value)}
-            aria-describedby="referrer-contact-note"
-            className={inputCls()}
-          />
-          <p id="referrer-contact-note" className="text-xs leading-relaxed text-ink-faint">
-            So I can send them their code.
-          </p>
-        </div>
-      )}
+        {referrerFirstName && (
+          <FollowUp>
+            <label htmlFor="referrer-contact" className="text-sm font-medium text-ink-muted">
+              How can I reach {referrerFirstName}? <Optional />
+            </label>
+            <input
+              id="referrer-contact"
+              type="text"
+              maxLength={200}
+              autoComplete="off"
+              placeholder="Instagram handle, email, or phone"
+              value={values.referrerContact}
+              onChange={(e) => onChange('referrerContact', e.target.value)}
+              aria-describedby="referrer-contact-note"
+              className={inputCls()}
+            />
+            <p id="referrer-contact-note" className="text-xs leading-relaxed text-ink-faint">
+              So I can send them their code.
+            </p>
+          </FollowUp>
+        )}
+      </div>
 
       {/* Voucher code */}
       <div className="flex flex-col gap-1.5">
@@ -131,6 +119,6 @@ export const ReferralFields = ({ values, onChange }: Props) => {
           I&apos;ll confirm it by email.
         </p>
       </div>
-    </fieldset>
+    </div>
   );
 };
