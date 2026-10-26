@@ -77,5 +77,11 @@ export const VoucherUpdateSchema = z
     }
   });
 
+/** Emailing a voucher to its holder from the admin. */
+export const VoucherSendSchema = z.object({
+  to: z.string().trim().email('Enter a valid email address.')
+});
+
 export type VoucherCreate = z.infer<typeof VoucherCreateSchema>;
 export type VoucherUpdate = z.infer<typeof VoucherUpdateSchema>;
+export type VoucherSend = z.infer<typeof VoucherSendSchema>;

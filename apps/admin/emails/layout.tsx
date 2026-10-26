@@ -23,7 +23,7 @@ export const tokens = {
   accent: '#F06F42'
 };
 
-const SITE_URL = 'https://evrydayarchive.co';
+export const SITE_URL = 'https://evrydayarchive.co';
 const FONT_STACK = "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 
 type Props = {

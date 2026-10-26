@@ -5,6 +5,7 @@ import { BookingConfirmation } from '../../emails/booking-confirmation';
 import { BookingNotification } from '../../emails/booking-notification';
 import { formatDateShort } from '../../emails/components/format';
 import type { BookingEmailData } from '../../emails/components/types';
+import { ReferralVoucher, type ReferralVoucherEmailData } from '../../emails/referral-voucher';
 import { getEmailEnv } from './env';
 
 const FROM = 'Reed from Evryday Archive Co <reed@evrydayarchive.co>';
@@ -57,6 +58,19 @@ export const sendBookingNotification = async (data: BookingEmailData) => {
     to: NOTIFICATION_EMAIL,
     replyTo: data.email,
     subject: bookingNotificationSubject(data),
+    html
+  });
+};
+
+// ── Referral: thank-you and voucher code to the referrer ────────────────────
+
+export const sendReferralVoucher = async (to: string, data: ReferralVoucherEmailData) => {
+  const html = await render(ReferralVoucher(data));
+
+  await getResend().emails.send({
+    from: FROM,
+    to,
+    subject: `Thank you for the referral — here’s ${data.discountLabel} off a session`,
     html
   });
 };

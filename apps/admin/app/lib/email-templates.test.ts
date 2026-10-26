@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { BookingConfirmation } from '../../emails/booking-confirmation';
 import { BookingNotification } from '../../emails/booking-notification';
 import type { BookingEmailData } from '../../emails/components/types';
+import { ReferralVoucher } from '../../emails/referral-voucher';
 import { bookingNotificationSubject } from './email';
 
 const full = BookingNotification.PreviewProps as BookingEmailData;
@@ -97,5 +98,35 @@ describe('booking confirmation email', () => {
     expect(out).not.toContain('Voucher code');
     expect(out).not.toContain('Your notes');
     expect(out).not.toContain('This is an estimate');
+  });
+});
+
+describe('referral voucher email', () => {
+  it('thanks the holder and explains the code, its value, expiry, use and transfer', async () => {
+    const out = await text(render(ReferralVoucher(ReferralVoucher.PreviewProps)));
+
+    expect(out).toContain('Thank you, Sam.');
+    expect(out).toContain('EAC-7KQ2');
+    expect(out).toContain('$15 off a session');
+    expect(out).toContain('Good until Friday, December 31, 2027');
+    expect(out).toContain('Have a voucher code?');
+    expect(out).toContain('let me know who’ll be using it');
+  });
+
+  it('links to the packages page', async () => {
+    const html = await render(ReferralVoucher(ReferralVoucher.PreviewProps));
+    expect(html).toContain('href="https://evrydayarchive.co/packages"');
+  });
+
+  it('works without a holder name or an expiry', async () => {
+    const out = await text(
+      render(
+        ReferralVoucher({ holderName: '', code: 'EAC-7KQ2', discountLabel: '20%', expiresOn: null })
+      )
+    );
+
+    expect(out).toContain('Thank you.');
+    expect(out).toContain('20% off a session');
+    expect(out).not.toContain('Good until');
   });
 });
