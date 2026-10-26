@@ -123,8 +123,7 @@ export default async function BookPage({ searchParams }: Props) {
             Let&apos;s make it happen.
           </h1>
           <p className="mt-4 text-base leading-relaxed text-ink-muted">
-            Fill in the details below and I&apos;ll be in touch to confirm availability and talk
-            through the details.
+            Three short steps. Nothing is booked until I&apos;ve confirmed the details with you.
           </p>
         </header>
 
