@@ -17,12 +17,13 @@ export const tokens = {
   sun: '#f3ede2',
   ink: '#1a1814',
   inkMuted: '#2b2b2b',
-  inkFaint: '#8a7f74',
+  // 5.5:1 on white and 5:1 on canvas, so small secondary text stays readable.
+  inkFaint: '#6b6259',
   border: '#e0d9cf',
   accent: '#F06F42'
 };
 
-const SITE_URL = 'https://evrydayarchive.co';
+export const SITE_URL = 'https://evrydayarchive.co';
 const FONT_STACK = "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 
 type Props = {
@@ -80,7 +81,7 @@ export const EmailLayout = ({ preview, children }: Props) => (
               evrydayarchive.co
             </Link>
             {'  ·  '}
-            Kamloops, BC
+            Victoria · Vancouver · Kamloops, BC
           </Text>
         </Section>
       </Container>

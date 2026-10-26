@@ -1,9 +1,10 @@
-import { buildModifierLineItems } from '@repo/core';
+import { buildModifierLineItems, formatVoucherDiscount, toVoucherDiscount } from '@repo/core';
 import { prisma } from '@repo/db';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import BookingActions from './BookingActions';
+import ReferralVoucherCard from './ReferralVoucherCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,11 +50,23 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
     include: {
       inquiry: true,
       package: { include: { modifiers: { orderBy: { sortOrder: 'asc' } } } },
-      timeSlot: true
+      timeSlot: true,
+      referralVoucher: true
     }
   });
 
   if (!booking) notFound();
+
+  const voucher = booking.referralVoucher;
+  const voucherDiscount = voucher && toVoucherDiscount(voucher);
+  const isEmail = (v: string | null | undefined): v is string => !!v && /^\S+@\S+\.\S+$/.test(v);
+  const fmtDay = (d: Date) =>
+    d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'UTC'
+    });
 
   const inquiry = booking.inquiry;
   const payload = inquiry?.payload as BookingPayload | null;
@@ -160,6 +173,16 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
           <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
             <table className="w-full text-sm">
               <tbody className="divide-y divide-slate-100">
+                {booking.package?.basePriceCents != null && (
+                  <tr>
+                    <td colSpan={2} className="px-4 py-3 text-slate-900">
+                      {booking.package.name} package
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-right tabular-nums text-slate-900">
+                      {fmt(booking.package.basePriceCents)}
+                    </td>
+                  </tr>
+                )}
                 {modifierLineItems.map((item, i) => (
                   <tr key={i}>
                     <td className="px-4 py-3 text-slate-700">{item.name}</td>
@@ -182,6 +205,36 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
               </tbody>
             </table>
           </div>
+        </section>
+      )}
+
+      {/* Referral */}
+      {booking.referrerName && (
+        <section>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Referral
+          </h2>
+          <dl className="mb-3 divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
+            <Row label="Referred by" value={booking.referrerName} />
+            {booking.referrerContact && (
+              <Row label="Their contact" value={booking.referrerContact} />
+            )}
+          </dl>
+          {voucher && (
+            <ReferralVoucherCard
+              voucherId={voucher.id}
+              code={voucher.code}
+              status={voucher.status}
+              discountLabel={
+                voucherDiscount ? `${formatVoucherDiscount(voucherDiscount)} off` : null
+              }
+              expiresLabel={voucher.expiresAt ? fmtDay(voucher.expiresAt) : null}
+              expired={!!voucher.expiresAt && voucher.expiresAt < new Date()}
+              holderName={voucher.holderName}
+              suggestedEmail={[voucher.holderContact, booking.referrerContact].find(isEmail) ?? ''}
+              sentLabel={voucher.activatedAt ? fmtDay(voucher.activatedAt) : null}
+            />
+          )}
         </section>
       )}
 

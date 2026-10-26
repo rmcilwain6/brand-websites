@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { VoucherCreateSchema, VoucherDiscountSchema, VoucherUpdateSchema } from './voucher';
+import {
+  VoucherCreateSchema,
+  VoucherDiscountSchema,
+  VoucherSendSchema,
+  VoucherUpdateSchema
+} from './voucher';
 
 describe('VoucherDiscountSchema', () => {
   it('accepts a fixed amount or a percentage', () => {
@@ -126,5 +131,18 @@ describe('VoucherUpdateSchema', () => {
         amountCents: 500
       }).success
     ).toBe(false);
+  });
+});
+
+describe('VoucherSendSchema', () => {
+  it('accepts an email address, trimmed', () => {
+    expect(VoucherSendSchema.parse({ to: '  sam@example.com ' })).toEqual({
+      to: 'sam@example.com'
+    });
+  });
+
+  it('rejects anything that is not an email address', () => {
+    expect(VoucherSendSchema.safeParse({ to: '@sam.makes' }).success).toBe(false);
+    expect(VoucherSendSchema.safeParse({}).success).toBe(false);
   });
 });

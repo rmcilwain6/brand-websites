@@ -1,137 +1,221 @@
-import { Link, Text } from '@react-email/components';
+import { Link, Section, Text } from '@react-email/components';
 import * as React from 'react';
 
-import type { ModifierLineItem } from '@repo/core';
-import { EmailLayout, tokens } from './layout';
+import { formatDateLong, formatDateShort, formatExpiry, formatTime } from './components/format';
+import type { BookingEmailData, VoucherCheck } from './components/types';
+import {
+  Badge,
+  type BadgeTone,
+  Card,
+  Code,
+  DetailTable,
+  Eyebrow,
+  Hint,
+  PriceTable,
+  PrimaryButton,
+  SectionTitle,
+  s
+} from './components/ui';
+import { EmailLayout } from './layout';
 
-type Props = {
-  name: string;
-  email: string;
-  phone?: string;
-  location: string;
-  preferredDate: string;
-  preferredTime?: string;
-  packageName?: string;
-  estimatedTotalCents?: number;
-  notes?: string;
-  inquiryId: string;
-  modifierLineItems?: ModifierLineItem[];
+/** How each voucher check reads at a glance, and what to do about it. */
+const VOUCHER_VERDICT: Record<
+  VoucherCheck['verdict'],
+  { tone: BadgeTone; badge: string; summary: string }
+> = {
+  valid: { tone: 'good', badge: 'Valid', summary: 'Active and in date.' },
+  pending: {
+    tone: 'warn',
+    badge: 'Not active yet',
+    summary: 'This code exists but is still Pending, so its holder hasn’t been sent it yet.'
+  },
+  redeemed: {
+    tone: 'bad',
+    badge: 'Already used',
+    summary: 'This voucher has already been redeemed.'
+  },
+  void: { tone: 'bad', badge: 'Void', summary: 'This voucher has been voided.' },
+  expired: { tone: 'bad', badge: 'Expired', summary: 'This voucher is past its expiry date.' },
+  unknown: {
+    tone: 'bad',
+    badge: 'No match',
+    summary: 'No voucher has this code. They may have mistyped it.'
+  },
+  malformed: {
+    tone: 'bad',
+    badge: 'Not a code',
+    summary: 'This doesn’t look like a voucher code (EAC-XXXX).'
+  }
 };
 
-const formatCurrency = (cents: number) =>
-  new Intl.NumberFormat('en-CA', {
-    style: 'currency',
-    currency: 'CAD',
-    maximumFractionDigits: 0
-  }).format(cents / 100);
+export const BookingNotification = (data: BookingEmailData) => {
+  const {
+    name,
+    email,
+    phone,
+    location,
+    preferredDate,
+    preferredTime,
+    packageName,
+    packageBasePriceCents,
+    estimatedTotalCents,
+    notes,
+    inquiryId,
+    modifierLineItems,
+    locationIdeas,
+    heardFrom,
+    referrer,
+    referralVoucher,
+    voucherEntered,
+    adminUrl
+  } = data;
 
-const formatDelta = (cents: number | null): string => {
-  if (cents === null || cents === 0) return 'Included';
-  if (cents > 0) return `+${formatCurrency(cents)}`;
-  return `−${formatCurrency(Math.abs(cents))}`;
-};
-
-export const BookingNotification = ({
-  name,
-  email,
-  phone,
-  location,
-  preferredDate,
-  preferredTime,
-  packageName,
-  estimatedTotalCents,
-  notes,
-  inquiryId,
-  modifierLineItems
-}: Props) => {
-  const dateDisplay = preferredTime ? `${preferredDate} at ${preferredTime}` : preferredDate;
-  const hasModifiers = modifierLineItems && modifierLineItems.length > 0;
+  const verdict = voucherEntered && VOUCHER_VERDICT[voucherEntered.check.verdict];
+  const glance = [packageName ?? 'No package', formatDateShort(preferredDate), location].join(
+    ' · '
+  );
+  const hasFoundYou = !!(heardFrom || referrer || voucherEntered);
 
   return (
-    <EmailLayout preview={`New booking request — ${packageName ?? 'no package'} — ${name}`}>
-      <Text style={styles.label}>New booking request</Text>
-      <Text style={styles.heading}>From {name}</Text>
+    <EmailLayout preview={`${name} · ${glance}`}>
+      <Eyebrow>New booking request</Eyebrow>
+      <Text style={s.heading}>{name}</Text>
+      <Text style={s.subheading}>{glance}</Text>
 
-      <table style={styles.table}>
-        <tbody>
-          <tr>
-            <td style={styles.fieldLabel}>Name</td>
-            <td style={styles.fieldValue}>{name}</td>
-          </tr>
-          <tr>
-            <td style={styles.fieldLabel}>Email</td>
-            <td style={styles.fieldValue}>
-              <Link href={`mailto:${email}`} style={styles.link}>
-                {email}
-              </Link>
-            </td>
-          </tr>
-          {phone && (
-            <tr>
-              <td style={styles.fieldLabel}>Phone</td>
-              <td style={styles.fieldValue}>{phone}</td>
-            </tr>
-          )}
-          {packageName && (
-            <tr>
-              <td style={styles.fieldLabel}>Package</td>
-              <td style={styles.fieldValue}>{packageName}</td>
-            </tr>
-          )}
-          <tr>
-            <td style={styles.fieldLabel}>Location</td>
-            <td style={styles.fieldValue}>{location}</td>
-          </tr>
-          <tr>
-            <td style={styles.fieldLabel}>Preferred date</td>
-            <td style={styles.fieldValue}>{dateDisplay}</td>
-          </tr>
-          {!hasModifiers && estimatedTotalCents != null && (
-            <tr>
-              <td style={styles.fieldLabel}>Est. total</td>
-              <td style={styles.fieldValue}>{formatCurrency(estimatedTotalCents)}</td>
-            </tr>
-          )}
-          <tr>
-            <td style={styles.fieldLabel}>Inquiry ID</td>
-            <td style={styles.fieldValue}>{inquiryId}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      {hasModifiers && (
-        <>
-          <Text style={styles.sectionLabel}>Package modifiers</Text>
-          <table style={styles.modifierTable}>
-            <tbody>
-              {modifierLineItems!.map((item, i) => (
-                <tr key={i}>
-                  <td style={styles.modifierName}>{item.name}</td>
-                  <td style={styles.modifierValue}>{item.displayValue ?? ''}</td>
-                  <td style={styles.modifierPrice}>{formatDelta(item.priceDeltaCents)}</td>
-                </tr>
-              ))}
-              {estimatedTotalCents != null && (
-                <tr>
-                  <td colSpan={2} style={styles.totalLabel}>
-                    Estimated total
-                  </td>
-                  <td style={styles.totalPrice}>{formatCurrency(estimatedTotalCents)}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </>
+      {(referrer || verdict) && (
+        <Section style={{ margin: '0 0 14px' }}>
+          {referrer && <Badge tone="good">Referred by {referrer.name}</Badge>}
+          {verdict && <Badge tone={verdict.tone}>Voucher: {verdict.badge}</Badge>}
+          {referrer?.sameAsBooker && <Badge tone="warn">Check referrer</Badge>}
+        </Section>
       )}
+
+      {adminUrl && (
+        <Section style={{ margin: '4px 0 0' }}>
+          <PrimaryButton href={adminUrl}>Open in admin</PrimaryButton>
+        </Section>
+      )}
+
+      {/* ── The session ─────────────────────────────────────────────────────── */}
+      <SectionTitle>Session</SectionTitle>
+      <DetailTable
+        rows={[
+          ['Package', packageName ?? 'None chosen'],
+          ['Date', formatDateLong(preferredDate)],
+          ['Time', preferredTime ? formatTime(preferredTime) : 'No preference'],
+          ['Location', location],
+          ['Spots in mind', locationIdeas]
+        ]}
+      />
+      <PriceTable
+        packageName={packageName}
+        baseCents={packageBasePriceCents}
+        items={modifierLineItems}
+        totalCents={estimatedTotalCents}
+      />
+
+      {/* ── Contact ─────────────────────────────────────────────────────────── */}
+      <SectionTitle>Contact</SectionTitle>
+      <DetailTable
+        rows={[
+          [
+            'Email',
+            <Link key="email" href={`mailto:${email}`} style={s.link}>
+              {email}
+            </Link>
+          ],
+          [
+            'Phone',
+            phone && (
+              <Link key="phone" href={`tel:${phone.replace(/[^\d+]/g, '')}`} style={s.link}>
+                {phone}
+              </Link>
+            )
+          ]
+        ]}
+      />
 
       {notes && (
         <>
-          <Text style={styles.notesLabel}>Notes</Text>
-          <Text style={styles.notes}>{notes}</Text>
+          <SectionTitle>Their notes</SectionTitle>
+          <Text style={s.quote}>{notes}</Text>
         </>
       )}
 
-      <Text style={styles.hint}>Reply to this email to respond directly to {name}.</Text>
+      {/* ── Referral and voucher ────────────────────────────────────────────── */}
+      {hasFoundYou && (
+        <>
+          <SectionTitle>How they found you</SectionTitle>
+          {heardFrom && <DetailTable rows={[['Heard via', heardFrom]]} />}
+
+          {referrer && (
+            <Card>
+              <Text style={{ ...s.value, padding: 0, margin: '0 0 4px', fontWeight: '600' }}>
+                {referrer.name} sent them your way
+              </Text>
+              <Text style={{ ...s.value, padding: 0, margin: 0 }}>
+                {referrer.contact ?? 'No contact details given.'}
+              </Text>
+              {referrer.sameAsBooker && (
+                <Hint>Same name as the booker. Worth checking this isn’t a self-referral.</Hint>
+              )}
+              {referralVoucher && (
+                <>
+                  <Text style={{ ...s.value, padding: 0, margin: '14px 0 0' }}>
+                    Their referral voucher: <Code>{referralVoucher.code}</Code>
+                  </Text>
+                  <Hint>
+                    {[
+                      referralVoucher.discountLabel && `${referralVoucher.discountLabel} off`,
+                      'Pending',
+                      referralVoucher.expiresOn &&
+                        `expires ${formatExpiry(referralVoucher.expiresOn)}`
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                    . Send it to {referrer.name.split(/\s+/)[0]} when you’re ready, then mark it
+                    Active in the admin.
+                  </Hint>
+                </>
+              )}
+            </Card>
+          )}
+
+          {voucherEntered && verdict && (
+            <Card>
+              <Text style={{ ...s.value, padding: 0, margin: '0 0 8px', fontWeight: '600' }}>
+                They entered a voucher code: <Code>{voucherEntered.entered}</Code>
+              </Text>
+              <Badge tone={verdict.tone}>{verdict.badge}</Badge>
+              <Hint>
+                {verdict.summary}
+                {'holderName' in voucherEntered.check && (
+                  <>
+                    {' '}
+                    {[
+                      voucherEntered.check.holderName &&
+                        `Held by ${voucherEntered.check.holderName}`,
+                      voucherEntered.check.discountLabel &&
+                        `${voucherEntered.check.discountLabel} off`,
+                      voucherEntered.check.expiresOn &&
+                        `expires ${formatExpiry(voucherEntered.check.expiresOn)}`
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                    .
+                  </>
+                )}
+                {voucherEntered.check.verdict === 'valid' &&
+                  ' Take it off when you confirm the price, then mark it redeemed on this booking.'}
+              </Hint>
+            </Card>
+          )}
+        </>
+      )}
+
+      <Hint>
+        Reply to this email to respond to {name.split(/\s+/)[0]} directly. Inquiry {inquiryId}.
+      </Hint>
     </EmailLayout>
   );
 };
@@ -140,145 +224,33 @@ BookingNotification.PreviewProps = {
   name: 'Sarah Holloway',
   email: 'sarah@example.com',
   phone: '+1 (250) 555-0198',
-  location: 'Vancouver',
-  preferredDate: '2026-07-12',
+  location: 'Victoria',
+  preferredDate: '2026-11-14',
   preferredTime: '10:00',
-  packageName: 'Full Day',
-  estimatedTotalCents: 96000,
-  notes: 'Looking for a mix of candid and a few posed shots in the park.',
+  packageName: 'Evryday',
+  packageBasePriceCents: 15000,
+  estimatedTotalCents: 22500,
+  notes: 'Looking for a mix of candid and a few posed shots. My dog will be there too!',
   inquiryId: 'clz1abc2def3ghi4',
   modifierLineItems: [
-    { name: 'Session length', displayValue: '4 hr', priceDeltaCents: null },
-    { name: 'Studio backdrop', priceDeltaCents: 7500 },
-    { name: 'Rush editing', displayValue: 'Rush (7 days)', priceDeltaCents: 15000 }
-  ]
-} satisfies Props;
+    { name: 'Session length', displayValue: '60 min', priceDeltaCents: 2500 },
+    { name: 'Extra photos', displayValue: '10', priceDeltaCents: 5000 }
+  ],
+  locationIdeas: 'The farmers market, or Beacon Hill Park',
+  heardFrom: 'Friends/family',
+  referrer: { name: 'Sam Patel', contact: '@sam.makes', sameAsBooker: false },
+  referralVoucher: { code: 'EAC-7KQ2', discountLabel: '$15', expiresOn: '2027-12-31' },
+  voucherEntered: {
+    entered: 'eac-ab2c',
+    check: {
+      verdict: 'valid',
+      code: 'EAC-AB2C',
+      holderName: 'Jordan Lee',
+      discountLabel: '$15',
+      expiresOn: '2027-12-31'
+    }
+  },
+  adminUrl: 'http://localhost:3001/bookings/clz1booking'
+} satisfies BookingEmailData;
 
 export default BookingNotification;
-
-const styles = {
-  label: {
-    color: tokens.inkFaint,
-    fontSize: '11px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    letterSpacing: '0.1em',
-    margin: '0 0 20px',
-    textTransform: 'uppercase' as const
-  },
-  heading: {
-    color: tokens.ink,
-    fontSize: '24px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    fontWeight: '400',
-    margin: '0 0 28px',
-    lineHeight: '1.3'
-  },
-  table: {
-    borderCollapse: 'collapse' as const,
-    marginBottom: '28px',
-    width: '100%'
-  },
-  fieldLabel: {
-    color: tokens.inkFaint,
-    fontSize: '12px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    paddingBottom: '8px',
-    paddingRight: '20px',
-    verticalAlign: 'top' as const,
-    whiteSpace: 'nowrap' as const,
-    width: '120px'
-  },
-  fieldValue: {
-    color: tokens.inkMuted,
-    fontSize: '14px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    paddingBottom: '8px',
-    verticalAlign: 'top' as const
-  },
-  link: {
-    color: tokens.accent,
-    textDecoration: 'none'
-  },
-  sectionLabel: {
-    color: tokens.inkFaint,
-    fontSize: '11px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    letterSpacing: '0.08em',
-    margin: '0 0 12px',
-    textTransform: 'uppercase' as const
-  },
-  modifierTable: {
-    borderCollapse: 'collapse' as const,
-    marginBottom: '28px',
-    width: '100%'
-  },
-  modifierName: {
-    color: tokens.inkMuted,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    paddingBottom: '7px',
-    paddingRight: '16px',
-    verticalAlign: 'top' as const
-  },
-  modifierValue: {
-    color: tokens.inkFaint,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    paddingBottom: '7px',
-    paddingRight: '16px',
-    verticalAlign: 'top' as const,
-    width: '100px'
-  },
-  modifierPrice: {
-    color: tokens.inkMuted,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    paddingBottom: '7px',
-    textAlign: 'right' as const,
-    verticalAlign: 'top' as const,
-    whiteSpace: 'nowrap' as const
-  },
-  totalLabel: {
-    borderTop: `1px solid ${tokens.border}`,
-    color: tokens.ink,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    fontWeight: '600',
-    paddingTop: '10px'
-  },
-  totalPrice: {
-    borderTop: `1px solid ${tokens.border}`,
-    color: tokens.ink,
-    fontSize: '13px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    fontWeight: '600',
-    paddingTop: '10px',
-    textAlign: 'right' as const,
-    whiteSpace: 'nowrap' as const
-  },
-  notesLabel: {
-    color: tokens.inkFaint,
-    fontSize: '12px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    margin: '0 0 8px',
-    letterSpacing: '0.05em'
-  },
-  notes: {
-    backgroundColor: tokens.canvas,
-    borderLeft: `3px solid ${tokens.border}`,
-    color: tokens.inkMuted,
-    fontSize: '14px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    lineHeight: '1.7',
-    margin: '0 0 28px',
-    padding: '12px 16px',
-    whiteSpace: 'pre-wrap' as const
-  },
-  hint: {
-    color: tokens.inkFaint,
-    fontSize: '12px',
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    margin: '0',
-    fontStyle: 'italic' as const
-  }
-} as const;
