@@ -42,6 +42,20 @@ export const DetailTable = ({
   </table>
 );
 
+/** Numbered steps, with the text sitting right beside its number. */
+export const StepList = ({ steps }: { steps: React.ReactNode[] }) => (
+  <table style={s.table} role="presentation">
+    <tbody>
+      {steps.map((step, i) => (
+        <tr key={i}>
+          <td style={s.stepNumber}>{i + 1}</td>
+          <td style={s.stepText}>{step}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+);
+
 /** A tinted panel that groups related details. */
 export const Card = ({ children }: { children: React.ReactNode }) => (
   <Section style={s.card}>{children}</Section>
@@ -183,6 +197,24 @@ export const s = {
     fontSize: '15px',
     lineHeight: '1.45',
     paddingBottom: '9px',
+    verticalAlign: 'top' as const
+  },
+  stepNumber: {
+    color: tokens.accent,
+    fontFamily: FONT,
+    fontSize: '15px',
+    fontWeight: '600',
+    lineHeight: '1.6',
+    paddingBottom: '10px',
+    verticalAlign: 'top' as const,
+    width: '24px'
+  },
+  stepText: {
+    color: tokens.inkMuted,
+    fontFamily: FONT,
+    fontSize: '15px',
+    lineHeight: '1.6',
+    paddingBottom: '10px',
     verticalAlign: 'top' as const
   },
   card: {

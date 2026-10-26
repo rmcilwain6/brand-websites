@@ -81,7 +81,7 @@ export const EmailLayout = ({ preview, children }: Props) => (
               evrydayarchive.co
             </Link>
             {'  ·  '}
-            Kamloops, BC
+            Victoria · Vancouver · Kamloops, BC
           </Text>
         </Section>
       </Container>

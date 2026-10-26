@@ -3,7 +3,16 @@ import * as React from 'react';
 
 import { formatDateLong, formatTime } from './components/format';
 import type { BookingEmailData } from './components/types';
-import { Card, DetailTable, Eyebrow, Hint, PriceTable, SectionTitle, s } from './components/ui';
+import {
+  Card,
+  DetailTable,
+  Eyebrow,
+  Hint,
+  PriceTable,
+  SectionTitle,
+  StepList,
+  s
+} from './components/ui';
 import { EmailLayout } from './layout';
 
 /**
@@ -63,11 +72,11 @@ export const BookingConfirmation = ({
       )}
 
       <SectionTitle>What happens next</SectionTitle>
-      <DetailTable
-        rows={[
-          ['1', 'I’ll check my calendar and confirm the date and time with you.'],
-          ['2', 'We’ll sort out the details: the spot, timing, and anything you have in mind.'],
-          ['3', 'Once we’ve both confirmed, your session is booked.']
+      <StepList
+        steps={[
+          'I’ll reach out by email to confirm my availability for your date and time.',
+          'If you’re interested, we’ll set up a short call to touch base and sort out any other details.',
+          'Once we’ve confirmed the date and time and we’re on the same page about what to expect, I’ll share a contract to lock everything in.'
         ]}
       />
 
