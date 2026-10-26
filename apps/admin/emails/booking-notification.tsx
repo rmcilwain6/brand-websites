@@ -57,6 +57,7 @@ export const BookingNotification = (data: BookingEmailData) => {
     preferredDate,
     preferredTime,
     packageName,
+    packageBasePriceCents,
     estimatedTotalCents,
     notes,
     inquiryId,
@@ -106,7 +107,12 @@ export const BookingNotification = (data: BookingEmailData) => {
           ['Spots in mind', locationIdeas]
         ]}
       />
-      <PriceTable items={modifierLineItems} totalCents={estimatedTotalCents} />
+      <PriceTable
+        packageName={packageName}
+        baseCents={packageBasePriceCents}
+        items={modifierLineItems}
+        totalCents={estimatedTotalCents}
+      />
 
       {/* ── Contact ─────────────────────────────────────────────────────────── */}
       <SectionTitle>Contact</SectionTitle>
@@ -222,6 +228,7 @@ BookingNotification.PreviewProps = {
   preferredDate: '2026-11-14',
   preferredTime: '10:00',
   packageName: 'Evryday',
+  packageBasePriceCents: 15000,
   estimatedTotalCents: 22500,
   notes: 'Looking for a mix of candid and a few posed shots. My dog will be there too!',
   inquiryId: 'clz1abc2def3ghi4',

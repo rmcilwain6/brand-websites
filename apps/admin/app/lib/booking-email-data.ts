@@ -111,6 +111,7 @@ export const toBookingEmailData = (
     preferredDate: payload.preferredDate ?? toYmd(booking.requestedAt) ?? '',
     preferredTime: payload.preferredTime ?? undefined,
     packageName: payload.packageName ?? undefined,
+    packageBasePriceCents: booking.package?.basePriceCents ?? undefined,
     estimatedTotalCents: payload.estimatedTotalCents ?? undefined,
     notes: inquiry.message ?? undefined,
     inquiryId: inquiry.id,

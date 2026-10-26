@@ -13,6 +13,7 @@ const props: BookingEmailData = {
   preferredDate: '2026-12-05',
   preferredTime: '15:30',
   packageName: 'Evryday',
+  packageBasePriceCents: 15000,
   estimatedTotalCents: 15000,
   inquiryId: 'clz9problem000',
   heardFrom: 'Instagram',

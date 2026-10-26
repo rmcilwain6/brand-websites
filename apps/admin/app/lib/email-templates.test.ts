@@ -41,6 +41,14 @@ describe('booking notification email', () => {
     expect(out).toContain('10:00 AM');
   });
 
+  it('itemises the receipt from the base price up to the total', async () => {
+    const out = await text(render(BookingNotification(full)));
+
+    expect(out).toContain(
+      'Evryday package $150 Session length · 60 min +$25 Extra photos · 10 +$50 Estimated total $225'
+    );
+  });
+
   it('links to the booking in the admin', async () => {
     const html = await render(BookingNotification(full));
     expect(html).toContain('href="http://localhost:3001/bookings/clz1booking"');
@@ -80,6 +88,13 @@ describe('booking confirmation email', () => {
     expect(out).not.toContain('$15 off');
     expect(out).not.toContain('Held by');
     expect(out).not.toContain('Valid');
+  });
+
+  it('shows the client the same itemised receipt', async () => {
+    const out = await text(render(BookingConfirmation(full)));
+
+    expect(out).toContain('Evryday package $150');
+    expect(out).toContain('Estimated total $225');
   });
 
   it('never shows the referrer or their voucher', async () => {

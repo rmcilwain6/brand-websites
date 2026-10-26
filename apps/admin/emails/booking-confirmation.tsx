@@ -26,6 +26,7 @@ export const BookingConfirmation = ({
   preferredDate,
   preferredTime,
   packageName,
+  packageBasePriceCents,
   estimatedTotalCents,
   notes,
   modifierLineItems,
@@ -58,7 +59,12 @@ export const BookingConfirmation = ({
             ]
           ]}
         />
-        <PriceTable items={modifierLineItems} totalCents={estimatedTotalCents} />
+        <PriceTable
+          packageName={packageName}
+          baseCents={packageBasePriceCents}
+          items={modifierLineItems}
+          totalCents={estimatedTotalCents}
+        />
         {estimatedTotalCents != null && (
           <Hint>This is an estimate. I’ll confirm the final price with you.</Hint>
         )}
@@ -95,6 +101,7 @@ BookingConfirmation.PreviewProps = {
   preferredDate: '2026-11-14',
   preferredTime: '10:00',
   packageName: 'Evryday',
+  packageBasePriceCents: 15000,
   estimatedTotalCents: 22500,
   notes: 'Looking for a mix of candid and a few posed shots. My dog will be there too!',
   inquiryId: 'clz1abc2def3ghi4',

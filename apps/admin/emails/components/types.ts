@@ -31,6 +31,8 @@ export type BookingEmailData = {
   /** HH:mm, 24-hour */
   preferredTime?: string;
   packageName?: string;
+  /** The package's base price, the first line of the receipt. */
+  packageBasePriceCents?: number;
   estimatedTotalCents?: number;
   notes?: string;
   inquiryId: string;

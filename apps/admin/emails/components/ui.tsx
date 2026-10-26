@@ -87,15 +87,22 @@ export const Code = ({ children }: { children: React.ReactNode }) => (
   <span style={s.code}>{children}</span>
 );
 
-/** Modifier line items with the estimated total, or the total alone when there are none. */
+/**
+ * The receipt: the package's base price, each add-on's change, then the estimated total, so
+ * the lines visibly add up. Without a base price it falls back to the add-ons and total alone.
+ */
 export const PriceTable = ({
-  items,
+  packageName,
+  baseCents,
+  items = [],
   totalCents
 }: {
+  packageName?: string;
+  baseCents?: number;
   items?: ModifierLineItem[];
   totalCents?: number;
 }) => {
-  if (!items?.length) {
+  if (baseCents == null && !items.length) {
     return totalCents != null ? (
       <DetailTable rows={[['Est. total', formatCurrency(totalCents)]]} />
     ) : null;
@@ -103,6 +110,14 @@ export const PriceTable = ({
   return (
     <table style={s.table} role="presentation">
       <tbody>
+        {baseCents != null && (
+          <tr>
+            <td style={{ ...s.itemName, color: s.value.color }}>
+              {packageName ? `${packageName} package` : 'Package'}
+            </td>
+            <td style={{ ...s.itemPrice, color: s.value.color }}>{formatCurrency(baseCents)}</td>
+          </tr>
+        )}
         {items.map((item, i) => (
           <tr key={i}>
             <td style={s.itemName}>

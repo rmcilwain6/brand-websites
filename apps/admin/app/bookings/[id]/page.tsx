@@ -173,6 +173,16 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
           <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
             <table className="w-full text-sm">
               <tbody className="divide-y divide-slate-100">
+                {booking.package?.basePriceCents != null && (
+                  <tr>
+                    <td colSpan={2} className="px-4 py-3 text-slate-900">
+                      {booking.package.name} package
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-right tabular-nums text-slate-900">
+                      {fmt(booking.package.basePriceCents)}
+                    </td>
+                  </tr>
+                )}
                 {modifierLineItems.map((item, i) => (
                   <tr key={i}>
                     <td className="px-4 py-3 text-slate-700">{item.name}</td>

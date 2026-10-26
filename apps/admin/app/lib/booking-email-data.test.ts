@@ -158,6 +158,15 @@ describe('toBookingEmailData', () => {
     });
   });
 
+  it("takes the receipt's base price from the package", () => {
+    const data = toBookingEmailData(
+      booking({ package: { basePriceCents: 15000, modifiers: [] } as never }),
+      null,
+      { now }
+    );
+    expect(data?.packageBasePriceCents).toBe(15000);
+  });
+
   it('flags a referrer with the same name as the booker', () => {
     const data = toBookingEmailData(booking({ referrerName: '  jordan   LEE ' }), null, { now });
     expect(data?.referrer?.sameAsBooker).toBe(true);
