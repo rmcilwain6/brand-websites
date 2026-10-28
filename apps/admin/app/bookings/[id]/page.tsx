@@ -2,15 +2,18 @@ import {
   buildModifierLineItems,
   formatVoucherDiscount,
   heardFromLabel,
+  normalizeVoucherCode,
   toVoucherDiscount
 } from '@repo/core';
 import { prisma } from '@repo/db';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { sameName } from '../../lib/booking-email-data';
+import { VOUCHER_VERDICT } from '../../../emails/components/voucher-verdict';
+import { checkEnteredVoucher, sameName } from '../../lib/booking-email-data';
 
 import BookingActions from './BookingActions';
+import EnteredVoucherCard from './EnteredVoucherCard';
 import ReferralVoucherCard from './ReferralVoucherCard';
 
 export const dynamic = 'force-dynamic';
@@ -79,6 +82,36 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
   const payload = inquiry?.payload as BookingPayload | null;
   const selectedOptions = booking.selectedOptions as SelectedOptions | null;
   const heardFrom = heardFromLabel(booking.heardFrom);
+
+  // The voucher code the booker typed, and what it matches in the table.
+  const enteredCode =
+    booking.voucherCodeEntered && normalizeVoucherCode(booking.voucherCodeEntered);
+  const enteredVoucher = enteredCode
+    ? await prisma.voucher.findUnique({ where: { code: enteredCode } })
+    : null;
+  const enteredCheck = booking.voucherCodeEntered
+    ? checkEnteredVoucher(booking.voucherCodeEntered, enteredVoucher, new Date())
+    : null;
+  const redeemedHere = !!enteredVoucher && enteredVoucher.redeemedBookingId === booking.id;
+  const enteredVerdict = redeemedHere
+    ? {
+        tone: 'good' as const,
+        badge: 'Redeemed here',
+        summary: `Marked redeemed on this booking${
+          enteredVoucher.redeemedAt ? ` on ${fmtDay(enteredVoucher.redeemedAt)}` : ''
+        }.`
+      }
+    : enteredCheck && VOUCHER_VERDICT[enteredCheck.verdict];
+  const enteredDiscount = enteredVoucher && toVoucherDiscount(enteredVoucher);
+  const enteredDetails =
+    enteredVoucher &&
+    [
+      enteredVoucher.holderName && `Held by ${enteredVoucher.holderName}`,
+      enteredDiscount && `${formatVoucherDiscount(enteredDiscount)} off`,
+      enteredVoucher.expiresAt && `expires ${fmtDay(enteredVoucher.expiresAt)}`
+    ]
+      .filter(Boolean)
+      .join(' · ');
   const selfReferral =
     !!booking.referrerName && !!inquiry?.name && sameName(booking.referrerName, inquiry.name);
 
@@ -255,6 +288,25 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
               sentLabel={voucher.activatedAt ? fmtDay(voucher.activatedAt) : null}
             />
           )}
+        </section>
+      )}
+
+      {/* Voucher entered */}
+      {booking.voucherCodeEntered && enteredCheck && enteredVerdict && (
+        <section>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Voucher entered
+          </h2>
+          <EnteredVoucherCard
+            bookingId={booking.id}
+            entered={booking.voucherCodeEntered}
+            tone={enteredVerdict.tone}
+            badge={enteredVerdict.badge}
+            summary={enteredVerdict.summary}
+            details={enteredDetails || null}
+            voucherId={enteredVoucher?.id ?? null}
+            canRedeem={enteredCheck.verdict === 'valid'}
+          />
         </section>
       )}
 
