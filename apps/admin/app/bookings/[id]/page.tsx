@@ -1,7 +1,14 @@
-import { buildModifierLineItems, formatVoucherDiscount, toVoucherDiscount } from '@repo/core';
+import {
+  buildModifierLineItems,
+  formatVoucherDiscount,
+  heardFromLabel,
+  toVoucherDiscount
+} from '@repo/core';
 import { prisma } from '@repo/db';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+
+import { sameName } from '../../lib/booking-email-data';
 
 import BookingActions from './BookingActions';
 import ReferralVoucherCard from './ReferralVoucherCard';
@@ -71,6 +78,9 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
   const inquiry = booking.inquiry;
   const payload = inquiry?.payload as BookingPayload | null;
   const selectedOptions = booking.selectedOptions as SelectedOptions | null;
+  const heardFrom = heardFromLabel(booking.heardFrom);
+  const selfReferral =
+    !!booking.referrerName && !!inquiry?.name && sameName(booking.referrerName, inquiry.name);
 
   const modifierLineItems =
     booking.package && selectedOptions
@@ -147,6 +157,9 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
         </h2>
         <dl className="divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
           {payload?.location && <Row label="Location" value={payload.location} />}
+          {booking.locationIdeas && (
+            <Row label="Location ideas" value={booking.locationIdeas} multiline />
+          )}
           {payload?.preferredDate && (
             <Row
               label="Preferred date"
@@ -161,6 +174,7 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
             <Row label="Package" value={booking.package?.name ?? payload?.packageName ?? '—'} />
           )}
           {inquiry?.message && <Row label="Notes" value={inquiry.message} multiline />}
+          {heardFrom && <Row label="Heard about us" value={heardFrom} />}
         </dl>
       </section>
 
@@ -214,6 +228,12 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
             Referral
           </h2>
+          {selfReferral && (
+            <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              The referrer’s name matches the booker’s. This may be a self-referral, so check before
+              sending the voucher.
+            </p>
+          )}
           <dl className="mb-3 divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
             <Row label="Referred by" value={booking.referrerName} />
             {booking.referrerContact && (

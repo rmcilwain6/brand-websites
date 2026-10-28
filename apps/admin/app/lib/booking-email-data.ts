@@ -47,7 +47,8 @@ const discountLabel = (row: VoucherRow) => {
   return discount ? formatVoucherDiscount(discount) : null;
 };
 
-const sameName = (a: string, b: string) =>
+/** Names match ignoring case and spacing, e.g. a booker naming themselves as referrer. */
+export const sameName = (a: string, b: string) =>
   a.trim().toLowerCase().replace(/\s+/g, ' ') === b.trim().toLowerCase().replace(/\s+/g, ' ');
 
 /** What a typed voucher code matches. `voucher` is the row found for its normalised code, if any. */
