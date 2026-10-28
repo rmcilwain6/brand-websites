@@ -12,9 +12,19 @@ type Props = {
   bookingId: string;
   currentStatus: string;
   emailSentAt: string | null;
+  /** The referral voucher this booking created. Deleting the booking deletes it too. */
+  referralVoucher: { code: string; status: string } | null;
 };
 
-const BookingActions = ({ bookingId, currentStatus, emailSentAt }: Props) => {
+/** What deleting the voucher means for someone who may already hold the code. */
+const voucherDeleteNote: Record<string, string> = {
+  PENDING: 'It hasn’t been sent to anyone yet.',
+  ACTIVE: 'It has already been sent, so the holder’s code will stop working.',
+  REDEEMED: 'It has already been used on another booking.',
+  VOID: 'It is already void.'
+};
+
+const BookingActions = ({ bookingId, currentStatus, emailSentAt, referralVoucher }: Props) => {
   const router = useRouter();
   const { addToast } = useToast();
   const [status, setStatus] = useState<BookingStatus>(currentStatus as BookingStatus);
@@ -144,8 +154,16 @@ const BookingActions = ({ bookingId, currentStatus, emailSentAt }: Props) => {
             </button>
           )}
         </div>
+        {confirmDelete && referralVoucher && (
+          <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            This also deletes the referral voucher{' '}
+            <span className="font-mono font-semibold">{referralVoucher.code}</span> (
+            {referralVoucher.status}). {voucherDeleteNote[referralVoucher.status]}
+          </p>
+        )}
         <p className="mt-2 text-xs text-slate-400">
-          Permanently removes the booking and its contact record.
+          Permanently removes the booking and its contact record
+          {referralVoucher ? ', and the referral voucher it created' : ''}.
         </p>
       </section>
     </div>

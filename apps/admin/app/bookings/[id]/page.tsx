@@ -328,6 +328,7 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
         bookingId={booking.id}
         currentStatus={booking.status}
         emailSentAt={booking.emailSentAt?.toISOString() ?? null}
+        referralVoucher={voucher && { code: voucher.code, status: voucher.status }}
       />
     </main>
   );
