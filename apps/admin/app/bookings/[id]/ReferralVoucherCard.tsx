@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -87,6 +88,12 @@ const ReferralVoucherCard = ({
         >
           {expired && status !== 'REDEEMED' && status !== 'VOID' ? 'EXPIRED' : status}
         </span>
+        <Link
+          href={`/vouchers/${voucherId}`}
+          className="ml-auto text-sm text-indigo-600 hover:text-indigo-500"
+        >
+          View voucher →
+        </Link>
       </div>
       <p className="mt-1 text-sm text-slate-600">
         {[

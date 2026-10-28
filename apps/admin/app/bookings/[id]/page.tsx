@@ -61,7 +61,8 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
       inquiry: true,
       package: { include: { modifiers: { orderBy: { sortOrder: 'asc' } } } },
       timeSlot: true,
-      referralVoucher: true
+      referralVoucher: true,
+      redeemedVouchers: { orderBy: { redeemedAt: 'desc' } }
     }
   });
 
@@ -102,6 +103,7 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
         }.`
       }
     : enteredCheck && VOUCHER_VERDICT[enteredCheck.verdict];
+  const otherRedeemed = booking.redeemedVouchers.filter((v) => v.id !== enteredVoucher?.id);
   const enteredDiscount = enteredVoucher && toVoucherDiscount(enteredVoucher);
   const enteredDetails =
     enteredVoucher &&
@@ -307,6 +309,42 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
             voucherId={enteredVoucher?.id ?? null}
             canRedeem={enteredCheck.verdict === 'valid'}
           />
+        </section>
+      )}
+
+      {/* Vouchers redeemed here from the Vouchers page, other than the one typed on the form */}
+      {otherRedeemed.length > 0 && (
+        <section>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Vouchers used on this booking
+          </h2>
+          <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
+            {otherRedeemed.map((v) => {
+              const discount = toVoucherDiscount(v);
+              return (
+                <li key={v.id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
+                  <span className="font-mono font-semibold tracking-wider text-slate-900">
+                    {v.code}
+                  </span>
+                  <span className="text-slate-600">
+                    {[
+                      discount && `${formatVoucherDiscount(discount)} off`,
+                      v.holderName && `held by ${v.holderName}`,
+                      v.redeemedAt && `redeemed ${fmtDay(v.redeemedAt)}`
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </span>
+                  <Link
+                    href={`/vouchers/${v.id}`}
+                    className="ml-auto text-indigo-600 hover:text-indigo-500"
+                  >
+                    View voucher →
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </section>
       )}
 
