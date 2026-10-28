@@ -82,6 +82,12 @@ export const VoucherSendSchema = z.object({
   to: z.string().trim().email('Enter a valid email address.')
 });
 
+/** Marking a voucher redeemed against the booking it was used on. */
+export const VoucherRedeemSchema = z.object({
+  bookingId: z.string().min(1)
+});
+
 export type VoucherCreate = z.infer<typeof VoucherCreateSchema>;
 export type VoucherUpdate = z.infer<typeof VoucherUpdateSchema>;
 export type VoucherSend = z.infer<typeof VoucherSendSchema>;
+export type VoucherRedeem = z.infer<typeof VoucherRedeemSchema>;
