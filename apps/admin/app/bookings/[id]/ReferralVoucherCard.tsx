@@ -71,6 +71,17 @@ const ReferralVoucherCard = ({
       expired={expired}
       suggestedEmail={suggestedEmail}
     />
+    {(status === 'PENDING' || status === 'ACTIVE') && !expired && (
+      <p className="mt-2 text-xs text-slate-500">
+        Only have a phone number or Instagram handle?{' '}
+        <Link
+          href={`/vouchers/${voucherId}#send`}
+          className="font-medium text-indigo-600 hover:text-indigo-500"
+        >
+          Send it as an image →
+        </Link>
+      </p>
+    )}
   </div>
 );
 

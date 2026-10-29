@@ -1,0 +1,11 @@
+Fonts embedded in the shareable voucher image (see app/vouchers/components/voucher-image.ts):
+
+- Plus Jakarta Sans, Copyright 2020 The Plus Jakarta Sans Project Authors
+  https://github.com/tokotype/PlusJakartaSans
+- JetBrains Mono, Copyright 2020 The JetBrains Mono Project Authors
+  https://github.com/JetBrains/JetBrainsMono
+
+Both are licensed under the SIL Open Font License, Version 1.1:
+https://openfontlicense.org/open-font-license-official-text/
+
+The .woff files are the Latin subsets as published by Fontsource.

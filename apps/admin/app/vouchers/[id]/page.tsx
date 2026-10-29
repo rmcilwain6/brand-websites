@@ -1,3 +1,4 @@
+import { formatVoucherDiscount, toVoucherDiscount } from '@repo/core';
 import { prisma } from '@repo/db';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -5,6 +6,7 @@ import { notFound } from 'next/navigation';
 import CopyCodeButton from '../components/CopyCodeButton';
 import SendVoucherForm from '../components/SendVoucherForm';
 import VoucherEditor from '../components/VoucherEditor';
+import VoucherImagePanel from '../components/VoucherImagePanel';
 import {
   VoucherStatusBadge,
   fmtVoucherDay,
@@ -54,6 +56,11 @@ const VoucherDetailPage = async ({ params }: { params: { id: string } }) => {
 
   // The thank-you email thanks the holder for a referral, so it's offered only when there was one.
   const isReferral = !!voucher.sourceBooking || !!voucher.referrerName;
+  const expired = isVoucherExpired(voucher);
+  const discount = toVoucherDiscount(voucher);
+  // Only a code someone can still use is worth sending.
+  const usable =
+    (voucher.status === 'PENDING' || voucher.status === 'ACTIVE') && !expired && !!discount;
 
   const timeline = [
     { label: 'Created', at: voucher.createdAt },
@@ -134,39 +141,65 @@ const VoucherDetailPage = async ({ params }: { params: { id: string } }) => {
         </dl>
       </section>
 
-      <section>
+      <section id="send">
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
           Send code
         </h2>
-        <div className="rounded-lg border border-slate-200 bg-white px-4 py-4">
-          {isReferral ? (
-            <>
-              <p className="text-sm text-slate-600">
-                Emails {voucher.holderName ?? 'the holder'} the referral thank-you with this code
-                {voucher.sourceBooking?.inquiry?.name
-                  ? `, thanking them for sending ${voucher.sourceBooking.inquiry.name}`
-                  : ''}
-                .
-              </p>
-              {voucher.activatedAt && (
-                <p className="mt-1 text-xs text-slate-500">
-                  First sent {fmtVoucherDay(voucher.activatedAt)}.
+        <div className="divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
+          <div className="px-4 py-4">
+            <h3 className="text-sm font-semibold text-slate-800">By email</h3>
+            {isReferral ? (
+              <>
+                <p className="mt-1 text-sm text-slate-600">
+                  Emails {voucher.holderName ?? 'the holder'} the referral thank-you with this code
+                  {voucher.sourceBooking?.inquiry?.name
+                    ? `, thanking them for sending ${voucher.sourceBooking.inquiry.name}`
+                    : ''}
+                  .
                 </p>
-              )}
-              <SendVoucherForm
+                {voucher.activatedAt && (
+                  <p className="mt-1 text-xs text-slate-500">
+                    First sent {fmtVoucherDay(voucher.activatedAt)}.
+                  </p>
+                )}
+                <SendVoucherForm
+                  voucherId={voucher.id}
+                  status={voucher.status}
+                  expired={expired}
+                  suggestedEmail={
+                    [voucher.holderContact, voucher.referrerContact].find(isEmail) ?? ''
+                  }
+                />
+              </>
+            ) : (
+              <p className="mt-1 text-sm text-slate-500">
+                The thank-you email is written for referrals, so it isn&apos;t offered for a voucher
+                with no referrer. Send the image below instead.
+              </p>
+            )}
+          </div>
+          {usable && (
+            <div className="px-4 py-4">
+              <h3 className="mb-3 text-sm font-semibold text-slate-800">As an image</h3>
+              <VoucherImagePanel
                 voucherId={voucher.id}
                 status={voucher.status}
-                expired={isVoucherExpired(voucher)}
-                suggestedEmail={
-                  [voucher.holderContact, voucher.referrerContact].find(isEmail) ?? ''
+                code={voucher.code}
+                discountLabel={discount ? formatVoucherDiscount(discount) : ''}
+                expiresLabel={
+                  voucher.expiresAt
+                    ? voucher.expiresAt.toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                        timeZone: 'UTC'
+                      })
+                    : null
                 }
+                holderName={voucher.holderName}
+                isReferral={isReferral}
               />
-            </>
-          ) : (
-            <p className="text-sm text-slate-500">
-              The only email so far is the referral thank-you, which doesn&apos;t fit a voucher with
-              no referrer. Copy the code and send it yourself, then set the status to Active.
-            </p>
+            </div>
           )}
         </div>
       </section>
