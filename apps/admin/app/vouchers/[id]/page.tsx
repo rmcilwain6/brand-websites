@@ -3,10 +3,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import CopyCodeButton from '../components/CopyCodeButton';
+import SendVoucherForm from '../components/SendVoucherForm';
 import VoucherEditor from '../components/VoucherEditor';
 import {
   VoucherStatusBadge,
   fmtVoucherDay,
+  isVoucherExpired,
   voucherDiscountLabel
 } from '../components/voucher-display';
 
@@ -16,6 +18,8 @@ export const dynamic = 'force-dynamic';
 const REDEEM_PICKER_LIMIT = 200;
 
 type BookingPayload = { preferredDate?: string };
+
+const isEmail = (v: string | null | undefined): v is string => !!v && /^\S+@\S+\.\S+$/.test(v);
 
 const VoucherDetailPage = async ({ params }: { params: { id: string } }) => {
   const voucher = await prisma.voucher.findUnique({
@@ -47,6 +51,9 @@ const VoucherDetailPage = async ({ params }: { params: { id: string } }) => {
         .join(' · ')
     };
   });
+
+  // The thank-you email thanks the holder for a referral, so it's offered only when there was one.
+  const isReferral = !!voucher.sourceBooking || !!voucher.referrerName;
 
   const timeline = [
     { label: 'Created', at: voucher.createdAt },
@@ -125,6 +132,43 @@ const VoucherDetailPage = async ({ params }: { params: { id: string } }) => {
             </Row>
           ))}
         </dl>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          Send code
+        </h2>
+        <div className="rounded-lg border border-slate-200 bg-white px-4 py-4">
+          {isReferral ? (
+            <>
+              <p className="text-sm text-slate-600">
+                Emails {voucher.holderName ?? 'the holder'} the referral thank-you with this code
+                {voucher.sourceBooking?.inquiry?.name
+                  ? `, thanking them for sending ${voucher.sourceBooking.inquiry.name}`
+                  : ''}
+                .
+              </p>
+              {voucher.activatedAt && (
+                <p className="mt-1 text-xs text-slate-500">
+                  First sent {fmtVoucherDay(voucher.activatedAt)}.
+                </p>
+              )}
+              <SendVoucherForm
+                voucherId={voucher.id}
+                status={voucher.status}
+                expired={isVoucherExpired(voucher)}
+                suggestedEmail={
+                  [voucher.holderContact, voucher.referrerContact].find(isEmail) ?? ''
+                }
+              />
+            </>
+          ) : (
+            <p className="text-sm text-slate-500">
+              The only email so far is the referral thank-you, which doesn&apos;t fit a voucher with
+              no referrer. Copy the code and send it yourself, then set the status to Active.
+            </p>
+          )}
+        </div>
       </section>
 
       <VoucherEditor
