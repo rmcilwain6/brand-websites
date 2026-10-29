@@ -66,6 +66,22 @@ const BookingsPage = async () => {
                       >
                         {booking.status}
                       </span>
+                      {booking.referrerName && (
+                        <span
+                          title={`Referred by ${booking.referrerName}`}
+                          className="shrink-0 rounded border border-violet-200 bg-violet-50 px-1.5 py-0.5 text-xs font-medium text-violet-700"
+                        >
+                          Referral
+                        </span>
+                      )}
+                      {booking.voucherCodeEntered && (
+                        <span
+                          title={`Entered voucher code ${booking.voucherCodeEntered}`}
+                          className="shrink-0 rounded border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-xs font-medium text-sky-700"
+                        >
+                          Voucher
+                        </span>
+                      )}
                     </div>
                     <p className="truncate text-sm text-slate-500">{booking.inquiry?.email}</p>
                   </div>

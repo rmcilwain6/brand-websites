@@ -1,9 +1,19 @@
-import { buildModifierLineItems, formatVoucherDiscount, toVoucherDiscount } from '@repo/core';
+import {
+  buildModifierLineItems,
+  formatVoucherDiscount,
+  heardFromLabel,
+  normalizeVoucherCode,
+  toVoucherDiscount
+} from '@repo/core';
 import { prisma } from '@repo/db';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { VOUCHER_VERDICT } from '../../../emails/components/voucher-verdict';
+import { checkEnteredVoucher, sameName } from '../../lib/booking-email-data';
+
 import BookingActions from './BookingActions';
+import EnteredVoucherCard from './EnteredVoucherCard';
 import ReferralVoucherCard from './ReferralVoucherCard';
 
 export const dynamic = 'force-dynamic';
@@ -51,7 +61,8 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
       inquiry: true,
       package: { include: { modifiers: { orderBy: { sortOrder: 'asc' } } } },
       timeSlot: true,
-      referralVoucher: true
+      referralVoucher: true,
+      redeemedVouchers: { orderBy: { redeemedAt: 'desc' } }
     }
   });
 
@@ -71,6 +82,40 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
   const inquiry = booking.inquiry;
   const payload = inquiry?.payload as BookingPayload | null;
   const selectedOptions = booking.selectedOptions as SelectedOptions | null;
+  const heardFrom = heardFromLabel(booking.heardFrom);
+
+  // The voucher code the booker typed, and what it matches in the table.
+  const enteredCode =
+    booking.voucherCodeEntered && normalizeVoucherCode(booking.voucherCodeEntered);
+  const enteredVoucher = enteredCode
+    ? await prisma.voucher.findUnique({ where: { code: enteredCode } })
+    : null;
+  const enteredCheck = booking.voucherCodeEntered
+    ? checkEnteredVoucher(booking.voucherCodeEntered, enteredVoucher, new Date())
+    : null;
+  const redeemedHere = !!enteredVoucher && enteredVoucher.redeemedBookingId === booking.id;
+  const enteredVerdict = redeemedHere
+    ? {
+        tone: 'good' as const,
+        badge: 'Redeemed here',
+        summary: `Marked redeemed on this booking${
+          enteredVoucher.redeemedAt ? ` on ${fmtDay(enteredVoucher.redeemedAt)}` : ''
+        }.`
+      }
+    : enteredCheck && VOUCHER_VERDICT[enteredCheck.verdict];
+  const otherRedeemed = booking.redeemedVouchers.filter((v) => v.id !== enteredVoucher?.id);
+  const enteredDiscount = enteredVoucher && toVoucherDiscount(enteredVoucher);
+  const enteredDetails =
+    enteredVoucher &&
+    [
+      enteredVoucher.holderName && `Held by ${enteredVoucher.holderName}`,
+      enteredDiscount && `${formatVoucherDiscount(enteredDiscount)} off`,
+      enteredVoucher.expiresAt && `expires ${fmtDay(enteredVoucher.expiresAt)}`
+    ]
+      .filter(Boolean)
+      .join(' · ');
+  const selfReferral =
+    !!booking.referrerName && !!inquiry?.name && sameName(booking.referrerName, inquiry.name);
 
   const modifierLineItems =
     booking.package && selectedOptions
@@ -147,6 +192,9 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
         </h2>
         <dl className="divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
           {payload?.location && <Row label="Location" value={payload.location} />}
+          {booking.locationIdeas && (
+            <Row label="Location ideas" value={booking.locationIdeas} multiline />
+          )}
           {payload?.preferredDate && (
             <Row
               label="Preferred date"
@@ -161,6 +209,7 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
             <Row label="Package" value={booking.package?.name ?? payload?.packageName ?? '—'} />
           )}
           {inquiry?.message && <Row label="Notes" value={inquiry.message} multiline />}
+          {heardFrom && <Row label="Heard about us" value={heardFrom} />}
         </dl>
       </section>
 
@@ -214,6 +263,12 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
             Referral
           </h2>
+          {selfReferral && (
+            <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              The referrer’s name matches the booker’s. This may be a self-referral, so check before
+              sending the voucher.
+            </p>
+          )}
           <dl className="mb-3 divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
             <Row label="Referred by" value={booking.referrerName} />
             {booking.referrerContact && (
@@ -238,6 +293,61 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
         </section>
       )}
 
+      {/* Voucher entered */}
+      {booking.voucherCodeEntered && enteredCheck && enteredVerdict && (
+        <section>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Voucher entered
+          </h2>
+          <EnteredVoucherCard
+            bookingId={booking.id}
+            entered={booking.voucherCodeEntered}
+            tone={enteredVerdict.tone}
+            badge={enteredVerdict.badge}
+            summary={enteredVerdict.summary}
+            details={enteredDetails || null}
+            voucherId={enteredVoucher?.id ?? null}
+            canRedeem={enteredCheck.verdict === 'valid'}
+          />
+        </section>
+      )}
+
+      {/* Vouchers redeemed here from the Vouchers page, other than the one typed on the form */}
+      {otherRedeemed.length > 0 && (
+        <section>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Vouchers used on this booking
+          </h2>
+          <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
+            {otherRedeemed.map((v) => {
+              const discount = toVoucherDiscount(v);
+              return (
+                <li key={v.id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
+                  <span className="font-mono font-semibold tracking-wider text-slate-900">
+                    {v.code}
+                  </span>
+                  <span className="text-slate-600">
+                    {[
+                      discount && `${formatVoucherDiscount(discount)} off`,
+                      v.holderName && `held by ${v.holderName}`,
+                      v.redeemedAt && `redeemed ${fmtDay(v.redeemedAt)}`
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </span>
+                  <Link
+                    href={`/vouchers/${v.id}`}
+                    className="ml-auto text-indigo-600 hover:text-indigo-500"
+                  >
+                    View voucher →
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+
       {/* Email status */}
       <section>
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -256,6 +366,7 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
         bookingId={booking.id}
         currentStatus={booking.status}
         emailSentAt={booking.emailSentAt?.toISOString() ?? null}
+        referralVoucher={voucher && { code: voucher.code, status: voucher.status }}
       />
     </main>
   );
