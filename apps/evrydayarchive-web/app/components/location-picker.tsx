@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-export const CORE_LOCATIONS = ['Kamloops', 'Victoria', 'Vancouver', 'Nanaimo'] as const;
+export const CORE_LOCATIONS = ['Kamloops', 'Victoria', 'Vancouver'] as const;
 export type CoreLocation = (typeof CORE_LOCATIONS)[number];
 
 const OPTIONS: { value: CoreLocation | 'Other'; label: string }[] = [
