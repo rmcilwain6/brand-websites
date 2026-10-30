@@ -1,7 +1,7 @@
 # Passion Projects: Implementation Plan
 
 **Spec:** [`passion-projects-spec.md`](./passion-projects-spec.md)
-**Status:** Phases 1–2 committed. Phase 3 is a draft, to be revisited after the Phase 2 checkpoint.
+**Status:** Phases 1–2 merged and checked on production. Checkpoint done Oct 29. Phase 3 rewritten below and ready to start.
 **Campaign target:** launch Fri Nov 6, 2026
 
 ---
@@ -139,40 +139,83 @@ These are permanent, site-wide features (the spec: "Referrals are a permanent si
 - `/vouchers/new`: manual create.
 - API under `/api/vouchers`, all `requireAdminSession`. Route tests.
 
-### ✋ Checkpoint
+### ✅ Checkpoint (done Oct 29)
 
-Reed uses the updated `/book` flow on Preview and/or production, with real referrals and vouchers flowing through admin and email. Decide:
+Reed ran the updated `/book` flow on production with a real referral through admin and email. Answers:
 
-- How the form feels. Which fields to hide behind links, merge, or drop (candidates: voucher code, preferred time, notes).
-- Whether the landing page form should be one step or two.
-- Which builder controls the landing page shows (spec: "time and image modifiers"; there are 4–5 per package).
-
-Then rewrite Phase 3 below with those answers before starting it.
+- **Form feel.** Solid as it is and not overwhelming. Nothing hidden, merged or dropped.
+- **Referral amount.** $15, as already set in `packages/core/src/referrals.ts`. The Notion brief has been brought in line.
+- **Campaign opt-in.** Campaign fields sit behind an explicit checkbox ("Apply to be featured in Passion Projects"). Checking it expands the campaign fields (spec §4.3) plus a short disclaimer about what being featured involves. Unchecked by default on `/book`, checked by default on the landing page (spec §4.4).
+- **Entry points.** Both. `/book` must support applying on its own, for people who wander into the regular flow.
+- **Landing page form.** The full embedded version from spec §8.3, delivered as a staged flow: concept → routing questions → builder for the matched package → booking form with campaign fields. Earlier answers stay editable at every stage. Accepted as the bigger build because the page stays up for about six months.
 
 ---
 
-## Phase 3: Passion Projects (draft, revisit after checkpoint)
+## Phase 3: Passion Projects
 
 Everything here sits behind **`PASSION_PROJECTS_ENABLED`**, a server-side env var in both apps (`true` in local + Vercel Preview, `false` in Production until launch). Launch is an env change + redeploy in Vercel, not a code release. Afterwards it doubles as the "close the round" switch.
 
-Rough shape, in order:
+Target dates follow the Notion tasks: booking side by **Nov 2**, landing page by **Nov 4**, launch **Nov 6**.
 
-1. **Flag + campaign schema.** `campaigns.ts` (`id: 'passion-projects-fw26'`, eligible slugs `['evryday-package', 'together', 'in-practice']`), flag helpers in both apps, and migration: `BookingRequest.campaign` (indexed), `campaignAnswers` (JSON, incl. `acknowledgedAt` + `ackVersion`), `applicantStatus` enum. The server stamps the campaign; the client only sends `applyToCampaign`.
-2. **Apply toggle on `/book`.** Eligible packages only, with `?apply=1` passed through from the builder (the old `sale=1` pattern). Campaign fields with progressive disclosure, plus API persistence and validation.
-3. **Campaign in emails + admin.** Campaign block in the notification email, applicant status control, campaign filter on the bookings list.
-4. **`/passion-projects` landing page, built from scratch.** An all-in-one _home_ for the campaign: the story, who Reed is looking for, how it works, referrals, a features section (empty state for now), and a clear way to apply. Metadata, sitemap, static OG placeholder.
-   - **How applying works is open.** The spec asks for routing questions + an embedded builder + the full form on the page. After the checkpoint we may instead have the routing questions pre-select a package and hand off to the existing builder → `/book?apply=1` flow. That's less to build, and it doesn't put a second copy of a long form on the page.
-   - Only if we choose the embedded version: extract builder state (`usePackageBuilder` + `ModifierRows`) so the builder and form can live on one page.
-5. **Nav item + home block.**
-6. **Launch:** flip the flag in production.
+### PR 10 · `feat/campaign-schema`
 
-Parked until then: announcement bar, distinct applicant confirmation email (stretch), home block placement.
+- `packages/core/src/campaigns.ts`: `{ id: 'passion-projects-fw26', eligibleSlugs: ['evryday-package', 'together', 'in-practice'], ackVersion: 1 }` plus `isCampaignEligible(slug)`.
+- Flag helper `isPassionProjectsEnabled()` in both apps, read from server env.
+- Migration (additive, nullable): `BookingRequest.campaign String?` (indexed), `campaignAnswers Json?` (`whatWorkingOn`, `aboutIt`, `link`, `othersInvolved`, `acknowledgedAt`, `ackVersion`), `applicantStatus ApplicantStatus?` with enum `PENDING | ACCEPTED | NOT_FEATURED`.
+- `booking-form.ts` schema: client sends `applyToCampaign: boolean` and `campaignAnswers`. When `applyToCampaign` is true, `whatWorkingOn` and the acknowledgement are required. Link is free text, not URL-validated.
+- `/api/bookings`: the server stamps `campaign` and `applicantStatus = PENDING`, and only when the flag is on and the package is eligible. Otherwise `applyToCampaign` is dropped quietly so a stale tab can't fail the booking. Route tests for flag off, ineligible package, missing required answers.
+
+### PR 11 · `feat/book-campaign-optin`
+
+- `app/book/booking-fields/campaign-fields.tsx`: the opt-in checkbox, the disclaimer, and the §4.3 fields, revealed on check. Rendered only when the flag is on and the selected package is eligible.
+- Placement: its own `BookingStep` after contact details and before notes, so it reads as a deliberate choice and not part of the required path. Confirm on Preview.
+- Disclaimer and acknowledgement copy live in one constant next to `ackVersion`. The contract feature section isn't written yet, so ship placeholder wording and bump `ackVersion` when the contract lands.
+- `/book?apply=1` pre-checks the box. `/package-builder` carries `apply=1` through to `/book` when present.
+- Selection summary shows a small "Applying to Passion Projects" line when checked.
+
+### PR 12 · `feat/campaign-emails-admin`
+
+- Reed's notification email: campaign block with the answers and acknowledgement timestamp. Client confirmation gets one added line acknowledging the application. The distinct applicant confirmation email stays a stretch.
+- Admin bookings: campaign badge on the list, campaign filter, applicant status control on the booking detail.
+- Accepted and not-featured replies: copy from Reed, stored as templates Reed sends by hand for now.
+
+### PR 13 · `refactor/builder-state`
+
+- Extract `usePackageBuilder(pkg, initial?)` from `app/package-builder/builder-card.tsx` (624 lines, all state in local `useState`). Returns items, price breakdown, a `selection` in the shape `/book` already consumes, and `reset(pkg)`.
+- `BuilderCard` becomes a view over the hook. `/package-builder` behaviour and output URLs unchanged. Pricing parity tests against current totals for all eligible packages.
+- Check that `BookingForm` handles a `selection` prop that changes after mount (it is only fed from URL params today). Fix any state that assumes the selection is fixed for the form's lifetime.
+
+### PR 14 · `feat/passion-projects-page`
+
+- Route `/passion-projects`. Returns 404 while the flag is off in Production.
+- Content sections per spec §8.3 (hero, what this is, how it works, referrals, features empty state), then the staged apply flow:
+  1. **Questions.** Personal project or business? Just you or others involved? Answers map to a package: personal + solo → Evryday, personal + others → Together, business → In Practice. One line of copy explains the match.
+  2. **Builder.** Revealed once both are answered. `usePackageBuilder` for the matched package only, with a switcher limited to the three eligible packages.
+  3. **Booking form.** Revealed by a "Continue to booking" action under the builder. Reuses `BookingForm` with the live selection and the campaign checkbox pre-checked.
+- Stage and answers live in the URL (`?type=personal|business&people=solo|group&package=<slug>&stage=build|book`), so refresh, back and shared links land in the same place.
+- Changing an answer after editing the builder: if the matched package changes, the builder resets to that package's defaults with a one-line note; if it doesn't change, modifiers are kept. The form stays revealed and its contents are kept.
+- Structure and spacing on existing tokens first, visual identity applied once it's settled. Works in light and `.dark`, tested at phone widths.
+- Metadata, canonical, `sitemap.ts`, static OG placeholder.
+
+### PR 15 · `feat/passion-projects-nav-home`
+
+- Nav item and home page block (spec §8.1–8.2), both behind the flag.
+
+### Launch (Nov 6)
+
+- Set `PASSION_PROJECTS_ENABLED=true` in Vercel Production, redeploy, then submit one test application through the landing page and one through `/book?apply=1` and check admin and both emails. Void the test bookings afterwards.
+
+### Fallback if the landing page slips past Nov 4
+
+PRs 10–12 make `/book?apply=1` a complete way to apply on their own. If PR 13 or 14 runs late, launch with the content sections and routing questions, with the questions linking to `/package-builder` → `/book?apply=1`, and switch the stages in-page after launch. No content or copy is thrown away.
 
 ---
 
 ## Risks
 
-- **Timeline.** Phases 1–2 are about 9 PRs. Phase 3 depends on checkpoint feedback, so it's realistically squeezed against Nov 6. Handing off to the existing builder → `/book` flow (Phase 3, step 4) is the lighter option if time is short.
+- **Timeline.** Phase 3 is six PRs in eight days, and the embedded landing flow (PRs 13–14) is the largest piece. See the fallback above.
+- **Visual identity** is due Oct 30 and feeds PR 14. Build structure on existing tokens so the page isn't blocked on it.
+- **Acknowledgement wording** must match the contract feature section, which is due Nov 21. Ship placeholder copy with `ackVersion` so later changes are traceable per booking.
 - **Production rollout.** Each release runs `pnpm db:deploy` on the Neon production branch. All Phase 2 migrations are additive/nullable. Smoke-test admin on production after the first migration release.
 - **PRs 2–3** touch the live booking path. They're mitigated by having no behaviour change, pricing unit tests, and before/after total checks.
 - **Slugs** are editable in admin. Renaming an eligible package's slug would break campaign eligibility.
