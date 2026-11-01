@@ -1,6 +1,11 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["DATABASE_URL", "ADMIN_API_BASE_URL", "SKIP_ENV_VALIDATION"],
+  "globalEnv": [
+    "DATABASE_URL",
+    "ADMIN_API_BASE_URL",
+    "SKIP_ENV_VALIDATION",
+    "PASSION_PROJECTS_ENABLED"
+  ],
   "tasks": {
     "dev": {
       "cache": false,

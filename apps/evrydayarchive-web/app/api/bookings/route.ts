@@ -1,6 +1,6 @@
 import { BookingFormSchema, createApiError, jsonError, jsonOk, parseJson } from '@repo/core';
 
-import { getServerEnv } from '../../lib/env';
+import { getServerEnv, isPassionProjectsEnabled } from '../../lib/env';
 
 export const POST = async (req: Request): Promise<Response> => {
   const result = await parseJson(req, BookingFormSchema);
@@ -11,12 +11,18 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const { ADMIN_API_BASE_URL } = getServerEnv();
 
+  // With the campaign off, a tab left open from before still books a regular session.
+  const { applyToCampaign, campaignAnswers, ...regularBooking } = result.data;
+  const booking = isPassionProjectsEnabled()
+    ? { ...regularBooking, applyToCampaign, campaignAnswers }
+    : regularBooking;
+
   let adminRes: Response;
   try {
     adminRes = await fetch(new URL('/api/public/bookings', ADMIN_API_BASE_URL), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(result.data)
+      body: JSON.stringify(booking)
     });
   } catch (error) {
     console.error('[bookings] Failed to reach admin API', error);

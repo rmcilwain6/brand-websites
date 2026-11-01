@@ -14,6 +14,12 @@ type EmailEnv = {
 let cachedEnv: ServerEnv | null = null;
 let cachedEmailEnv: EmailEnv | null = null;
 
+/**
+ * Whether Passion Projects is live on the public site. Read on the server only: this is the
+ * one switch for the campaign, so opening or closing a round is an env change here.
+ */
+export const isPassionProjectsEnabled = () => process.env.PASSION_PROJECTS_ENABLED === 'true';
+
 export const getServerEnv = () => {
   if (!cachedEnv) {
     const envSchema = z.object({
