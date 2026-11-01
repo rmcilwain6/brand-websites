@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 // Subpath import keeps the core package's Zod schemas out of the client bundle.
 import { CAMPAIGN } from '@repo/core/campaigns';
 
@@ -43,7 +45,18 @@ export const CampaignFields = ({ values, onChange, errors }: Props) => (
         id="campaign-disclaimer"
         className="text-[13px] leading-relaxed text-ink-soft sm:pl-8 sm:text-sm"
       >
-        {CAMPAIGN.copy.disclaimer}
+        {CAMPAIGN.copy.disclaimer}{' '}
+        {/* A new tab, so reading about the campaign doesn't lose what's typed in the form. */}
+        <Link
+          href="/passion-projects"
+          target="_blank"
+          rel="noopener"
+          className="whitespace-nowrap font-medium text-accent underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          Find out more
+          <span aria-hidden="true"> ↗</span>
+          <span className="sr-only"> (opens in a new tab)</span>
+        </Link>
       </p>
     </div>
 
