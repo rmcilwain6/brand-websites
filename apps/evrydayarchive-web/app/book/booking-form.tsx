@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 
 import type { LocationWindow, TimeSlot } from '@repo/core';
+// Subpath import keeps the core package's Zod schemas out of the client bundle.
+import { CAMPAIGN } from '@repo/core/campaigns';
 
+import { CampaignFields, type CampaignValues } from './booking-fields/campaign-fields';
 import { ContactFields, type ContactValues } from './booking-fields/contact-fields';
 import { DateTimeFields } from './booking-fields/date-time-fields';
 import { LocationFields, type LocationSelectValue } from './booking-fields/location-fields';
@@ -20,21 +23,40 @@ type Props = {
   selection: BookingSelection | null;
   timeSlots: TimeSlot[];
   locationWindows: LocationWindow[];
+  /** The campaign is on and this package is eligible, so the booker can apply. */
+  campaignAvailable?: boolean;
+  /** Tick the apply box to begin with. */
+  initialApply?: boolean;
 };
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
-type FieldErrors = Partial<Record<'name' | 'email' | 'phone' | 'location' | 'date', string>>;
+type FieldErrors = Partial<
+  Record<
+    'name' | 'email' | 'phone' | 'location' | 'date' | 'whatWorkingOn' | 'acknowledged',
+    string
+  >
+>;
 
 // ── Steps ─────────────────────────────────────────────────────────────────────
 
-const STEPS = [
-  { title: 'Where & when', hint: 'Your area and a date that suits you' },
-  { title: 'Your details', hint: 'Name and email' },
-  { title: 'A few extras', hint: 'Referrals, voucher codes, notes', optional: true }
-] as const;
+type Step = { title: string; hint: string; optional?: boolean };
 
-const LAST_STEP = STEPS.length - 1;
+const WHERE_STEP: Step = { title: 'Where & when', hint: 'Your area and a date that suits you' };
+const DETAILS_STEP: Step = { title: 'Your details', hint: 'Name and email' };
+const CAMPAIGN_STEP: Step = {
+  title: 'Passion Projects',
+  hint: 'Apply to be featured',
+  optional: true
+};
+const EXTRAS_STEP: Step = {
+  title: 'A few extras',
+  hint: 'Referrals, voucher codes, notes',
+  optional: true
+};
+
+/** Where the campaign step sits, when this booking has one. */
+const CAMPAIGN_STEP_INDEX = 2;
 
 /** Which step each validated field lives in. */
 const FIELD_STEP: Record<keyof FieldErrors, number> = {
@@ -42,7 +64,9 @@ const FIELD_STEP: Record<keyof FieldErrors, number> = {
   date: 0,
   name: 1,
   email: 1,
-  phone: 1
+  phone: 1,
+  whatWorkingOn: CAMPAIGN_STEP_INDEX,
+  acknowledged: CAMPAIGN_STEP_INDEX
 };
 
 // ── Availability helpers ──────────────────────────────────────────────────────
@@ -101,12 +125,24 @@ const focusById = (id: string) => {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) => {
+export const BookingForm = ({
+  selection,
+  timeSlots,
+  locationWindows,
+  campaignAvailable = false,
+  initialApply = false
+}: Props) => {
+  const steps = campaignAvailable
+    ? [WHERE_STEP, DETAILS_STEP, CAMPAIGN_STEP, EXTRAS_STEP]
+    : [WHERE_STEP, DETAILS_STEP, EXTRAS_STEP];
+  const lastStep = steps.length - 1;
+
   const [status, setStatus] = useState<FormStatus>('idle');
   const [serverError, setServerError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submittedName, setSubmittedName] = useState('');
   const [submittedVoucher, setSubmittedVoucher] = useState(false);
+  const [submittedApplication, setSubmittedApplication] = useState(false);
 
   // The open step, and the furthest step reached. Steps up to `furthestStep` can be reopened.
   const [step, setStep] = useState(0);
@@ -127,6 +163,14 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
     referrerContact: '',
     voucherCode: ''
   });
+  const [campaign, setCampaign] = useState<CampaignValues>({
+    apply: initialApply,
+    whatWorkingOn: '',
+    aboutIt: '',
+    link: '',
+    othersInvolved: '',
+    acknowledged: false
+  });
   // Honeypot: hidden from people; only bots fill it in. The admin API drops those requests.
   const [website, setWebsite] = useState('');
 
@@ -142,6 +186,7 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
   ].join('-');
 
   const { name, email, phone } = contact;
+  const applying = campaignAvailable && campaign.apply;
 
   // ── Derived location value ──────────────────────────────────────────────────
 
@@ -179,6 +224,14 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
       errs.date = 'Please choose a preferred date.';
     }
 
+    if (applying && !campaign.whatWorkingOn.trim()) {
+      errs.whatWorkingOn = "Please tell me what you're working on.";
+    }
+
+    if (applying && !campaign.acknowledged) {
+      errs.acknowledged = 'Please confirm you understand what a featured session involves.';
+    }
+
     return errs;
   };
 
@@ -201,7 +254,9 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
       ['date', 'preferred-date'],
       ['name', 'name'],
       ['email', 'email'],
-      ['phone', 'phone']
+      ['phone', 'phone'],
+      ['whatWorkingOn', 'campaign-what-working-on'],
+      ['acknowledged', 'campaign-acknowledged']
     ];
     return fieldIds.find(([field]) => errs[field])?.[1];
   };
@@ -253,16 +308,19 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
       .filter(Boolean)
       .join(' · '),
     [name.trim(), email.trim()].filter(Boolean).join(' · '),
+    ...(campaignAvailable
+      ? [applying ? `Applying · ${campaign.whatWorkingOn.trim()}` : 'Not applying']
+      : []),
     ''
   ];
 
   const stepProps = (i: number) => {
-    const s = STEPS[i]!;
+    const s = steps[i]!;
     const status = stepStatus(i);
     return {
       index: i,
       title: s.title,
-      optional: 'optional' in s && s.optional,
+      optional: s.optional,
       status,
       subtitle: status === 'done' ? stepSummaries[i] || s.hint : s.hint,
       onOpen: i <= furthestStep ? () => openStep(i) : undefined
@@ -276,7 +334,7 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
     setServerError('');
 
     // Enter in an earlier step's field means "Continue", not "Send".
-    if (step < LAST_STEP) {
+    if (step < lastStep) {
       continueFrom(step);
       return;
     }
@@ -284,7 +342,7 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
     // Earlier steps can be reopened and changed without pressing Continue, so check them all.
     const errs = validate();
     if (Object.keys(errs).length > 0) {
-      continueFrom(LAST_STEP);
+      continueFrom(lastStep);
       return;
     }
 
@@ -307,6 +365,17 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
       // The contact field is only shown with a name, so drop a contact left behind by a cleared name.
       referrerContact: (referrerName && referral.referrerContact.trim()) || undefined,
       voucherCode: voucherCode || undefined,
+      // Answers typed before unticking the box aren't an application, so they stay behind.
+      ...(applying && {
+        applyToCampaign: true,
+        campaignAnswers: {
+          whatWorkingOn: campaign.whatWorkingOn,
+          aboutIt: campaign.aboutIt,
+          link: campaign.link,
+          othersInvolved: campaign.othersInvolved,
+          acknowledged: campaign.acknowledged
+        }
+      }),
       website: website || undefined,
       packageId: selection?.pkg.id,
       packageName: selection?.pkg.name,
@@ -332,6 +401,7 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
 
       setSubmittedName(name);
       setSubmittedVoucher(!!voucherCode);
+      setSubmittedApplication(applying);
       setStatus('success');
     } catch {
       setServerError('Unable to reach the server. Please check your connection and try again.');
@@ -340,7 +410,13 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
   };
 
   if (status === 'success') {
-    return <ConfirmationPanel name={submittedName} voucherEntered={submittedVoucher} />;
+    return (
+      <ConfirmationPanel
+        name={submittedName}
+        voucherEntered={submittedVoucher}
+        applied={submittedApplication}
+      />
+    );
   }
 
   const continueButton = (
@@ -357,7 +433,12 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
       <div className="min-w-0 flex-1">
         {/* Mobile-only package summary — desktop has a sidebar */}
         {selection && (
-          <SelectionSummary selection={selection} variant="compact" className="mb-4 lg:hidden" />
+          <SelectionSummary
+            selection={selection}
+            variant="compact"
+            applying={applying}
+            className="mb-4 lg:hidden"
+          />
         )}
 
         <form onSubmit={handleSubmit} noValidate className="space-y-3">
@@ -409,7 +490,30 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
             {continueButton}
           </BookingStep>
 
-          <BookingStep {...stepProps(2)}>
+          {campaignAvailable && (
+            <BookingStep {...stepProps(CAMPAIGN_STEP_INDEX)}>
+              <CampaignFields
+                values={campaign}
+                onChange={(field, value) => {
+                  setCampaign((prev) => ({ ...prev, [field]: value }));
+                  if (field === 'whatWorkingOn') clearError('whatWorkingOn');
+                  if (field === 'acknowledged') clearError('acknowledged');
+                  if (field === 'apply') {
+                    setFieldErrors((prev) => ({
+                      ...prev,
+                      whatWorkingOn: undefined,
+                      acknowledged: undefined
+                    }));
+                  }
+                }}
+                errors={fieldErrors}
+              />
+
+              {continueButton}
+            </BookingStep>
+          )}
+
+          <BookingStep {...stepProps(lastStep)}>
             <ReferralFields
               values={referral}
               onChange={(field, value) => setReferral((prev) => ({ ...prev, [field]: value }))}
@@ -434,7 +538,11 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
                 disabled={status === 'submitting'}
                 className="rounded-card bg-accent px-8 py-3.5 text-sm font-medium text-white transition-opacity duration-fast hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
-                {status === 'submitting' ? 'Sending…' : 'Send request'}
+                {status === 'submitting'
+                  ? 'Sending…'
+                  : applying
+                    ? 'Send my application'
+                    : 'Send request'}
               </button>
               <p className="text-[13px] leading-relaxed text-ink-soft sm:text-sm">
                 No commitment. I&apos;ll be in touch soon.
@@ -460,14 +568,20 @@ export const BookingForm = ({ selection, timeSlots, locationWindows }: Props) =>
 
       {selection && (
         <aside className="hidden lg:block lg:w-80 lg:flex-none lg:sticky lg:top-8">
-          <SelectionSummary selection={selection} variant="full" />
+          <SelectionSummary selection={selection} variant="full" applying={applying} />
           <div className="mt-6 px-1">
             <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-soft">
               What happens next
             </p>
             <p className="text-sm leading-relaxed text-ink-muted">
-              Once you submit, I&apos;ll review your request and be in touch to confirm the date and
-              sort out any details.
+              {applying ? (
+                CAMPAIGN.copy.whatHappensNext
+              ) : (
+                <>
+                  Once you submit, I&apos;ll review your request and be in touch to confirm the date
+                  and sort out any details.
+                </>
+              )}
             </p>
           </div>
         </aside>
