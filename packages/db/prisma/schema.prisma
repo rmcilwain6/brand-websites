@@ -60,6 +60,12 @@ enum BookingRequestStatus {
   CANCELLED
 }
 
+enum ApplicantStatus {
+  PENDING
+  ACCEPTED
+  NOT_FEATURED
+}
+
 enum VoucherType {
   REFERRAL
 }
@@ -273,6 +279,12 @@ model BookingRequest {
   referrerContact    String?
   voucherCodeEntered String?
   heardFrom          String?
+  // Campaign application (Passion Projects spec §4.3, §5.1). All null on regular bookings.
+  /// Campaign id, e.g. passion-projects-winter-2026, see CAMPAIGN in @repo/core.
+  campaign           String?
+  /// whatWorkingOn, aboutIt, link, othersInvolved, acknowledgedAt, ackVersion.
+  campaignAnswers    Json?
+  applicantStatus    ApplicantStatus?
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   inquiry            Inquiry?             @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
@@ -281,6 +293,7 @@ model BookingRequest {
   referralVoucher    Voucher?             @relation("VoucherSource")
   redeemedVouchers   Voucher[]            @relation("VoucherRedeemed")
 
+  @@index([campaign])
   @@index([packageId])
   @@index([status])
   @@index([timeSlotId])
