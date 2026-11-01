@@ -14,7 +14,7 @@ import {
   type TimeSlot
 } from '@repo/core';
 
-import { getServerEnv, isPassionProjectsEnabled } from '../lib/env';
+import { getServerEnv } from '../lib/env';
 import { BookingForm } from './booking-form';
 import type { BookingSelection } from './selection-summary';
 
@@ -71,14 +71,14 @@ export default async function BookPage({ searchParams }: Props) {
   // Resolve package by slug
   const pkg = packageSlug ? packages.find((p) => p.slug === packageSlug) : undefined;
 
-  const applyRequested = isPassionProjectsEnabled() && apply === '1';
+  const applyRequested = apply === '1';
 
   // An application attaches to a package, so without one there is nothing to apply with yet.
   if (applyRequested && !pkg) {
     redirect('/package-builder?apply=1');
   }
 
-  const campaignAvailable = isPassionProjectsEnabled() && isCampaignEligible(pkg?.slug);
+  const campaignAvailable = isCampaignEligible(pkg?.slug);
 
   // Parse selected modifier IDs (CHECKBOX / TOGGLE)
   const selectedModifierIds = modifiersParam ? modifiersParam.split(',').filter(Boolean) : [];

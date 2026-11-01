@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import { fetchPublicPackages, isCampaignEligible, type PublicPackage } from '@repo/core';
 
-import { getServerEnv, isPassionProjectsEnabled } from '../lib/env';
+import { getServerEnv } from '../lib/env';
 import { BuilderCard } from './builder-card';
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ type Props = {
 const PackageBuilderPage = async ({ searchParams }: Props) => {
   const { package: packageSlug, apply: applyParam } = await searchParams;
   const { ADMIN_API_BASE_URL } = getServerEnv();
-  const apply = isPassionProjectsEnabled() && applyParam === '1';
+  const apply = applyParam === '1';
 
   let allPackages: PublicPackage[] = [];
   try {

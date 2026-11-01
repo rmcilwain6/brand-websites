@@ -166,7 +166,7 @@ Target dates follow the Notion tasks: booking side by **Nov 2**, landing page by
 
 ### PR 11 · `feat/book-campaign-optin`
 
-- `app/book/booking-fields/campaign-fields.tsx`: the opt-in checkbox and disclaimer, always visible so someone new to the campaign can decide, and the §4.3 fields, revealed on check. Rendered only when the flag is on and the selected package is eligible.
+- `app/book/booking-fields/campaign-fields.tsx`: the opt-in checkbox and disclaimer, always visible so someone new to the campaign can decide, and the §4.3 fields, revealed on check. Rendered only when the selected package is eligible.
 - Placement: its own `BookingStep` after contact details and before notes, so it reads as a deliberate choice and not part of the required path. Confirm locally.
 - Disclaimer and acknowledgement copy live in one constant next to `ackVersion`. The contract feature section isn't written yet, so ship placeholder wording and bump `ackVersion` when the contract lands.
 - `/book?package=<slug>&apply=1` pre-checks the box. `/package-builder` carries `apply=1` through to `/book` when present, and the "Back to builder" link keeps it. `/book?apply=1` with no package has nothing to apply against, so it redirects to `/package-builder?apply=1`.
