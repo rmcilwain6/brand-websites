@@ -153,24 +153,26 @@ Reed ran the updated `/book` flow on production with a real referral through adm
 
 ## Phase 3: Passion Projects
 
-Everything here sits behind **`PASSION_PROJECTS_ENABLED`**, a server-side env var in both apps (`true` in local + Vercel Preview, `false` in Production until launch). Launch is an env change + redeploy in Vercel, not a code release. Afterwards it doubles as the "close the round" switch.
+Everything here sits behind **`PASSION_PROJECTS_ENABLED`**, a server-side env var on the public site only (`true` locally, unset or `false` in Production until launch). Admin doesn't read it, so the two apps can't disagree and silently lose an application. Admin only checks that the package is eligible. Web previews talk to the production admin API, so test this work locally. The code and migration reach production through a normal release with the flag off; launch itself is then an env change + redeploy in Vercel. Afterwards the flag doubles as the "close the round" switch.
 
 Target dates follow the Notion tasks: booking side by **Nov 2**, landing page by **Nov 4**, launch **Nov 6**.
 
 ### PR 10 · `feat/campaign-schema`
 
 - `packages/core/src/campaigns.ts`: `{ id: 'passion-projects-winter-2026', eligibleSlugs: ['evryday-package', 'together', 'in-practice'], ackVersion: 1 }` plus `isCampaignEligible(slug)`.
-- Flag helper `isPassionProjectsEnabled()` in both apps, read from server env.
+- Flag helper `isPassionProjectsEnabled()` in the public site, read from server env.
 - Migration (additive, nullable): `BookingRequest.campaign String?` (indexed), `campaignAnswers Json?` (`whatWorkingOn`, `aboutIt`, `link`, `othersInvolved`, `acknowledgedAt`, `ackVersion`), `applicantStatus ApplicantStatus?` with enum `PENDING | ACCEPTED | NOT_FEATURED`.
 - `booking-form.ts` schema: client sends `applyToCampaign: boolean` and `campaignAnswers`. When `applyToCampaign` is true, `whatWorkingOn` and the acknowledgement are required. Link is free text, not URL-validated.
-- `/api/bookings`: the server stamps `campaign` and `applicantStatus = PENDING`, and only when the flag is on and the package is eligible. Otherwise `applyToCampaign` is dropped quietly so a stale tab can't fail the booking. Route tests for flag off, ineligible package, missing required answers.
+- Public `/api/bookings` strips the application when the flag is off, so a stale tab still books a regular session. Admin `/api/public/bookings` looks up the package and, when it's eligible, stamps `campaign`, `applicantStatus = PENDING`, `acknowledgedAt` and `ackVersion`. Otherwise the application is dropped quietly so it can't fail the booking. Route tests for flag off, ineligible package, missing required answers.
 
 ### PR 11 · `feat/book-campaign-optin`
 
 - `app/book/booking-fields/campaign-fields.tsx`: the opt-in checkbox, the disclaimer, and the §4.3 fields, revealed on check. Rendered only when the flag is on and the selected package is eligible.
 - Placement: its own `BookingStep` after contact details and before notes, so it reads as a deliberate choice and not part of the required path. Confirm on Preview.
 - Disclaimer and acknowledgement copy live in one constant next to `ackVersion`. The contract feature section isn't written yet, so ship placeholder wording and bump `ackVersion` when the contract lands.
-- `/book?apply=1` pre-checks the box. `/package-builder` carries `apply=1` through to `/book` when present.
+- `/book?package=<slug>&apply=1` pre-checks the box. `/package-builder` carries `apply=1` through to `/book` when present, and the "Back to builder" link keeps it. `/book?apply=1` with no package has nothing to apply against, so it redirects to `/package-builder?apply=1`.
+- The step list and the "Three short steps" copy on `/book` are hardcoded today; both need to handle the optional extra step.
+- Revisit the "How did you hear about this?" options so they match how people would answer. Instagram already covers being tagged in a post.
 - Selection summary shows a small "Applying to Passion Projects" line when checked.
 
 ### PR 12 · `feat/campaign-emails-admin`
@@ -232,7 +234,8 @@ Needed before the first feature publishes (target late November), not for launch
 
 ### Launch (Nov 6)
 
-- Set `PASSION_PROJECTS_ENABLED=true` in Vercel Production, redeploy, then submit one test application through the landing page and one through `/book?apply=1` and check admin and both emails. Void the test bookings afterwards.
+- Publish a release with the flag off, so the code and migration are on production first.
+- Set `PASSION_PROJECTS_ENABLED=true` on the public site's Vercel Production project, redeploy, then submit one test application through the landing page and one through `/book?package=<slug>&apply=1` and check admin and both emails. Void the test bookings afterwards.
 
 ### Fallback if the landing page slips past Nov 4
 
