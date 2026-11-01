@@ -44,9 +44,7 @@ describe('POST /api/bookings', () => {
     vi.unstubAllGlobals();
   });
 
-  it('forwards an application when the campaign is on', async () => {
-    vi.stubEnv('PASSION_PROJECTS_ENABLED', 'true');
-
+  it('forwards an application to the admin API', async () => {
     const res = await post(application);
 
     expect(res.status).toBe(200);
@@ -56,23 +54,7 @@ describe('POST /api/bookings', () => {
     });
   });
 
-  it.each([
-    ['unset', undefined],
-    ['false', 'false']
-  ])('books a regular session when the flag is %s', async (_label, value) => {
-    vi.stubEnv('PASSION_PROJECTS_ENABLED', value as string);
-
-    const res = await post(application);
-
-    expect(res.status).toBe(200);
-    expect(forwarded()).toMatchObject({ name: 'Jordan Lee', packageId: 'pkg_1' });
-    expect(forwarded()).not.toHaveProperty('applyToCampaign');
-    expect(forwarded()).not.toHaveProperty('campaignAnswers');
-  });
-
   it('rejects an application missing the required answers without forwarding it', async () => {
-    vi.stubEnv('PASSION_PROJECTS_ENABLED', 'true');
-
     const res = await post({ ...booking, applyToCampaign: true });
 
     expect(res.status).toBe(400);
