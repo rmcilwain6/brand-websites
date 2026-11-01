@@ -146,7 +146,7 @@ The current flow stores most booking details in `Inquiry.payload` (JSON) with a 
 
 A booking needs to be able to record:
 
-- **Campaign value.** **Decided:** a campaign identifier, e.g. `passion-projects-fw26`, rather than a boolean, so a spring round needs no schema change. Bookings without a campaign have none. Reed should be able to filter bookings by campaign in the admin.
+- **Campaign value.** **Decided:** a campaign identifier, e.g. `passion-projects-winter-2026`, rather than a boolean, so a spring round needs no schema change. Bookings without a campaign have none. Reed should be able to filter bookings by campaign in the admin.
 - Passion Projects answers (Section 4.3). These may change between rounds, so a flexible structure is reasonable.
 - Location ideas
 - Referrer name and referrer contact

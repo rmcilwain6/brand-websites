@@ -159,7 +159,7 @@ Target dates follow the Notion tasks: booking side by **Nov 2**, landing page by
 
 ### PR 10 · `feat/campaign-schema`
 
-- `packages/core/src/campaigns.ts`: `{ id: 'passion-projects-fw26', eligibleSlugs: ['evryday-package', 'together', 'in-practice'], ackVersion: 1 }` plus `isCampaignEligible(slug)`.
+- `packages/core/src/campaigns.ts`: `{ id: 'passion-projects-winter-2026', eligibleSlugs: ['evryday-package', 'together', 'in-practice'], ackVersion: 1 }` plus `isCampaignEligible(slug)`.
 - Flag helper `isPassionProjectsEnabled()` in both apps, read from server env.
 - Migration (additive, nullable): `BookingRequest.campaign String?` (indexed), `campaignAnswers Json?` (`whatWorkingOn`, `aboutIt`, `link`, `othersInvolved`, `acknowledgedAt`, `ackVersion`), `applicantStatus ApplicantStatus?` with enum `PENDING | ACCEPTED | NOT_FEATURED`.
 - `booking-form.ts` schema: client sends `applyToCampaign: boolean` and `campaignAnswers`. When `applyToCampaign` is true, `whatWorkingOn` and the acknowledgement are required. Link is free text, not URL-validated.
@@ -185,19 +185,48 @@ Target dates follow the Notion tasks: booking side by **Nov 2**, landing page by
 - `BuilderCard` becomes a view over the hook. `/package-builder` behaviour and output URLs unchanged. Pricing parity tests against current totals for all eligible packages.
 - Check that `BookingForm` handles a `selection` prop that changes after mount (it is only fed from URL params today). Fix any state that assumes the selection is fixed for the form's lifetime.
 
-### PR 14 · `feat/passion-projects-page`
+### Design decisions (Oct 31)
+
+Settled on the design canvas and recorded on the Notion task "Passion Projects: visual identity discovery". What the build needs:
+
+- **Type.** Newsreader (Google Fonts, via `next/font`, optical size axis) for campaign headings, names, quotes and feature body text. Plus Jakarta Sans stays for UI. JetBrains Mono for placard place/date lines and catalogue numbers.
+- **Naming.** Editions are seasons (`Winter 2026`, then `Spring 2027`); stories are `Feature 01`, `Feature 02`. The campaign id is `passion-projects-winter-2026`.
+- **Masthead strip.** Sun-coloured strip, "Passion Projects" in Newsreader, season in mono, feature number or count right-aligned, 2px orange bottom border. Desktop: directly under the sticky nav. Phone: first element on the page above the fixed bottom nav. It scrolls with the page on every breakpoint; it is never sticky. The same strip (orange top border) is the page footer.
+- **Orange band.** Full-width `#F06F42` with `#1b1a19` Newsreader text. One per page, used for the main ask or a pull quote. Buttons keep white text on orange.
+- **Arch frames** mean "feature": `border-radius: 999px 999px 0 0` image with a 4–5px orange line under it. Used for feature cards only.
+- Light and dark mode for everything.
+
+### PR 14 · `feat/passion-projects-design`
+
+- Newsreader via `next/font`, exposed as a `font-serif` Tailwind family.
+- Shared components under `app/passion-projects/_components/`: `MastheadStrip` (props: season, right label; `as="header" | "footer"`), `OrangeBand`, `ArchCard` (image, feature number, name, one-liner, href), `SectionHeading`, and the existing `Placard` with a mono subline variant.
+- Check the components on a temporary `/passion-projects/_preview` route behind the flag, removed before launch.
+
+### PR 15 · `feat/passion-projects-page`
 
 - Route `/passion-projects`. Returns 404 while the flag is off in Production.
-- Content sections per spec §8.3 (hero, what this is, how it works, referrals, features empty state), then the staged apply flow:
-  1. **Questions.** Personal project or business? Just you or others involved? Answers map to a package: personal + solo → Evryday, personal + others → Together, business → In Practice. One line of copy explains the match.
-  2. **Builder.** Revealed once both are answered. `usePackageBuilder` for the matched package only, with a switcher limited to the three eligible packages.
-  3. **Booking form.** Revealed by a "Continue to booking" action under the builder. Reuses `BookingForm` with the live selection and the campaign checkbox pre-checked.
-- Stage and answers live in the URL (`?type=personal|business&people=solo|group&package=<slug>&stage=build|book`), so refresh, back and shared links land in the same place.
-- Changing an answer after editing the builder: if the matched package changes, the builder resets to that package's defaults with a one-line note; if it doesn't change, modifiers are kept. The form stays revealed and its contents are kept.
-- Structure and spacing on existing tokens first, visual identity applied once it's settled. Works in light and `.dark`, tested at phone widths.
+- Page order: masthead strip → salon wall with the hero text placed in its top-left (grid cols 1–5, rows 1–11) → features row → how it works → orange referral band ("Somebody you know is working on something.", the $15 note, share button) → staged apply flow → masthead footer.
+- **Salon wall.** 12-col grid, 40px rows, 12px gap, `grid-auto-flow: dense` on desktop; 6-col, 30px rows, 6px gap on phone. Slots come from `app/passion-projects/wall.ts` (image, alt, title, place, date, desktop span, phone span or `null` for desktop-only). The slot list and shapes are on the Notion landing page task ("Wall plan"); Reed fills it with photos exported as webp next to the home page images. Each frame has a number button: placard slides up on hover and focus (desktop), toggles on tap (phone), `aria-expanded` on the button, no transition under `prefers-reduced-motion`.
+- **Features row.** Hidden when no features are published. Arch cards in a row: desktop shows four, previous/next buttons slide by four (transform transition, disabled at the ends, counter like "1–4 of 9"); phone is a native horizontal scroll with `scroll-snap-type: x mandatory` and the next card peeking. A season tab is added when Spring 2027 starts, not now.
+- **Apply flow** (`id="apply"`, hero button scrolls to it smoothly, jump under reduced motion):
+  1. **Questions.** Personal project or business? Just you or others involved? personal + solo → Evryday, personal + others → Together, business → In Practice. Chips with `aria-pressed`.
+  2. **Package card.** Matched package name, base price, one-line reason, tabs to override with the other two eligible packages, then the builder rows from `usePackageBuilder` and the live total.
+  3. **Booking steps.** `BookingForm` with the live selection; the Passion Projects step expanded and pre-checked; submit label "Send my application".
+- Stage and answers live in the URL (`?type=personal|business&people=solo|group&package=<slug>`), so refresh, back and shared links land in the same place.
+- Changing an answer after editing the builder: if the matched package changes, the builder resets to that package's defaults with a one-line note; if it doesn't change, modifiers are kept. The form keeps its contents.
 - Metadata, canonical, `sitemap.ts`, static OG placeholder.
 
-### PR 15 · `feat/passion-projects-nav-home`
+### PR 16 · `feat/passion-projects-features`
+
+Needed before the first feature publishes (target late November), not for launch.
+
+- Content as MDX in `apps/evrydayarchive-web/content/passion-projects/<slug>.mdx`, frontmatter: `number`, `season`, `name`, `slug`, `intro`, `place`, `sessionDate`, `heroImage`, `archImage`, `oneLiner`, `published`. Unpublished files never build into pages or the features row.
+- Route `/passion-projects/[slug]`, statically generated, behind the flag.
+- Layout blocks as MDX components: `Entrance` (Feature number, name, intro, place and date, large print with placard), `Section` heading, body text in Newsreader, `Beside` (photo hung next to the passage), `QuoteBand` (orange), `Pinned` (sticky print beside a passage on desktop, inline on phone), `Pair`, `Run` (two to four photos, no text), `PullQuote`, `Referral` ("Know someone like …?"), `KeepReading` (arch cards for the other published features in the season).
+- Masthead strip header shows the feature number; footer links to the next feature.
+- The feature also appears in the hall's features row and sitemap once `published` is true.
+
+### PR 17 · `feat/passion-projects-nav-home`
 
 - Nav item and home page block (spec §8.1–8.2), both behind the flag.
 
@@ -207,14 +236,14 @@ Target dates follow the Notion tasks: booking side by **Nov 2**, landing page by
 
 ### Fallback if the landing page slips past Nov 4
 
-PRs 10–12 make `/book?apply=1` a complete way to apply on their own. If PR 13 or 14 runs late, launch with the content sections and routing questions, with the questions linking to `/package-builder` → `/book?apply=1`, and switch the stages in-page after launch. No content or copy is thrown away.
+PRs 10–12 make `/book?apply=1` a complete way to apply on their own. If PR 13 or 15 runs late, launch with the content sections and routing questions, with the questions linking to `/package-builder` → `/book?apply=1`, and switch the stages in-page after launch. No content or copy is thrown away.
 
 ---
 
 ## Risks
 
-- **Timeline.** Phase 3 is six PRs in eight days, and the embedded landing flow (PRs 13–14) is the largest piece. See the fallback above.
-- **Visual identity** is due Oct 30 and feeds PR 14. Build structure on existing tokens so the page isn't blocked on it.
+- **Timeline.** PRs 10–15 and 17 are needed for launch; PR 16 can follow before the first feature. The embedded landing flow (PRs 13 and 15) is the largest piece. See the fallback above.
+- **Visual identity** is settled (see Design decisions above). Wall photos still need picking and exporting before PR 15 can ship the real wall; build it with the current home page images until then.
 - **Acknowledgement wording** must match the contract feature section, which is due Nov 21. Ship placeholder copy with `ackVersion` so later changes are traceable per booking.
 - **Production rollout.** Each release runs `pnpm db:deploy` on the Neon production branch. All Phase 2 migrations are additive/nullable. Smoke-test admin on production after the first migration release.
 - **PRs 2–3** touch the live booking path. They're mitigated by having no behaviour change, pricing unit tests, and before/after total checks.
