@@ -1,4 +1,5 @@
 export * from './api';
+export * from './campaigns';
 export * from './env';
 export * from './pricing';
 export * from './referrals';

@@ -5,6 +5,7 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./campaigns": "./src/campaigns.ts",
     "./pricing": "./src/pricing.ts",
     "./referrals": "./src/referrals.ts",
     "./vouchers": "./src/vouchers.ts"
