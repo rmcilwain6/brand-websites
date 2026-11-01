@@ -14,7 +14,7 @@ The spec bundles three different kinds of work. They carry different levels of c
 | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
 | **1. Cleanup**                   | Remove dead code and consolidate duplicated logic. No visible change.                                                                                                        | Committed                                |
 | **2. Booking flow improvements** | Permanent, site-wide additions to the existing `/book` flow (referrals, vouchers, location ideas, source) plus the admin and email support for them. Ships visibly, no flag. | Committed                                |
-| **3. Passion Projects**          | The campaign layer on top: apply toggle and campaign fields, `/passion-projects` landing page, nav, home block. Behind a production flag.                                    | **Draft.** Revisit after the checkpoint. |
+| **3. Passion Projects**          | The campaign layer on top: apply toggle and campaign fields, `/passion-projects` landing page, nav, home block. Goes live with the launch release.                           | **Draft.** Revisit after the checkpoint. |
 
 **Why this order:** the form changes are significant. It's hard to judge how heavy the form feels until Reed has used it. Phase 2 lands the new fields on the existing `/book` flow first. Then there's a **checkpoint**: Reed uses it on Preview/production, and decides what the form should look like before the landing page builds on top of it. Phase 3 will likely change as a result, and that's expected.
 
@@ -153,17 +153,16 @@ Reed ran the updated `/book` flow on production with a real referral through adm
 
 ## Phase 3: Passion Projects
 
-Everything here sits behind **`PASSION_PROJECTS_ENABLED`**, a server-side env var on the public site only (`true` locally, unset or `false` in Production until launch). Admin doesn't read it, so the two apps can't disagree and silently lose an application. Admin only checks that the package is eligible. Web previews talk to the production admin API, so test this work locally. The code and migration reach production through a normal release with the flag off; launch itself is then an env change + redeploy in Vercel. Afterwards the flag doubles as the "close the round" switch.
+**There is no feature flag (decided Nov 1).** Phase 3 merges to `main`, which doesn't touch production, and publishing a release is the launch. So **nothing from `main` is released until the campaign is ready to go live.** Web previews talk to the production admin API, so test this work locally. Closing a round later is a code change and a release, until the admin switch in the spec's follow-up list exists.
 
 Target dates follow the Notion tasks: booking side by **Nov 2**, landing page by **Nov 4**, launch **Nov 6**.
 
 ### PR 10 · `feat/campaign-schema`
 
 - `packages/core/src/campaigns.ts`: `{ id: 'passion-projects-winter-2026', eligibleSlugs: ['evryday-package', 'together', 'in-practice'], ackVersion: 1 }` plus `isCampaignEligible(slug)`.
-- Flag helper `isPassionProjectsEnabled()` in the public site, read from server env.
 - Migration (additive, nullable): `BookingRequest.campaign String?` (indexed), `campaignAnswers Json?` (`whatWorkingOn`, `aboutIt`, `link`, `othersInvolved`, `acknowledgedAt`, `ackVersion`), `applicantStatus ApplicantStatus?` with enum `PENDING | ACCEPTED | NOT_FEATURED`.
 - `booking-form.ts` schema: client sends `applyToCampaign: boolean` and `campaignAnswers`. When `applyToCampaign` is true, `whatWorkingOn` and the acknowledgement are required. Link is free text, not URL-validated.
-- Public `/api/bookings` strips the application when the flag is off, so a stale tab still books a regular session. Admin `/api/public/bookings` looks up the package and, when it's eligible, stamps `campaign`, `applicantStatus = PENDING`, `acknowledgedAt` and `ackVersion`. Otherwise the application is dropped quietly so it can't fail the booking. Route tests for flag off, ineligible package, missing required answers.
+- Admin `/api/public/bookings` looks up the package and, when it's eligible, stamps `campaign`, `applicantStatus = PENDING`, `acknowledgedAt` and `ackVersion`. Otherwise the application is dropped quietly so it can't fail the booking. Route tests for ineligible package, missing required answers.
 
 ### PR 11 · `feat/book-campaign-optin`
 
@@ -202,11 +201,11 @@ Settled on the design canvas and recorded on the Notion task "Passion Projects: 
 
 - Newsreader via `next/font`, exposed as a `font-serif` Tailwind family.
 - Shared components under `app/passion-projects/_components/`: `MastheadStrip` (props: season, right label; `as="header" | "footer"`), `OrangeBand`, `ArchCard` (image, feature number, name, one-liner, href), `SectionHeading`, and the existing `Placard` with a mono subline variant.
-- Check the components on a temporary `/passion-projects/_preview` route behind the flag, removed before launch.
+- Check the components on a temporary preview route, removed before launch.
 
 ### PR 15 · `feat/passion-projects-page`
 
-- Route `/passion-projects`. Returns 404 while the flag is off in Production.
+- Route `/passion-projects`.
 - Page order: masthead strip → salon wall with the hero text placed in its top-left (grid cols 1–5, rows 1–11) → features row → how it works → orange referral band ("Somebody you know is working on something.", the $15 note, share button) → staged apply flow → masthead footer.
 - **Salon wall.** 12-col grid, 40px rows, 12px gap, `grid-auto-flow: dense` on desktop; 6-col, 30px rows, 6px gap on phone. Slots come from `app/passion-projects/wall.ts` (image, alt, title, place, date, desktop span, phone span or `null` for desktop-only). The slot list and shapes are on the Notion landing page task ("Wall plan"); Reed fills it with photos exported as webp next to the home page images. Each frame has a number button: placard slides up on hover and focus (desktop), toggles on tap (phone), `aria-expanded` on the button, no transition under `prefers-reduced-motion`.
 - **Features row.** Hidden when no features are published. Arch cards in a row: desktop shows four, previous/next buttons slide by four (transform transition, disabled at the ends, counter like "1–4 of 9"); phone is a native horizontal scroll with `scroll-snap-type: x mandatory` and the next card peeking. A season tab is added when Spring 2027 starts, not now.
@@ -223,19 +222,19 @@ Settled on the design canvas and recorded on the Notion task "Passion Projects: 
 Needed before the first feature publishes (target late November), not for launch.
 
 - Content as MDX in `apps/evrydayarchive-web/content/passion-projects/<slug>.mdx`, frontmatter: `number`, `season`, `name`, `slug`, `intro`, `place`, `sessionDate`, `heroImage`, `archImage`, `oneLiner`, `published`. Unpublished files never build into pages or the features row.
-- Route `/passion-projects/[slug]`, statically generated, behind the flag.
+- Route `/passion-projects/[slug]`, statically generated.
 - Layout blocks as MDX components: `Entrance` (Feature number, name, intro, place and date, large print with placard), `Section` heading, body text in Newsreader, `Beside` (photo hung next to the passage), `QuoteBand` (orange), `Pinned` (sticky print beside a passage on desktop, inline on phone), `Pair`, `Run` (two to four photos, no text), `PullQuote`, `Referral` ("Know someone like …?"), `KeepReading` (arch cards for the other published features in the season).
 - Masthead strip header shows the feature number; footer links to the next feature.
 - The feature also appears in the hall's features row and sitemap once `published` is true.
 
 ### PR 17 · `feat/passion-projects-nav-home`
 
-- Nav item and home page block (spec §8.1–8.2), both behind the flag.
+- Nav item and home page block (spec §8.1–8.2).
 
 ### Launch (Nov 6)
 
-- Publish a release with the flag off, so the code and migration are on production first.
-- Set `PASSION_PROJECTS_ENABLED=true` on the public site's Vercel Production project, redeploy, then submit one test application through the landing page and one through `/book?package=<slug>&apply=1` and check admin and both emails. Void the test bookings afterwards.
+- Publish a release. That runs the migration and puts the campaign live.
+- Submit one test application through the landing page and one through `/book?package=<slug>&apply=1` and check admin and both emails. Void the test bookings afterwards.
 
 ### Fallback if the landing page slips past Nov 4
 
@@ -245,6 +244,7 @@ PRs 10–12 make `/book?apply=1` a complete way to apply on their own. If PR 13 
 
 ## Risks
 
+- **Releases before launch.** With no flag, a release from `main` ships whatever campaign work has merged. An urgent production fix before launch has to branch from the `production` branch instead.
 - **Timeline.** PRs 10–15 and 17 are needed for launch; PR 16 can follow before the first feature. The embedded landing flow (PRs 13 and 15) is the largest piece. See the fallback above.
 - **Visual identity** is settled (see Design decisions above). Wall photos still need picking and exporting before PR 15 can ship the real wall; build it with the current home page images until then.
 - **Acknowledgement wording** must match the contract feature section, which is due Nov 21. Ship placeholder copy with `ackVersion` so later changes are traceable per booking.
