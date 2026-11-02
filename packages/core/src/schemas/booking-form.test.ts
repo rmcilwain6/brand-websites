@@ -9,9 +9,68 @@ const base = {
   preferredDate: '2026-11-14'
 };
 
+const errorPaths = (input: unknown) => {
+  const result = BookingFormSchema.safeParse(input);
+  return result.success ? [] : result.error.issues.map((issue) => issue.path.join('.'));
+};
+
 describe('BookingFormSchema', () => {
   it('accepts a booking with only the required fields', () => {
     expect(BookingFormSchema.safeParse(base).success).toBe(true);
+  });
+
+  it('accepts an application with the required answers and keeps the rest', () => {
+    const result = BookingFormSchema.parse({
+      ...base,
+      applyToCampaign: true,
+      campaignAnswers: {
+        whatWorkingOn: '  Restoring a 1972 sailboat  ',
+        aboutIt: '',
+        link: '@sailboat.restored',
+        othersInvolved: 'My brother',
+        acknowledged: true
+      }
+    });
+
+    expect(result.campaignAnswers).toEqual({
+      whatWorkingOn: 'Restoring a 1972 sailboat',
+      aboutIt: undefined,
+      link: '@sailboat.restored',
+      othersInvolved: 'My brother',
+      acknowledged: true
+    });
+  });
+
+  it('requires what they are working on and the acknowledgement to apply', () => {
+    expect(errorPaths({ ...base, applyToCampaign: true })).toEqual([
+      'campaignAnswers.whatWorkingOn',
+      'campaignAnswers.acknowledged'
+    ]);
+  });
+
+  it('treats a blank answer as missing when applying', () => {
+    expect(
+      errorPaths({
+        ...base,
+        applyToCampaign: true,
+        campaignAnswers: { whatWorkingOn: '   ', acknowledged: true }
+      })
+    ).toEqual(['campaignAnswers.whatWorkingOn']);
+  });
+
+  it('requires the acknowledgement to be ticked, not just present', () => {
+    expect(
+      errorPaths({
+        ...base,
+        applyToCampaign: true,
+        campaignAnswers: { whatWorkingOn: 'A sewing business', acknowledged: false }
+      })
+    ).toEqual(['campaignAnswers.acknowledged']);
+  });
+
+  it('does not require campaign answers when not applying', () => {
+    expect(errorPaths({ ...base, applyToCampaign: false })).toEqual([]);
+    expect(errorPaths({ ...base, applyToCampaign: false, campaignAnswers: {} })).toEqual([]);
   });
 
   it('accepts and keeps the referral fields', () => {

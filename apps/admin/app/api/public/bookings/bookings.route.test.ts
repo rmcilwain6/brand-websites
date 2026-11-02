@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   inquiryCreate: vi.fn(),
+  packageFindUnique: vi.fn(),
   bookingRequestUpdate: vi.fn(),
   loadBookingEmailData: vi.fn(),
   sendBookingConfirmation: vi.fn(),
@@ -32,6 +33,7 @@ vi.mock('@repo/db', () => {
   return {
     prisma: {
       inquiry: { create: mocks.inquiryCreate },
+      package: { findUnique: mocks.packageFindUnique },
       bookingRequest: { update: mocks.bookingRequestUpdate }
     },
     PrismaClientKnownRequestError
@@ -251,6 +253,121 @@ describe('POST /api/public/bookings', () => {
     expect(mocks.bookingRequestUpdate).toHaveBeenCalledWith({
       where: { id: 'br_1' },
       data: { emailError: 'Booking not found after saving it.' }
+    });
+  });
+
+  describe('campaign applications', () => {
+    const application = {
+      ...booking,
+      packageId: 'pkg_1',
+      applyToCampaign: true,
+      campaignAnswers: {
+        whatWorkingOn: 'Restoring a 1972 sailboat',
+        link: '@sailboat.restored',
+        acknowledged: true
+      }
+    };
+
+    it('stamps the campaign, a pending status and the acknowledgement on an eligible package', async () => {
+      mocks.packageFindUnique.mockResolvedValue({ slug: 'together' });
+
+      const res = await post(application);
+
+      expect(res.status).toBe(200);
+      expect(bookingCreate()).toMatchObject({
+        campaign: 'passion-projects-winter-2026',
+        applicantStatus: 'PENDING',
+        campaignAnswers: {
+          whatWorkingOn: 'Restoring a 1972 sailboat',
+          aboutIt: null,
+          link: '@sailboat.restored',
+          othersInvolved: null,
+          acknowledgedAt: expect.any(String),
+          ackVersion: 1
+        }
+      });
+    });
+
+    it('does not store the acknowledged flag itself, or trust a sent timestamp', async () => {
+      mocks.packageFindUnique.mockResolvedValue({ slug: 'together' });
+
+      await post({
+        ...application,
+        campaignAnswers: { ...application.campaignAnswers, acknowledgedAt: '2000-01-01' }
+      });
+
+      const answers = bookingCreate().campaignAnswers;
+      expect(answers).not.toHaveProperty('acknowledged');
+      expect(answers.acknowledgedAt).not.toBe('2000-01-01');
+    });
+
+    it('saves a regular booking when the package is not eligible', async () => {
+      mocks.packageFindUnique.mockResolvedValue({ slug: 'as-it-unfolds' });
+
+      const res = await post(application);
+
+      expect(res.status).toBe(200);
+      expect(mocks.inquiryCreate).toHaveBeenCalledTimes(1);
+      expect(bookingCreate().campaign).toBeUndefined();
+      expect(bookingCreate().applicantStatus).toBeUndefined();
+      expect(bookingCreate().campaignAnswers).toBeUndefined();
+    });
+
+    it('saves a regular booking when the package no longer exists', async () => {
+      mocks.packageFindUnique.mockResolvedValue(null);
+
+      const res = await post(application);
+
+      expect(res.status).toBe(200);
+      expect(bookingCreate().campaign).toBeUndefined();
+    });
+
+    it('saves a regular booking when applying without a package', async () => {
+      const { packageId: _packageId, ...withoutPackage } = application;
+
+      const res = await post(withoutPackage);
+
+      expect(res.status).toBe(200);
+      expect(mocks.packageFindUnique).not.toHaveBeenCalled();
+      expect(bookingCreate().campaign).toBeUndefined();
+    });
+
+    it('ignores answers from a booker who did not opt in', async () => {
+      await post({ ...application, applyToCampaign: false });
+
+      expect(mocks.packageFindUnique).not.toHaveBeenCalled();
+      expect(bookingCreate().campaign).toBeUndefined();
+      expect(bookingCreate().campaignAnswers).toBeUndefined();
+    });
+
+    it('rejects an application missing the required answers', async () => {
+      const res = await post({
+        ...application,
+        campaignAnswers: { link: '@sailboat.restored' }
+      });
+
+      expect(res.status).toBe(400);
+      expect(mocks.inquiryCreate).not.toHaveBeenCalled();
+    });
+
+    it('keeps the application and its referral voucher together on a code retry', async () => {
+      mocks.packageFindUnique.mockResolvedValue({ slug: 'in-practice' });
+      mocks.inquiryCreate.mockRejectedValueOnce(await codeCollision());
+
+      await post({ ...application, referrerName: 'Sam Patel' });
+
+      expect(mocks.packageFindUnique).toHaveBeenCalledTimes(1);
+      expect(bookingCreate(1).campaign).toBe('passion-projects-winter-2026');
+      expect(bookingCreate(1).referralVoucher.create.code).toMatch(/^EAC-/);
+    });
+
+    it('returns an error without saving if the package lookup fails', async () => {
+      mocks.packageFindUnique.mockRejectedValue(new Error('Database is down'));
+
+      const res = await post(application);
+
+      expect(res.status).toBe(500);
+      expect(mocks.inquiryCreate).not.toHaveBeenCalled();
     });
   });
 

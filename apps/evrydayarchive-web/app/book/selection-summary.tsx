@@ -32,26 +32,37 @@ type Props = {
    * `full`: desktop sidebar, with the package description.
    */
   variant: 'compact' | 'full';
+  /** The booker has ticked the box to apply to the campaign. */
+  applying?: boolean;
   className?: string;
 };
 
-export const SelectionSummary = ({ selection, variant, className }: Props) =>
+const ApplyingNote = ({ className }: { className?: string }) => (
+  <span className={cn('block text-[13px] font-medium text-accent', className)}>
+    Applying to Passion Projects
+  </span>
+);
+
+export const SelectionSummary = ({ selection, variant, applying = false, className }: Props) =>
   variant === 'full' ? (
     <div className={cn('rounded-card border border-border bg-sun px-5 py-6', className)}>
       <p className="mb-1 text-xs font-medium uppercase tracking-widest text-ink-soft">
         Your selection
       </p>
       <SelectionDetails selection={selection} full />
+      {applying && <ApplyingNote className="mt-4 border-t border-border pt-4" />}
     </div>
   ) : (
-    <CollapsibleSummary selection={selection} className={className} />
+    <CollapsibleSummary selection={selection} applying={applying} className={className} />
   );
 
 const CollapsibleSummary = ({
   selection,
+  applying,
   className
 }: {
   selection: BookingSelection;
+  applying: boolean;
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
@@ -72,6 +83,7 @@ const CollapsibleSummary = ({
             Your selection
           </span>
           <span className="truncate text-base font-semibold text-ink">{pkg.name}</span>
+          {applying && <ApplyingNote />}
         </span>
         {headlineCents != null && (
           <span className="flex-none text-sm font-semibold tabular-nums text-ink">

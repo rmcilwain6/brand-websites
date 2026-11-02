@@ -1,12 +1,15 @@
 import {
   BookingFormSchema,
+  CAMPAIGN,
   REFERRAL,
   generateVoucherCode,
+  isCampaignEligible,
   jsonError,
   jsonOk,
   parseJson,
   referralExpiresAt,
-  voucherDiscountColumns
+  voucherDiscountColumns,
+  type BookingFormInput
 } from '@repo/core';
 import { PrismaClientKnownRequestError, prisma } from '@repo/db';
 
@@ -22,6 +25,40 @@ const isVoucherCodeCollision = (error: unknown): boolean =>
   error instanceof PrismaClientKnownRequestError &&
   error.code === 'P2002' &&
   [error.meta?.target].flat().some((t) => typeof t === 'string' && t.includes('code'));
+
+/**
+ * The campaign columns for a booking, which stays a regular booking unless its package is
+ * eligible. An ineligible package drops the application quietly: the session request still
+ * matters more than the opt-in, so it should never fail the booking.
+ */
+const campaignColumns = async ({
+  applyToCampaign,
+  campaignAnswers,
+  packageId
+}: Pick<BookingFormInput, 'applyToCampaign' | 'campaignAnswers' | 'packageId'>) => {
+  if (!applyToCampaign || !campaignAnswers || !packageId) return {};
+
+  const pkg = await prisma.package.findUnique({
+    where: { id: packageId },
+    select: { slug: true }
+  });
+  if (!isCampaignEligible(pkg?.slug)) return {};
+
+  const { whatWorkingOn, aboutIt, link, othersInvolved } = campaignAnswers;
+  return {
+    campaign: CAMPAIGN.id,
+    applicantStatus: 'PENDING' as const,
+    campaignAnswers: {
+      whatWorkingOn: whatWorkingOn ?? null,
+      aboutIt: aboutIt ?? null,
+      link: link ?? null,
+      othersInvolved: othersInvolved ?? null,
+      // Stamped here rather than sent by the browser, so the record can be relied on.
+      acknowledgedAt: new Date().toISOString(),
+      ackVersion: CAMPAIGN.ackVersion
+    }
+  };
+};
 
 export const POST = async (req: Request): Promise<Response> => {
   const result = await parseJson(req, BookingFormSchema);
@@ -82,7 +119,10 @@ export const POST = async (req: Request): Promise<Response> => {
         }
       : undefined;
 
-  const createInquiry = (newVoucherCode: string) =>
+  const createInquiry = (
+    newVoucherCode: string,
+    campaign: Awaited<ReturnType<typeof campaignColumns>>
+  ) =>
     prisma.inquiry.create({
       data: {
         type: 'BOOKING_REQUEST',
@@ -110,6 +150,7 @@ export const POST = async (req: Request): Promise<Response> => {
             referrerContact: referrerContact ?? null,
             voucherCodeEntered: voucherCode ?? null,
             heardFrom: heardFrom ?? null,
+            ...campaign,
             referralVoucher: referralVoucher(newVoucherCode)
           }
         }
@@ -118,9 +159,10 @@ export const POST = async (req: Request): Promise<Response> => {
     });
 
   const createWithFreshCode = async () => {
+    const campaign = await campaignColumns(result.data);
     for (let attempt = 1; ; attempt++) {
       try {
-        return await createInquiry(generateVoucherCode());
+        return await createInquiry(generateVoucherCode(), campaign);
       } catch (error) {
         const retry =
           referrerName && isVoucherCodeCollision(error) && attempt < MAX_VOUCHER_CODE_ATTEMPTS;

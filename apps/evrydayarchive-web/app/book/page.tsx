@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 import {
   activeModifiers,
@@ -7,6 +8,7 @@ import {
   fetchPublicAvailability,
   fetchPublicSchedule,
   fetchPublicPackages,
+  isCampaignEligible,
   type LocationWindow,
   type PublicPackage,
   type TimeSlot
@@ -31,6 +33,7 @@ type Props = {
     modifiers?: string;
     modifierValues?: string;
     from?: string;
+    apply?: string;
   }>;
 };
 
@@ -39,7 +42,8 @@ export default async function BookPage({ searchParams }: Props) {
     package: packageSlug,
     modifiers: modifiersParam,
     modifierValues: modifierValuesParam,
-    from
+    from,
+    apply
   } = await searchParams;
   const { ADMIN_API_BASE_URL } = getServerEnv();
 
@@ -66,6 +70,15 @@ export default async function BookPage({ searchParams }: Props) {
 
   // Resolve package by slug
   const pkg = packageSlug ? packages.find((p) => p.slug === packageSlug) : undefined;
+
+  const applyRequested = apply === '1';
+
+  // An application attaches to a package, so without one there is nothing to apply with yet.
+  if (applyRequested && !pkg) {
+    redirect('/package-builder?apply=1');
+  }
+
+  const campaignAvailable = isCampaignEligible(pkg?.slug);
 
   // Parse selected modifier IDs (CHECKBOX / TOGGLE)
   const selectedModifierIds = modifiersParam ? modifiersParam.split(',').filter(Boolean) : [];
@@ -98,7 +111,9 @@ export default async function BookPage({ searchParams }: Props) {
     : null;
 
   const backHref =
-    from === 'packages' || !pkg ? '/packages' : `/package-builder?package=${pkg.slug}`;
+    from === 'packages' || !pkg
+      ? '/packages'
+      : `/package-builder?package=${pkg.slug}${applyRequested ? '&apply=1' : ''}`;
   const backLabel = from === 'packages' || !pkg ? '← Back to packages' : '← Back to builder';
 
   return (
@@ -123,7 +138,8 @@ export default async function BookPage({ searchParams }: Props) {
             Let&apos;s make it happen.
           </h1>
           <p className="mt-4 text-base leading-relaxed text-ink-muted">
-            Three short steps. Nothing is booked until I&apos;ve confirmed the details with you.
+            {campaignAvailable ? 'Four' : 'Three'} short steps. Nothing is booked until I&apos;ve
+            confirmed the details with you.
           </p>
         </header>
 
@@ -133,6 +149,8 @@ export default async function BookPage({ searchParams }: Props) {
             selection={selection}
             timeSlots={timeSlots}
             locationWindows={locationWindows}
+            campaignAvailable={campaignAvailable}
+            initialApply={campaignAvailable && applyRequested}
           />
         </div>
       </div>

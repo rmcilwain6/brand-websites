@@ -166,7 +166,7 @@ const modifierToItem = (m: PublicPackageModifier): BuilderItem => ({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
+export const BuilderCard = ({ pkg, apply = false }: { pkg: PublicPackage; apply?: boolean }) => {
   const [items, setItems] = useState<BuilderItem[]>(() => pkg.modifiers.map(modifierToItem));
 
   const updateControl = useCallback((id: string, next: Partial<ControlState>) => {
@@ -199,8 +199,10 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
       );
     }
 
+    if (apply) params.set('apply', '1');
+
     return `?${params.toString()}`;
-  }, [selection, pkg.slug]);
+  }, [selection, pkg.slug, apply]);
 
   return (
     <div className="mx-auto w-full max-w-3xl">
@@ -261,7 +263,7 @@ export const BuilderCard = ({ pkg }: { pkg: PublicPackage }) => {
         </div>
 
         {/* ── Sticky price widget (desktop only) ───────────────────── */}
-        <aside className="sticky top-6 hidden w-52 shrink-0 lg:block">
+        <aside className="sticky top-24 hidden w-52 shrink-0 lg:block">
           <PriceWidget pkg={pkg} items={items} total={total} />
         </aside>
       </div>

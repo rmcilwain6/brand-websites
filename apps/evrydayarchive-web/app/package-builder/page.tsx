@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { fetchPublicPackages, type PublicPackage } from '@repo/core';
+import { fetchPublicPackages, isCampaignEligible, type PublicPackage } from '@repo/core';
 
 import { getServerEnv } from '../lib/env';
 import { BuilderCard } from './builder-card';
@@ -16,19 +16,24 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 type Props = {
-  searchParams: Promise<{ package?: string }>;
+  searchParams: Promise<{ package?: string; apply?: string }>;
 };
 
 const PackageBuilderPage = async ({ searchParams }: Props) => {
-  const { package: packageSlug } = await searchParams;
+  const { package: packageSlug, apply: applyParam } = await searchParams;
   const { ADMIN_API_BASE_URL } = getServerEnv();
+  const apply = applyParam === '1';
 
-  let packages: PublicPackage[] = [];
+  let allPackages: PublicPackage[] = [];
   try {
-    packages = await fetchPublicPackages(ADMIN_API_BASE_URL, { next: { revalidate: 60 } });
+    allPackages = await fetchPublicPackages(ADMIN_API_BASE_URL, { next: { revalidate: 60 } });
   } catch {
     // Graceful degradation
   }
+
+  // Someone applying only sees the packages they can apply with.
+  const eligiblePackages = allPackages.filter((p) => isCampaignEligible(p.slug));
+  const packages = apply && eligiblePackages.length > 0 ? eligiblePackages : allPackages;
 
   const pkg =
     (packageSlug ? packages.find((p) => p.slug === packageSlug) : undefined) ?? packages[0];
@@ -63,7 +68,7 @@ const PackageBuilderPage = async ({ searchParams }: Props) => {
           {packages.map((p) => (
             <Link
               key={p.id}
-              href={`/package-builder?package=${p.slug}`}
+              href={`/package-builder?package=${p.slug}${apply ? '&apply=1' : ''}`}
               className={[
                 'rounded-card border px-4 py-2 text-sm font-medium transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent',
                 p.slug === pkg.slug
@@ -77,7 +82,7 @@ const PackageBuilderPage = async ({ searchParams }: Props) => {
         </nav>
       )}
 
-      <BuilderCard key={pkg.id} pkg={pkg} />
+      <BuilderCard key={pkg.id} pkg={pkg} apply={apply} />
     </main>
   );
 };
