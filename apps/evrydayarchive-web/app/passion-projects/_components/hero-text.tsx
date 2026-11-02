@@ -6,7 +6,7 @@ const buttonCls =
 /** The locked core statement from the campaign brief. Check any change against the brief. */
 export const HeroText = () => (
   <div className="flex flex-col gap-[22px] lg:gap-5">
-    <h1 className="font-campaign text-[58px] font-normal leading-[0.95] tracking-[-0.025em] text-ink lg:text-[clamp(64px,6.6vw,88px)] lg:leading-[0.94] lg:tracking-[-0.03em]">
+    <h1 className="font-campaign text-[42px] font-normal leading-none tracking-[-0.02em] text-ink lg:text-[clamp(48px,4.2vw,60px)]">
       I need your help.
     </h1>
     <p className="text-base leading-[1.65] text-ink-muted">
