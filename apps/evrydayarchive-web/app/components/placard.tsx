@@ -6,6 +6,8 @@ type PlacardProps = {
   /** Small metadata label rendered above the title in muted all-caps */
   meta?: string;
   size?: 'sm' | 'md';
+  /** Sets the subtitle as a catalogue line in mono caps, e.g. "Kamloops · 2026". */
+  monoSubtitle?: boolean;
   className?: string;
 };
 
@@ -13,7 +15,14 @@ type PlacardProps = {
  * Placard — the brand's label card for titles, captions, and metadata.
  * Styled like a real gallery label: sharp corners, clean border, no shadow.
  */
-export const Placard = ({ title, subtitle, meta, size = 'md', className }: PlacardProps) => {
+export const Placard = ({
+  title,
+  subtitle,
+  meta,
+  size = 'md',
+  monoSubtitle = false,
+  className
+}: PlacardProps) => {
   return (
     <div
       className={cn(
@@ -31,7 +40,14 @@ export const Placard = ({ title, subtitle, meta, size = 'md', className }: Placa
         {title}
       </p>
       {subtitle && (
-        <p className={cn('mt-0.5 text-ink-muted', size === 'sm' ? 'text-[10px]' : 'text-xs')}>
+        <p
+          className={cn(
+            'mt-0.5',
+            monoSubtitle
+              ? 'font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft'
+              : cn('text-ink-muted', size === 'sm' ? 'text-[10px]' : 'text-xs')
+          )}
+        >
           {subtitle}
         </p>
       )}
