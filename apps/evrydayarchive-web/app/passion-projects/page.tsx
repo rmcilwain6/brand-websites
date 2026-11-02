@@ -24,13 +24,17 @@ import { FEATURES, featureCountLabel } from './features';
 
 const TITLE = 'Passion Projects | Evryday Archive Co';
 const DESCRIPTION =
-  'Someone close by is putting years into a craft, a project, or a business they love. They deserve to have their story told. Who would you put in the spotlight?';
+  'Somewhere close by, someone is putting years into a craft, a project, or a business they love. Who would you put in the spotlight?';
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: '/passion-projects' },
+  // Replaces the root layout's openGraph rather than merging with it, so it repeats the site fields.
   openGraph: {
+    type: 'website',
+    locale: 'en_CA',
+    siteName: 'Evryday Archive Co',
     title: TITLE,
     description: DESCRIPTION,
     url: '/passion-projects',
