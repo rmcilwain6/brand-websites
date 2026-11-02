@@ -1,7 +1,13 @@
 import { Link, Section, Text } from '@react-email/components';
 import * as React from 'react';
 
-import { formatDateLong, formatDateShort, formatExpiry, formatTime } from './components/format';
+import {
+  formatDateLong,
+  formatDateShort,
+  formatExpiry,
+  formatTime,
+  formatTimestamp
+} from './components/format';
 import type { BookingEmailData } from './components/types';
 import {
   Badge,
@@ -37,6 +43,7 @@ export const BookingNotification = (data: BookingEmailData) => {
     referrer,
     referralVoucher,
     voucherEntered,
+    campaign,
     adminUrl
   } = data;
 
@@ -52,8 +59,9 @@ export const BookingNotification = (data: BookingEmailData) => {
       <Text style={s.heading}>{name}</Text>
       <Text style={s.subheading}>{glance}</Text>
 
-      {(referrer || verdict) && (
+      {(campaign || referrer || verdict) && (
         <Section style={{ margin: '0 0 14px' }}>
+          {campaign && <Badge tone="warn">Applied: Passion Projects</Badge>}
           {referrer && <Badge tone="good">Referred by {referrer.name}</Badge>}
           {verdict && <Badge tone={verdict.tone}>Voucher: {verdict.badge}</Badge>}
           {referrer?.sameAsBooker && <Badge tone="warn">Check referrer</Badge>}
@@ -64,6 +72,33 @@ export const BookingNotification = (data: BookingEmailData) => {
         <Section style={{ margin: '4px 0 0' }}>
           <PrimaryButton href={adminUrl}>Open in admin</PrimaryButton>
         </Section>
+      )}
+
+      {/* ── Campaign application ────────────────────────────────────────────── */}
+      {campaign && (
+        <>
+          <SectionTitle>{campaign.label} application</SectionTitle>
+          <DetailTable
+            rows={[
+              ['Working on', campaign.whatWorkingOn],
+              [
+                'About it',
+                campaign.aboutIt && (
+                  // Keeps the line breaks in what they wrote.
+                  <span key="about" style={{ whiteSpace: 'pre-wrap' }}>
+                    {campaign.aboutIt}
+                  </span>
+                )
+              ],
+              ['Link', campaign.link],
+              ['Others involved', campaign.othersInvolved],
+              [
+                'Acknowledged',
+                `${formatTimestamp(campaign.acknowledgedAt)} (wording v${campaign.ackVersion})`
+              ]
+            ]}
+          />
+        </>
       )}
 
       {/* ── The session ─────────────────────────────────────────────────────── */}

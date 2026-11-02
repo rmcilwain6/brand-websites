@@ -11,6 +11,7 @@
 
 export const CAMPAIGN = {
   id: 'passion-projects-winter-2026',
+  label: 'Passion Projects Winter 2026',
   /** Package slugs as they are in production. Renaming one in admin makes it ineligible. */
   eligibleSlugs: ['evryday-package', 'together', 'in-practice'],
   ackVersion: 1,
@@ -28,3 +29,26 @@ export const CAMPAIGN = {
 
 export const isCampaignEligible = (slug: string | null | undefined): boolean =>
   (CAMPAIGN.eligibleSlugs as readonly string[]).includes(slug ?? '');
+
+/** A booking's campaign id, readable. An earlier round's id no longer has a label, so shows as is. */
+export const campaignLabel = (id: string): string => (id === CAMPAIGN.id ? CAMPAIGN.label : id);
+
+export const APPLICANT_STATUSES = ['PENDING', 'ACCEPTED', 'NOT_FEATURED'] as const;
+export type ApplicantStatus = (typeof APPLICANT_STATUSES)[number];
+
+export const APPLICANT_STATUS_LABELS: Record<ApplicantStatus, string> = {
+  PENDING: 'Pending',
+  ACCEPTED: 'Accepted',
+  NOT_FEATURED: 'Not featured'
+};
+
+/** What `BookingRequest.campaignAnswers` holds. */
+export type CampaignAnswers = {
+  whatWorkingOn: string | null;
+  aboutIt: string | null;
+  link: string | null;
+  othersInvolved: string | null;
+  /** ISO timestamp, stamped by the server when the application was saved. */
+  acknowledgedAt: string;
+  ackVersion: number;
+};

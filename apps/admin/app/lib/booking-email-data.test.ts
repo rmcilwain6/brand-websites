@@ -70,6 +70,42 @@ const booking = (overrides: Partial<BookingForEmail> = {}): BookingForEmail =>
     ...overrides
   }) as BookingForEmail;
 
+describe('toBookingEmailData campaign', () => {
+  const opts = { now };
+
+  it('has no campaign on a regular booking', () => {
+    expect(toBookingEmailData(booking(), null, opts)?.campaign).toBeUndefined();
+  });
+
+  it('carries the answers, dropping the ones left blank', () => {
+    const data = toBookingEmailData(
+      booking({
+        campaign: 'passion-projects-winter-2026',
+        campaignAnswers: {
+          whatWorkingOn: 'A sewing business',
+          aboutIt: null,
+          link: '@jordan.sews',
+          othersInvolved: null,
+          acknowledgedAt: '2026-11-02T03:00:00.000Z',
+          ackVersion: 1
+        }
+      }),
+      null,
+      opts
+    );
+
+    expect(data?.campaign).toEqual({
+      label: 'Passion Projects Winter 2026',
+      whatWorkingOn: 'A sewing business',
+      aboutIt: undefined,
+      link: '@jordan.sews',
+      othersInvolved: undefined,
+      acknowledgedAt: '2026-11-02T03:00:00.000Z',
+      ackVersion: 1
+    });
+  });
+});
+
 describe('checkEnteredVoucher', () => {
   it('is valid for an active, in-date voucher, matched however it was typed', () => {
     expect(checkEnteredVoucher(' eac ab2c ', voucher(), now)).toEqual({

@@ -1,3 +1,4 @@
+import { APPLICANT_STATUS_LABELS, CAMPAIGN, campaignLabel } from '@repo/core';
 import { prisma } from '@repo/db';
 import Link from 'next/link';
 
@@ -18,8 +19,27 @@ const statusStyles: Record<string, string> = {
   CANCELLED: 'bg-slate-50 text-slate-500 border-slate-200'
 };
 
-const BookingsPage = async () => {
+const chip = (active: boolean) =>
+  `rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
+    active
+      ? 'border-indigo-600 bg-indigo-600 text-white'
+      : 'border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+  }`;
+
+const BookingsPage = async ({ searchParams }: { searchParams: { campaign?: string } }) => {
+  // The current round, plus any earlier round that has bookings.
+  const withCampaign = await prisma.bookingRequest.findMany({
+    where: { campaign: { not: null } },
+    distinct: ['campaign'],
+    select: { campaign: true }
+  });
+  const campaigns = [
+    ...new Set([CAMPAIGN.id, ...withCampaign.flatMap((b) => b.campaign ?? [])])
+  ] as string[];
+  const campaign = campaigns.find((c) => c === searchParams.campaign);
+
   const bookings = await prisma.bookingRequest.findMany({
+    where: campaign ? { campaign } : undefined,
     orderBy: { createdAt: 'desc' },
     include: {
       inquiry: {
@@ -35,13 +55,29 @@ const BookingsPage = async () => {
         <h1 className="text-3xl font-semibold text-slate-900">Bookings</h1>
         <p className="mt-1 text-sm text-slate-500">
           {bookings.length} {bookings.length === 1 ? 'request' : 'requests'}
+          {campaign ? ' matching the filter' : ''}
         </p>
       </header>
+
+      <nav aria-label="Filter by campaign" className="flex flex-wrap gap-2">
+        <Link href="/bookings" className={chip(!campaign)}>
+          All bookings
+        </Link>
+        {campaigns.map((c) => (
+          <Link
+            key={c}
+            href={`/bookings?campaign=${encodeURIComponent(c)}`}
+            className={chip(campaign === c)}
+          >
+            {campaignLabel(c)}
+          </Link>
+        ))}
+      </nav>
 
       <div className="rounded-lg border border-slate-200 bg-white">
         {bookings.length === 0 ? (
           <div className="px-6 py-10 text-center text-sm text-slate-500">
-            No booking requests yet.
+            {campaign ? 'No applications yet.' : 'No booking requests yet.'}
           </div>
         ) : (
           <ul className="divide-y divide-slate-100">
@@ -66,6 +102,16 @@ const BookingsPage = async () => {
                       >
                         {booking.status}
                       </span>
+                      {booking.campaign && (
+                        <span
+                          title={`Applied to ${campaignLabel(booking.campaign)}`}
+                          className="shrink-0 rounded border border-orange-200 bg-orange-50 px-1.5 py-0.5 text-xs font-medium text-orange-700"
+                        >
+                          Passion Projects
+                          {booking.applicantStatus &&
+                            ` · ${APPLICANT_STATUS_LABELS[booking.applicantStatus]}`}
+                        </span>
+                      )}
                       {booking.referrerName && (
                         <span
                           title={`Referred by ${booking.referrerName}`}

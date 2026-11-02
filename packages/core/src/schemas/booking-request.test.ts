@@ -1,6 +1,23 @@
 import { describe, expect, it } from 'vitest';
 
-import { BookingRequestSubmissionPayloadSchema } from './booking-request';
+import {
+  BookingRequestSubmissionPayloadSchema,
+  BookingRequestUpdateSchema
+} from './booking-request';
+
+describe('BookingRequestUpdateSchema', () => {
+  it.each(['PENDING', 'ACCEPTED', 'NOT_FEATURED'])('accepts applicant status %s', (status) => {
+    const result = BookingRequestUpdateSchema.safeParse({ applicantStatus: status });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects an unknown applicant status', () => {
+    const result = BookingRequestUpdateSchema.safeParse({ applicantStatus: 'MAYBE' });
+
+    expect(result.success).toBe(false);
+  });
+});
 
 describe('BookingRequestSubmissionPayloadSchema', () => {
   it('accepts a valid booking request submission payload', () => {
