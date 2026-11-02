@@ -157,6 +157,17 @@ export const createItems = (pkg: PublicPackage, initial?: ModifierSelection): Bu
   return initial ? applyConstraints(items) : items;
 };
 
+/** Whether these choices differ from where the builder started: by default, the package's defaults. */
+export const hasEdits = (
+  pkg: PublicPackage,
+  selection: ModifierSelection,
+  start: ModifierSelection = toSelection(createItems(pkg))
+): boolean => {
+  const key = ({ selectedIds, values }: ModifierSelection) =>
+    JSON.stringify([[...selectedIds].sort(), Object.entries(values).sort()]);
+  return key(start) !== key(selection);
+};
+
 /** The items after one control changes, with the cross-modifier constraints re-applied. */
 export const updateItemControl = (
   items: BuilderItem[],

@@ -12,6 +12,7 @@
 export const CAMPAIGN = {
   id: 'passion-projects-winter-2026',
   label: 'Passion Projects Winter 2026',
+  season: 'Winter 2026',
   /** Package slugs as they are in production. Renaming one in admin makes it ineligible. */
   eligibleSlugs: ['evryday-package', 'together', 'in-practice'],
   ackVersion: 1,
@@ -19,9 +20,9 @@ export const CAMPAIGN = {
   copy: {
     apply: 'Apply to be featured in Passion Projects',
     disclaimer:
-      "Featured sessions include a recorded conversation while we shoot, and a story on the website and Instagram. You read it before anything is published. Features are chosen for variety, and you'll be photographed either way.",
+      "Featured sessions include a conversation while we shoot, recorded as audio only (no video), and a story on the website and Instagram. You read it before anything is published. Features are chosen for variety, and you'll be photographed either way.",
     acknowledgement:
-      'I understand what a featured session involves, including the recorded conversation and the published story.',
+      'I understand what a featured session involves, including the audio recording of our conversation and the published story.',
     whatHappensNext:
       "I'll reply within 24 to 48 hours, usually to set up a short call before anything is confirmed."
   }

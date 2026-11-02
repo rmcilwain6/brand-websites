@@ -13,6 +13,7 @@ import { LocationFields, type LocationSelectValue } from './booking-fields/locat
 import { NotesField } from './booking-fields/notes-field';
 import { ReferralFields, type ReferralValues } from './booking-fields/referral-fields';
 import { BookingStep, stepHeadingId, type StepStatus } from './booking-step';
+import { CampaignConfirmation } from './campaign-confirmation';
 import { ConfirmationPanel } from './confirmation-panel';
 import { SelectionSummary, type BookingSelection } from './selection-summary';
 
@@ -27,6 +28,16 @@ type Props = {
   campaignAvailable?: boolean;
   /** Tick the apply box to begin with. */
   initialApply?: boolean;
+  /**
+   * The form is part of a page that already shows the package and explains the campaign, such as
+   * the landing page. Leaves out the phone summary bar at the top, in favour of a line by the
+   * submit button, and the link to the landing page.
+   */
+  embedded?: boolean;
+  /** Shown at the top of the form's column, beside the desktop sidebar. */
+  before?: React.ReactNode;
+  /** Called once the request has been sent and the confirmation is showing. */
+  onSubmitted?: () => void;
 };
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
@@ -101,6 +112,13 @@ const isValidPhone = (v: string) => {
 
 // ── Summary helpers ───────────────────────────────────────────────────────────
 
+const formatPrice = (cents: number) =>
+  new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+    maximumFractionDigits: 0
+  }).format(cents / 100);
+
 /** "2026-11-14" → "Sat, Nov 14". Noon avoids the date shifting across time zones. */
 const formatDate = (iso: string) =>
   new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', {
@@ -130,7 +148,10 @@ export const BookingForm = ({
   timeSlots,
   locationWindows,
   campaignAvailable = false,
-  initialApply = false
+  initialApply = false,
+  embedded = false,
+  before,
+  onSubmitted
 }: Props) => {
   const steps = campaignAvailable
     ? [WHERE_STEP, DETAILS_STEP, CAMPAIGN_STEP, EXTRAS_STEP]
@@ -407,6 +428,7 @@ export const BookingForm = ({
       setSubmittedVoucher(!!voucherCode);
       setSubmittedApplication(applying);
       setStatus('success');
+      onSubmitted?.();
     } catch {
       setServerError('Unable to reach the server. Please check your connection and try again.');
       setStatus('error');
@@ -414,12 +436,10 @@ export const BookingForm = ({
   };
 
   if (status === 'success') {
-    return (
-      <ConfirmationPanel
-        name={submittedName}
-        voucherEntered={submittedVoucher}
-        applied={submittedApplication}
-      />
+    return submittedApplication ? (
+      <CampaignConfirmation name={submittedName} voucherEntered={submittedVoucher} />
+    ) : (
+      <ConfirmationPanel name={submittedName} voucherEntered={submittedVoucher} />
     );
   }
 
@@ -435,8 +455,10 @@ export const BookingForm = ({
   return (
     <>
       <div className="min-w-0 flex-1">
+        {before}
+
         {/* Mobile-only package summary — desktop has a sidebar */}
-        {selection && (
+        {selection && !embedded && (
           <SelectionSummary
             selection={selection}
             variant="compact"
@@ -497,6 +519,7 @@ export const BookingForm = ({
           {campaignAvailable && (
             <BookingStep {...stepProps(CAMPAIGN_STEP_INDEX)}>
               <CampaignFields
+                showFindOutMore={!embedded}
                 values={campaign}
                 onChange={(field, value) => {
                   setCampaign((prev) => ({ ...prev, [field]: value }));
@@ -532,6 +555,20 @@ export const BookingForm = ({
                 className="rounded-card border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
               >
                 {serverError}
+              </p>
+            )}
+
+            {embedded && selection && (
+              <p className="flex items-baseline justify-between gap-3 text-sm lg:hidden">
+                <span className="text-ink-soft">
+                  {selection.pkg.name}
+                  {applying && <span className="text-accent-text"> · Applying to be featured</span>}
+                </span>
+                {selection.estimatedTotalCents != null && (
+                  <span className="font-semibold text-ink">
+                    {formatPrice(selection.estimatedTotalCents)}
+                  </span>
+                )}
               </p>
             )}
 

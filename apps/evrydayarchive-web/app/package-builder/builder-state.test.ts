@@ -7,6 +7,7 @@ import {
   bookingQueryString,
   createItems,
   getSliderEffectiveMin,
+  hasEdits,
   priceLines,
   toSelection,
   updateItemControl
@@ -174,6 +175,33 @@ describe('pricing parity with /book', () => {
       'Processing effort'
     ]);
     expect(15000 + lines.reduce((sum, l) => sum + l.deltaCents, 0)).toBe(total);
+  });
+});
+
+describe('hasEdits', () => {
+  it('is false for the defaults', () => {
+    expect(hasEdits(pkg, toSelection(createItems(pkg)))).toBe(false);
+  });
+
+  it('is true once a control moves', () => {
+    const items = updateItemControl(createItems(pkg), 'length', { type: 'slider', value: 90 });
+
+    expect(hasEdits(pkg, toSelection(items))).toBe(true);
+  });
+
+  it('compares against a given starting point', () => {
+    const items = updateItemControl(createItems(pkg), 'length', { type: 'slider', value: 90 });
+    const start = toSelection(items);
+
+    expect(hasEdits(pkg, start, start)).toBe(false);
+    expect(hasEdits(pkg, toSelection(createItems(pkg)), start)).toBe(true);
+  });
+
+  it('is false again when the control moves back', () => {
+    let items = updateItemControl(createItems(pkg), 'length', { type: 'slider', value: 90 });
+    items = updateItemControl(items, 'length', { type: 'slider', value: 60 });
+
+    expect(hasEdits(pkg, toSelection(items))).toBe(false);
   });
 });
 

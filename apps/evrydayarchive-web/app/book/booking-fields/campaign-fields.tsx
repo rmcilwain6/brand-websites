@@ -20,13 +20,15 @@ type Props = {
   values: CampaignValues;
   onChange: <K extends keyof CampaignValues>(field: K, value: CampaignValues[K]) => void;
   errors: { whatWorkingOn?: string; acknowledged?: string };
+  /** The link to the landing page, which is pointless on the landing page itself. */
+  showFindOutMore?: boolean;
 };
 
 const labelCls = 'text-sm font-medium text-ink-muted sm:text-[15px]';
 
 const Optional = () => <span className="text-[13px] font-normal text-ink-soft">(optional)</span>;
 
-export const CampaignFields = ({ values, onChange, errors }: Props) => (
+export const CampaignFields = ({ values, onChange, errors, showFindOutMore = true }: Props) => (
   <div className="space-y-6">
     <div className="space-y-2">
       <label className="flex cursor-pointer items-start gap-3 text-base font-medium text-ink">
@@ -43,17 +45,19 @@ export const CampaignFields = ({ values, onChange, errors }: Props) => (
         className="text-[13px] leading-relaxed text-ink-soft sm:pl-8 sm:text-sm"
       >
         {CAMPAIGN.copy.disclaimer}{' '}
-        {/* A new tab, so reading about the campaign doesn't lose what's typed in the form. */}
-        <Link
-          href="/passion-projects"
-          target="_blank"
-          rel="noopener"
-          className="whitespace-nowrap font-medium text-accent underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-        >
-          Find out more
-          <span aria-hidden="true"> ↗</span>
-          <span className="sr-only"> (opens in a new tab)</span>
-        </Link>
+        {showFindOutMore && (
+          // A new tab, so reading about the campaign doesn't lose what's typed in the form.
+          <Link
+            href="/passion-projects"
+            target="_blank"
+            rel="noopener"
+            className="whitespace-nowrap font-medium text-accent underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            Find out more
+            <span aria-hidden="true"> ↗</span>
+            <span className="sr-only"> (opens in a new tab)</span>
+          </Link>
+        )}
       </p>
     </div>
 

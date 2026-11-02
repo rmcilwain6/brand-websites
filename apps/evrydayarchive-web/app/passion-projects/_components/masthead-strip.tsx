@@ -5,7 +5,10 @@ import { cn } from '../../lib/cn';
 type Props = {
   /** The edition, e.g. "Winter 2026". */
   season: string;
-  /** Right-aligned label: a feature number or count at the top, places at the foot. */
+  /**
+   * Right-aligned label: a feature number or count at the top, places at the foot. Left off on
+   * phones, where the edition takes the right-hand side instead.
+   */
   right?: string;
   /** `header` opens a page and `footer` closes it. */
   as?: 'header' | 'footer';
@@ -25,17 +28,25 @@ export const MastheadStrip = ({ season, right, as: Tag = 'header', href }: Props
   const content = (
     <>
       <span className="font-campaign text-[22px] leading-none text-ink">Passion Projects</span>
-      <span className={cn(monoCls, 'text-ink-soft')}>{season}</span>
+      <span className={cn(monoCls, 'ml-auto text-ink-soft md:ml-0')}>{season}</span>
       {right && (
-        <span className={cn(monoCls, 'ml-auto', isHeader ? 'text-accent-text' : 'text-ink-soft')}>
+        <span
+          className={cn(
+            monoCls,
+            'ml-auto hidden md:inline',
+            isHeader ? 'text-accent-text' : 'text-ink-soft'
+          )}
+        >
           {right}
         </span>
       )}
     </>
   );
 
+  // The colour runs full width. The contents line up with the page text on phones, where the nav is
+  // at the bottom of the screen, and with the site header's logo and button from there up.
   const layoutCls = cn(
-    'flex flex-wrap items-baseline gap-x-2.5 gap-y-1 px-5 sm:gap-x-3.5 lg:px-20',
+    'mx-auto flex max-w-7xl flex-wrap items-baseline gap-x-2.5 gap-y-1 px-6 sm:gap-x-3.5 lg:px-8',
     isHeader ? 'pb-3.5 pt-[18px] md:py-3.5' : 'py-5 lg:py-[22px]'
   );
 
