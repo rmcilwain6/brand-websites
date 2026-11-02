@@ -5,7 +5,7 @@ import Link from 'next/link';
 // Subpath import keeps the core package's Zod schemas out of the client bundle.
 import { CAMPAIGN } from '@repo/core/campaigns';
 
-import { FieldError, FollowUp, inputCls } from './field-ui';
+import { Checkbox, FieldError, FollowUp, inputCls } from './field-ui';
 
 export type CampaignValues = {
   apply: boolean;
@@ -23,7 +23,6 @@ type Props = {
 };
 
 const labelCls = 'text-sm font-medium text-ink-muted sm:text-[15px]';
-const checkboxCls = 'mt-0.5 h-5 w-5 flex-none cursor-pointer accent-accent';
 
 const Optional = () => <span className="text-[13px] font-normal text-ink-soft">(optional)</span>;
 
@@ -31,13 +30,11 @@ export const CampaignFields = ({ values, onChange, errors }: Props) => (
   <div className="space-y-6">
     <div className="space-y-2">
       <label className="flex cursor-pointer items-start gap-3 text-base font-medium text-ink">
-        <input
+        <Checkbox
           id="campaign-apply"
-          type="checkbox"
           checked={values.apply}
           onChange={(e) => onChange('apply', e.target.checked)}
           aria-describedby="campaign-disclaimer"
-          className={checkboxCls}
         />
         {CAMPAIGN.copy.apply}
       </label>
@@ -135,15 +132,13 @@ export const CampaignFields = ({ values, onChange, errors }: Props) => (
 
           <div className="flex flex-col gap-1.5">
             <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-ink-muted sm:text-[15px]">
-              <input
+              <Checkbox
                 id="campaign-acknowledged"
-                type="checkbox"
                 checked={values.acknowledged}
                 onChange={(e) => onChange('acknowledged', e.target.checked)}
                 aria-required="true"
                 aria-invalid={!!errors.acknowledged}
                 aria-describedby={errors.acknowledged ? 'campaign-acknowledged-error' : undefined}
-                className={checkboxCls}
               />
               <span>
                 {CAMPAIGN.copy.acknowledgement}&nbsp;

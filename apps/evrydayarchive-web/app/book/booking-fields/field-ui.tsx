@@ -27,6 +27,35 @@ export const FollowUp = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
+export const CheckIcon = () => (
+  <svg className="h-3.5 w-3.5" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+    <path
+      d="M3 7.5l2.5 2.5L11 4.5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/**
+ * A native checkbox drawn by hand, because browsers choose the tick colour themselves and pick
+ * black on the brand orange. The tick is the same one a finished booking step shows.
+ */
+export const Checkbox = (props: Omit<React.ComponentProps<'input'>, 'type' | 'className'>) => (
+  <span className="relative mt-0.5 flex h-5 w-5 flex-none">
+    <input
+      {...props}
+      type="checkbox"
+      className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-ink-muted bg-canvas transition-colors duration-fast checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    />
+    <span className="pointer-events-none absolute inset-0 hidden items-center justify-center text-white peer-checked:flex">
+      <CheckIcon />
+    </span>
+  </span>
+);
+
 export const FieldError = ({ id, message }: { id: string; message: string | undefined }) => {
   if (!message) return null;
   return (

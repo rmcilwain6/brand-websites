@@ -2,6 +2,8 @@
 
 import { cn } from '../lib/cn';
 
+import { CheckIcon } from './booking-fields/field-ui';
+
 export type StepStatus = 'open' | 'done' | 'upcoming';
 
 type Props = {
@@ -122,15 +124,3 @@ export const BookingStep = ({
     </section>
   );
 };
-
-const CheckIcon = () => (
-  <svg className="h-3.5 w-3.5" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-    <path
-      d="M3 7.5l2.5 2.5L11 4.5"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
