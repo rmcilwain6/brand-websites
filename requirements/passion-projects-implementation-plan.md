@@ -212,7 +212,7 @@ Settled on the design canvas and recorded on the Notion task "Passion Projects: 
 - **Salon wall.** 12-col grid, 40px rows, 12px gap, `grid-auto-flow: dense` on desktop; 6-col, 30px rows, 6px gap on phone. Slots come from `app/passion-projects/wall.ts` (image, alt, title, place, date, desktop span, phone span or `null` for desktop-only). The slot list and shapes are on the Notion landing page task ("Wall plan"); Reed fills it with photos exported as webp next to the home page images. Each frame has a number button: placard slides up on hover and focus (desktop), toggles on tap (phone), `aria-expanded` on the button, no transition under `prefers-reduced-motion`.
 - **Features row.** Hidden when no features are published. Arch cards in a row: desktop shows four, previous/next buttons slide by four (transform transition, disabled at the ends, counter like "1–4 of 9"); phone is a native horizontal scroll with `scroll-snap-type: x mandatory` and the next card peeking. A season tab is added when Spring 2027 starts, not now.
 - **Apply flow** (`id="apply"`, hero button scrolls to it smoothly, jump under reduced motion):
-  1. **Questions.** Personal project or business? Just you or others involved? personal + solo → Evryday, personal + others → Together, business → In Practice. Chips with `aria-pressed`.
+  1. **Questions.** Personal project or business? Just you or others involved? personal + solo → Evryday, personal + others → Together, business → In Practice. Chips with `aria-pressed`. Nothing below shows until both are answered. "Others too" also turns on In Practice's "Multiple people" toggle (2+ people, +$50), which the person can still change. It's found by that exact name in admin.
   2. **Package card.** Matched package name, base price, one-line reason, tabs to override with the other two eligible packages, then the builder rows from `usePackageBuilder` and the live total.
   3. **Booking steps.** `BookingForm` with the live selection; the Passion Projects step expanded and pre-checked; submit label "Send my application". Hide the step's "Find out more" link here, since it points at this page.
   - As built: the questions start unanswered, and the package card and booking steps appear together once there's a match, as in the mockup, with no separate "continue" step. The booking steps run in order, with the Passion Projects step's box ticked and its fields open when reached.
@@ -237,6 +237,7 @@ Needed before the first feature publishes (target late November), not for launch
 
 ### Launch (Nov 6)
 
+- Add the "Multiple people" toggle to In Practice in production admin (1 person / 2+ people, +$50). It shows on `/package-builder` and `/book` as soon as it's saved.
 - Publish a release. That runs the migration and puts the campaign live.
 - Submit one test application through the landing page and one through `/book?package=<slug>&apply=1` and check admin and both emails. Void the test bookings afterwards.
 

@@ -19,6 +19,8 @@ import {
   applyHref,
   matchedSlug,
   parseAnswers,
+  peopleToggleId,
+  startingSelection,
   type ApplyAnswers,
   type People,
   type ProjectType
@@ -70,23 +72,36 @@ const Flow = ({
   const activePkg = eligible.find((p) => p.slug === slug);
 
   // Seeded with the first package while there's no match, and not shown until there is one.
-  const builder = usePackageBuilder(activePkg ?? eligible[0]!);
+  const builder = usePackageBuilder(
+    activePkg ?? eligible[0]!,
+    activePkg && startingSelection(activePkg, answers.people)
+  );
   const [note, setNote] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
   // Stays true once there's been a match, so going back to fewer answers doesn't lose the form.
   const [started, setStarted] = useState(!!activePkg);
+  // The people answer the builder last followed, so it only moves the toggle when the answer changes.
+  const [followedPeople, setFollowedPeople] = useState(answers.people);
 
   // Follows the URL, including back and forward. Unchanged package, unchanged choices. Done while
   // rendering, not in an effect: there's never a render with the old package and the new answers.
-  const { pkg, modifierSelection, reset } = builder;
+  const { pkg, modifierSelection, reset, updateControl } = builder;
   if (activePkg && activePkg.id !== pkg.id) {
     setNote(
-      hasEdits(pkg, modifierSelection)
+      hasEdits(pkg, modifierSelection, startingSelection(pkg, followedPeople))
         ? `Your package changed to ${activePkg.name}, so its options are back to the defaults.`
         : null
     );
-    reset(activePkg);
+    reset(activePkg, startingSelection(activePkg, answers.people));
+    setFollowedPeople(answers.people);
+  } else if (activePkg && answers.people !== followedPeople) {
+    // The answer sets the toggle, and it's still theirs to change afterwards.
+    const toggleId = peopleToggleId(pkg);
+    if (toggleId) {
+      updateControl(toggleId, { type: 'toggle', altSelected: answers.people === 'group' });
+    }
+    setFollowedPeople(answers.people);
   }
   if (activePkg && !started) setStarted(true);
 

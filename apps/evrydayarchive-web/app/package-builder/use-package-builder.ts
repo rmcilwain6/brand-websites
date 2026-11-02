@@ -18,7 +18,7 @@ import {
  * The state behind the package builder, for any page that shows one.
  *
  * `pkg` and `initial` only seed the state. To switch package afterwards call `reset`, which goes
- * back to the new package's defaults, or remount the builder with a new `key`.
+ * to the new package's defaults or the complete choices given, or remount with a new `key`.
  */
 export const usePackageBuilder = (initialPkg: PublicPackage, initial?: ModifierSelection) => {
   const [state, setState] = useState(() => ({
@@ -31,8 +31,8 @@ export const usePackageBuilder = (initialPkg: PublicPackage, initial?: ModifierS
     setState((prev) => ({ ...prev, items: updateItemControl(prev.items, id, next) }));
   }, []);
 
-  const reset = useCallback((nextPkg: PublicPackage) => {
-    setState({ pkg: nextPkg, items: createItems(nextPkg) });
+  const reset = useCallback((nextPkg: PublicPackage, choices?: ModifierSelection) => {
+    setState({ pkg: nextPkg, items: createItems(nextPkg, choices) });
   }, []);
 
   const modifierSelection = useMemo(() => toSelection(items), [items]);

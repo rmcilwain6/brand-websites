@@ -3,6 +3,12 @@
  * back and shared links all land in the same place.
  */
 
+import type { PublicPackage } from '@repo/core';
+// Subpath import keeps the core package's Zod schemas out of the client bundle.
+import type { ModifierSelection } from '@repo/core/pricing';
+
+import { createItems, toSelection } from '../package-builder/builder-state';
+
 export type ProjectType = 'personal' | 'business';
 export type People = 'solo' | 'group';
 
@@ -13,10 +19,10 @@ export type ApplyAnswers = {
   package?: string;
 };
 
-/** Which package the answers point to, or null until there's enough to go on. */
+/** Which package the answers point to, or null until both questions are answered. */
 export const matchedSlug = ({ type, people }: ApplyAnswers): string | null => {
+  if (!type || !people) return null;
   if (type === 'business') return 'in-practice';
-  if (type !== 'personal' || !people) return null;
   return people === 'group' ? 'together' : 'evryday-package';
 };
 
@@ -35,6 +41,24 @@ export const MATCH_REASONS: Record<string, string> = {
     'A personal project with other people in it. Together gives the session room for everyone involved.',
   'in-practice':
     'A business. In Practice includes an alignment call, because commercial work takes more effort to fit a professional brand.'
+};
+
+/** The name of In Practice's toggle in admin. Renaming it there stops the answers setting it. */
+const PEOPLE_TOGGLE_NAME = 'Multiple people';
+
+/** The toggle that "Others too" sets, for the packages that have one. */
+export const peopleToggleId = (pkg: PublicPackage): string | undefined =>
+  pkg.slug === 'in-practice'
+    ? pkg.modifiers.find((m) => m.type === 'TOGGLE' && m.name === PEOPLE_TOGGLE_NAME)?.id
+    : undefined;
+
+/** A package's defaults, with the people toggle on for "Others too". It can still be changed. */
+export const startingSelection = (pkg: PublicPackage, people?: People): ModifierSelection => {
+  const defaults = toSelection(createItems(pkg));
+  const toggleId = peopleToggleId(pkg);
+  return toggleId && people === 'group'
+    ? { ...defaults, selectedIds: [...defaults.selectedIds, toggleId] }
+    : defaults;
 };
 
 export const parseAnswers = (params: { get: (key: string) => string | null }): ApplyAnswers => {
