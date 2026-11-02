@@ -1,4 +1,5 @@
 import { ScrollLink } from './scroll-link';
+import { CopyLinkButton } from './share-button';
 
 const buttonCls =
   'flex h-[52px] items-center justify-center rounded-card px-[22px] text-[15px] transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent lg:h-12';
@@ -21,12 +22,11 @@ export const HeroText = () => (
       <ScrollLink to="apply" className={`${buttonCls} bg-accent font-semibold text-white`}>
         Apply to be featured
       </ScrollLink>
-      <ScrollLink
-        to="refer"
-        className={`${buttonCls} border border-border font-medium text-ink hover:border-ink-muted`}
-      >
-        Send someone my way
-      </ScrollLink>
+      <CopyLinkButton
+        label="Send someone my way"
+        fallbackTo="refer"
+        className={`${buttonCls} border font-medium`}
+      />
     </div>
   </div>
 );
