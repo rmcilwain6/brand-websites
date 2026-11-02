@@ -209,7 +209,7 @@ Settled on the design canvas and recorded on the Notion task "Passion Projects: 
 
 - Route `/passion-projects`.
 - Page order: masthead strip → salon wall with the hero text placed in its top-left (grid cols 1–5, rows 1–11) → features row → how it works → orange referral band ("Somebody you know is working on something.", the $15 note, share button) → staged apply flow → masthead footer.
-- **Salon wall.** 12-col grid, 40px rows, 12px gap, `grid-auto-flow: dense` on desktop; 6-col, 30px rows, 6px gap on phone. Slots come from `app/passion-projects/wall.ts` (image, alt, title, place, date, desktop span, phone span or `null` for desktop-only). The slot list and shapes are on the Notion landing page task ("Wall plan"); Reed fills it with photos exported as webp next to the home page images. Each frame has a number button: placard slides up on hover and focus (desktop), toggles on tap (phone), `aria-expanded` on the button, no transition under `prefers-reduced-motion`.
+- **Salon wall.** 12-col grid, 40px rows, 12px gap, `grid-auto-flow: dense` on desktop; 6-col, 30px rows, 6px gap on phone. Slots come from `app/passion-projects/wall.ts` (image, alt, title, place, date, desktop span, phone span or `null` for desktop-only). The slot list and shapes are on the Notion landing page task ("Wall plan"); Reed fills it with photos exported as webp next to the home page images. Each frame has a number button: placard slides up on hover and focus (desktop); below 1024px, tapping a photo opens one caption bar instead, `aria-expanded` on the button, no transition under `prefers-reduced-motion`.
 - **Features row.** Hidden when no features are published. Arch cards in a row: desktop shows four, previous/next buttons slide by four (transform transition, disabled at the ends, counter like "1–4 of 9"); phone is a native horizontal scroll with `scroll-snap-type: x mandatory` and the next card peeking. A season tab is added when Spring 2027 starts, not now.
 - **Apply flow** (`id="apply"`, hero button scrolls to it smoothly, jump under reduced motion):
   1. **Questions.** Personal project or business? Just you or others involved? personal + solo → Evryday, personal + others → Together, business → In Practice. Chips with `aria-pressed`. Nothing below shows until both are answered. "Others too" also turns on In Practice's "Multiple people" toggle (2+ people, +$50), which the person can still change. It's found by that exact name in admin.
@@ -235,6 +235,14 @@ Needed before the first feature publishes (target late November), not for launch
 
 - Nav item and home page block (spec §8.1–8.2).
 
+### PR 18 · `feat/passion-projects-assets`
+
+Separate from #127. Waits on assets Reed is creating. The page works with the stand-ins until then.
+
+- **OG share image.** Replace the placeholder (`/logo/og-image.jpg`) in `app/passion-projects/page.tsx` with Reed's image, 1200x630.
+- **Wall photos.** Replace the stand-ins in `app/passion-projects/wall.ts`, keeping portrait photos in portrait slots and landscape in landscape. Check the phone crops, since slots 08 and 09 crop hardest. The note after applying uses two of these photos (`WALL[0]` and `WALL[2]`).
+- **Caption style.** Reed may restyle the wall captions once the real photos are in.
+
 ### Launch (Nov 6)
 
 - Add the "Multiple people" toggle to In Practice in production admin (1 person / 2+ people, +$50). It shows on `/package-builder` and `/book` as soon as it's saved.
@@ -251,7 +259,7 @@ PRs 10–12 make `/book?apply=1` a complete way to apply on their own. If PR 13 
 
 - **Releases before launch.** With no flag, a release from `main` ships whatever campaign work has merged. An urgent production fix before launch has to branch from the `production` branch instead.
 - **Timeline.** PRs 10–15 and 17 are needed for launch; PR 16 can follow before the first feature. The embedded landing flow (PRs 13 and 15) is the largest piece. See the fallback above.
-- **Visual identity** is settled (see Design decisions above). Wall photos still need picking and exporting before PR 15 can ship the real wall; build it with the current home page images until then.
+- **Visual identity** is settled (see Design decisions above). Wall photos still need picking and exporting; PR 15 ships with the current home page images and PR 18 swaps them.
 - **Acknowledgement wording** must match the contract feature section, which is due Nov 21. Ship placeholder copy with `ackVersion` so later changes are traceable per booking.
 - **Production rollout.** Each release runs `pnpm db:deploy` on the Neon production branch. All Phase 2 migrations are additive/nullable. Smoke-test admin on production after the first migration release.
 - **PRs 2–3** touch the live booking path. They're mitigated by having no behaviour change, pricing unit tests, and before/after total checks.
