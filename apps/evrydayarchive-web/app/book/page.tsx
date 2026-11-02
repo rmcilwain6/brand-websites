@@ -3,8 +3,6 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import {
-  activeModifiers,
-  estimateTotalCents,
   fetchPublicAvailability,
   fetchPublicSchedule,
   fetchPublicPackages,
@@ -16,6 +14,7 @@ import {
 
 import { getServerEnv } from '../lib/env';
 import { BookingForm } from './booking-form';
+import { toBookingSelection } from './booking-selection';
 import type { BookingSelection } from './selection-summary';
 
 export const metadata: Metadata = {
@@ -96,18 +95,8 @@ export default async function BookPage({ searchParams }: Props) {
     }
   }
 
-  const modifierSelection = { selectedIds: selectedModifierIds, values: modifierValues };
   const selection: BookingSelection | null = pkg
-    ? {
-        pkg,
-        modifiers: activeModifiers(pkg.modifiers, modifierSelection),
-        modifierValues,
-        estimatedTotalCents: estimateTotalCents(
-          pkg.basePriceCents,
-          pkg.modifiers,
-          modifierSelection
-        )
-      }
+    ? toBookingSelection(pkg, { selectedIds: selectedModifierIds, values: modifierValues })
     : null;
 
   const backHref =

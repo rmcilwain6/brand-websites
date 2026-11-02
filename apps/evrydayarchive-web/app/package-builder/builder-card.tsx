@@ -1,45 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useMemo, useState } from 'react';
 
-import type {
-  IncrementerConfig,
-  ModifierType,
-  PublicModifierConfig,
-  PublicPackage,
-  PublicPackageModifier,
-  SliderConfig,
-  ToggleConfig
-} from '@repo/core';
-// Subpath import keeps the core package's Zod schemas out of the client bundle.
+import type { IncrementerConfig, PublicPackage, SliderConfig, ToggleConfig } from '@repo/core';
+
 import {
-  activeModifierDeltaCents,
-  estimateTotalCents,
-  type ModifierSelection,
-  type PricedModifier
-} from '@repo/core/pricing';
-
-// ── Control type definitions ────────────────────────────────────────────────
-
-type CheckboxState = { type: 'checkbox'; checked: boolean };
-type ToggleState = { type: 'toggle'; altSelected: boolean };
-type SliderState = { type: 'slider'; value: number };
-type IncrementerState = { type: 'incrementer'; count: number };
-
-type ControlState = CheckboxState | ToggleState | SliderState | IncrementerState;
-
-type BuilderItem = {
-  id: string;
-  name: string;
-  description: string | null;
-  modifierType: ModifierType;
-  isRequired: boolean;
-  isIncluded: boolean;
-  priceDeltaCents: number | null;
-  config: PublicModifierConfig;
-  control: ControlState;
-};
+  bookingQueryString,
+  getSliderEffectiveMin,
+  itemPriceDelta,
+  type BuilderItem,
+  type CheckboxState,
+  type ControlState
+} from './builder-state';
+import { usePackageBuilder } from './use-package-builder';
 
 // ── Price helpers ────────────────────────────────────────────────────────────
 
@@ -56,153 +29,12 @@ const formatDelta = (cents: number): string => {
   return `${sign}${formatPrice(Math.abs(cents))}`;
 };
 
-// Pricing rules live in @repo/core; these adapt builder control state to them.
-
-const toPricedModifier = (item: BuilderItem): PricedModifier => ({
-  id: item.id,
-  name: item.name,
-  type: item.modifierType,
-  isRequired: item.isRequired,
-  priceDeltaCents: item.priceDeltaCents,
-  config: item.config
-});
-
-// Checked checkboxes and alt-selected toggles are "selected"; sliders and
-// incrementers report their values. Same shape /book receives in the URL.
-const toSelection = (items: BuilderItem[]): ModifierSelection => {
-  const selectedIds: string[] = [];
-  const values: Record<string, number> = {};
-  for (const item of items) {
-    const { control } = item;
-    if (control.type === 'checkbox' && control.checked && !item.isRequired) {
-      selectedIds.push(item.id);
-    }
-    if (control.type === 'toggle' && control.altSelected && !item.isRequired) {
-      selectedIds.push(item.id);
-    }
-    if (control.type === 'slider') values[item.id] = control.value;
-    if (control.type === 'incrementer') values[item.id] = control.count;
-  }
-  return { selectedIds, values };
-};
-
-const itemPriceDelta = (item: BuilderItem): number =>
-  activeModifierDeltaCents(toPricedModifier(item), toSelection([item]));
-
-// ── Cross-modifier constraints ────────────────────────────────────────────────
-// If any "location" modifier is active, the first time-unit SLIDER must be >= 90 min.
-
-const LOCATION_MIN_MINUTES = 90;
-
-const isLocationActive = (items: BuilderItem[]): boolean =>
-  items.some((item) => {
-    if (!item.name.toLowerCase().includes('location')) return false;
-    const { control } = item;
-    if (control.type === 'checkbox') return control.checked;
-    if (control.type === 'toggle') return control.altSelected;
-    return false;
-  });
-
-const isTimeSlider = (item: BuilderItem): boolean => {
-  if (item.control.type !== 'slider') return false;
-  const cfg = item.config as SliderConfig;
-  return (
-    cfg?.unit?.toLowerCase().includes('min') ||
-    item.name.toLowerCase().includes('duration') ||
-    item.name.toLowerCase().includes('time')
-  );
-};
-
-const applyConstraints = (items: BuilderItem[]): BuilderItem[] => {
-  if (!isLocationActive(items)) return items;
-  return items.map((item) => {
-    if (!isTimeSlider(item)) return item;
-    const slider = item.control as SliderState;
-    if (slider.value < LOCATION_MIN_MINUTES) {
-      return { ...item, control: { type: 'slider', value: LOCATION_MIN_MINUTES } };
-    }
-    return item;
-  });
-};
-
-const getSliderEffectiveMin = (item: BuilderItem, items: BuilderItem[]): number => {
-  const cfg = item.config as SliderConfig;
-  const base = cfg?.min ?? 0;
-  if (!isTimeSlider(item)) return base;
-  return isLocationActive(items) ? Math.max(base, LOCATION_MIN_MINUTES) : base;
-};
-
-// ── Conversion from API modifier → BuilderItem ───────────────────────────────
-
-const buildInitialControl = (m: PublicPackageModifier): ControlState => {
-  switch (m.type) {
-    case 'TOGGLE':
-      return { type: 'toggle', altSelected: false };
-    case 'SLIDER': {
-      const cfg = m.config as SliderConfig;
-      return { type: 'slider', value: cfg?.defaultValue ?? 0 };
-    }
-    case 'INCREMENTER': {
-      const cfg = m.config as IncrementerConfig;
-      return { type: 'incrementer', count: cfg?.defaultValue ?? 0 };
-    }
-    case 'CHECKBOX':
-    default:
-      return { type: 'checkbox', checked: m.isRequired || m.isIncluded };
-  }
-};
-
-const modifierToItem = (m: PublicPackageModifier): BuilderItem => ({
-  id: m.id,
-  name: m.name,
-  description: m.description,
-  modifierType: m.type,
-  isRequired: m.isRequired,
-  isIncluded: m.isIncluded,
-  priceDeltaCents: m.priceDeltaCents,
-  config: m.config,
-  control: buildInitialControl(m)
-});
-
 // ── Main component ────────────────────────────────────────────────────────────
 
 export const BuilderCard = ({ pkg, apply = false }: { pkg: PublicPackage; apply?: boolean }) => {
-  const [items, setItems] = useState<BuilderItem[]>(() => pkg.modifiers.map(modifierToItem));
-
-  const updateControl = useCallback((id: string, next: Partial<ControlState>) => {
-    setItems((prev) => {
-      const updated = prev.map((item) =>
-        item.id === id ? { ...item, control: { ...item.control, ...next } as ControlState } : item
-      );
-      return applyConstraints(updated);
-    });
-  }, []);
-
-  const selection = useMemo(() => toSelection(items), [items]);
-
-  const total = useMemo(
-    () => estimateTotalCents(pkg.basePriceCents, items.map(toPricedModifier), selection),
-    [items, selection, pkg.basePriceCents]
-  );
-
-  const queryString = useMemo(() => {
-    const params = new URLSearchParams({ package: pkg.slug });
-    const { selectedIds, values } = selection;
-
-    if (selectedIds.length > 0) params.set('modifiers', selectedIds.join(','));
-    if (Object.keys(values).length > 0) {
-      params.set(
-        'modifierValues',
-        Object.entries(values)
-          .map(([id, val]) => `${id}:${val}`)
-          .join(',')
-      );
-    }
-
-    if (apply) params.set('apply', '1');
-
-    return `?${params.toString()}`;
-  }, [selection, pkg.slug, apply]);
+  const { items, modifierSelection, breakdown, updateControl } = usePackageBuilder(pkg);
+  const total = breakdown.totalCents;
+  const queryString = bookingQueryString(pkg, modifierSelection, apply);
 
   return (
     <div className="mx-auto w-full max-w-3xl">
@@ -264,7 +96,7 @@ export const BuilderCard = ({ pkg, apply = false }: { pkg: PublicPackage; apply?
 
         {/* ── Sticky price widget (desktop only) ───────────────────── */}
         <aside className="sticky top-24 hidden w-52 shrink-0 lg:block">
-          <PriceWidget pkg={pkg} items={items} total={total} />
+          <PriceWidget pkg={pkg} lines={breakdown.lines} total={total} />
         </aside>
       </div>
     </div>
@@ -275,17 +107,11 @@ export const BuilderCard = ({ pkg, apply = false }: { pkg: PublicPackage; apply?
 
 type PriceWidgetProps = {
   pkg: PublicPackage;
-  items: BuilderItem[];
+  lines: { name: string; deltaCents: number }[];
   total: number;
 };
 
-const PriceWidget = ({ pkg, items, total }: PriceWidgetProps) => {
-  const activeLines = useMemo(() => {
-    return items
-      .map((item) => ({ name: item.name, delta: itemPriceDelta(item) }))
-      .filter((line) => line.delta !== 0);
-  }, [items]);
-
+const PriceWidget = ({ pkg, lines, total }: PriceWidgetProps) => {
   return (
     <div className="rounded-card border border-border bg-canvas p-5 shadow-warm-sm">
       <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-faint">Summary</p>
@@ -299,16 +125,16 @@ const PriceWidget = ({ pkg, items, total }: PriceWidgetProps) => {
             </span>
           </div>
         )}
-        {activeLines.map((line) => (
+        {lines.map((line) => (
           <div key={line.name} className="flex items-baseline justify-between gap-2">
             <span className="truncate text-ink-muted">{line.name}</span>
             <span
               className={[
                 'shrink-0 tabular-nums',
-                line.delta > 0 ? 'text-ink' : 'text-ink-muted'
+                line.deltaCents > 0 ? 'text-ink' : 'text-ink-muted'
               ].join(' ')}
             >
-              {formatDelta(line.delta)}
+              {formatDelta(line.deltaCents)}
             </span>
           </div>
         ))}
