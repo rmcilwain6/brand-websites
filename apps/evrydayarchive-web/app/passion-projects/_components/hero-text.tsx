@@ -28,5 +28,10 @@ export const HeroText = () => (
         className={`${buttonCls} border font-medium`}
       />
     </div>
+    <p className="text-sm leading-[1.55] text-ink-soft">
+      Accepting applications for{' '}
+      <span className="font-medium text-ink">Victoria, Vancouver, Kamloops</span>, or somewhere
+      nearby.
+    </p>
   </div>
 );
