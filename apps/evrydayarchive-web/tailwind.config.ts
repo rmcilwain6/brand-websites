@@ -17,6 +17,8 @@ const config: Config = {
         'mat-deep': 'var(--color-mat-deep)',
         'mat-linen': 'var(--color-mat-linen)',
         accent: '#F06F42',
+        // Small orange text. Darker than `accent` in light mode so it stays readable.
+        'accent-text': 'var(--color-accent-text)',
         ink: 'var(--color-ink)',
         'ink-muted': 'var(--color-ink-muted)',
         'ink-faint': 'var(--color-ink-faint)',
@@ -25,7 +27,10 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-plus-jakarta)', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-jetbrains-mono)', 'monospace']
+        mono: ['var(--font-jetbrains-mono)', 'monospace'],
+        // Newsreader, loaded by app/passion-projects/layout.tsx and only available under it.
+        // Not `serif`: the site's decorative quote marks already use Tailwind's default serif.
+        campaign: ['var(--font-newsreader)', 'Georgia', 'serif']
       },
       borderRadius: {
         // Named radii matching the brand metaphor
