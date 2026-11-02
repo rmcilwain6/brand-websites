@@ -10,6 +10,7 @@ const staticRoutes: MetadataRoute.Sitemap = [
   { url: BASE_URL, priority: 1.0, changeFrequency: 'weekly' },
   { url: `${BASE_URL}/portfolio`, priority: 0.9, changeFrequency: 'weekly' },
   { url: `${BASE_URL}/packages`, priority: 0.8, changeFrequency: 'monthly' },
+  { url: `${BASE_URL}/passion-projects`, priority: 0.8, changeFrequency: 'weekly' },
   { url: `${BASE_URL}/package-builder`, priority: 0.7, changeFrequency: 'monthly' },
   { url: `${BASE_URL}/inquire`, priority: 0.7, changeFrequency: 'monthly' },
   { url: `${BASE_URL}/process`, priority: 0.6, changeFrequency: 'monthly' },

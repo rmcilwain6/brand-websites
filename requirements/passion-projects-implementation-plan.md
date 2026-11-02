@@ -215,7 +215,8 @@ Settled on the design canvas and recorded on the Notion task "Passion Projects: 
   1. **Questions.** Personal project or business? Just you or others involved? personal + solo → Evryday, personal + others → Together, business → In Practice. Chips with `aria-pressed`.
   2. **Package card.** Matched package name, base price, one-line reason, tabs to override with the other two eligible packages, then the builder rows from `usePackageBuilder` and the live total.
   3. **Booking steps.** `BookingForm` with the live selection; the Passion Projects step expanded and pre-checked; submit label "Send my application". Hide the step's "Find out more" link here, since it points at this page.
-- Stage and answers live in the URL (`?type=personal|business&people=solo|group&package=<slug>`), so refresh, back and shared links land in the same place.
+  - As built: the questions start unanswered, and the package card and booking steps appear together once there's a match, as in the mockup, with no separate "continue" step. The booking steps run in order, with the Passion Projects step's box ticked and its fields open when reached.
+- Answers live in the URL (`?type=personal|business&people=solo|group&package=<slug>`), so refresh, back and shared links land in the same place.
 - Changing an answer after editing the builder: if the matched package changes, the builder resets to that package's defaults with a one-line note; if it doesn't change, modifiers are kept. The form keeps its contents.
 - Metadata, canonical, `sitemap.ts`, static OG placeholder.
 
