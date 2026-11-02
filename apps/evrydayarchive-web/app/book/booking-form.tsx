@@ -13,6 +13,7 @@ import { LocationFields, type LocationSelectValue } from './booking-fields/locat
 import { NotesField } from './booking-fields/notes-field';
 import { ReferralFields, type ReferralValues } from './booking-fields/referral-fields';
 import { BookingStep, stepHeadingId, type StepStatus } from './booking-step';
+import { CampaignConfirmation } from './campaign-confirmation';
 import { ConfirmationPanel } from './confirmation-panel';
 import { SelectionSummary, type BookingSelection } from './selection-summary';
 
@@ -435,12 +436,10 @@ export const BookingForm = ({
   };
 
   if (status === 'success') {
-    return (
-      <ConfirmationPanel
-        name={submittedName}
-        voucherEntered={submittedVoucher}
-        applied={submittedApplication}
-      />
+    return submittedApplication ? (
+      <CampaignConfirmation name={submittedName} voucherEntered={submittedVoucher} />
+    ) : (
+      <ConfirmationPanel name={submittedName} voucherEntered={submittedVoucher} />
     );
   }
 

@@ -5,10 +5,12 @@ import { useEffect, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
 import { scrollToSection } from './scroll-link';
 
-/** The page itself, without whatever this visitor has answered further down. */
-const pageUrl = () => `${window.location.origin}${window.location.pathname}`;
+const PAGE_PATH = '/passion-projects';
 
-/** Copies the page's link, with `copied` true for a couple of seconds after. Rejects on failure. */
+/** The campaign page, without any answers, from whichever page the button is on. */
+const pageUrl = () => `${window.location.origin}${PAGE_PATH}`;
+
+/** Copies the campaign page's link, with `copied` true for a couple of seconds after. Rejects on failure. */
 const useCopyLink = () => {
   const [copied, setCopied] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>();
@@ -29,30 +31,40 @@ const labelCls =
   'transition-[opacity,transform] duration-[180ms] ease-out [grid-area:1/1] motion-reduce:transition-none';
 
 /**
- * Copies the page's link, and the label slides over to say so. The clipboard isn't available
- * everywhere, so it goes to the `fallbackTo` section, which has its own way to share.
+ * Copies the campaign page's link, and the label slides over to say so. The clipboard isn't
+ * available everywhere, so it goes to the campaign page's `fallbackTo` section, which has its own
+ * way to share.
  */
 export const CopyLinkButton = ({
   label,
   fallbackTo,
+  variant = 'outline',
   className
 }: {
   label: string;
   fallbackTo: string;
+  variant?: 'outline' | 'solid';
   className?: string;
 }) => {
   const { copied, copy } = useCopyLink();
+
+  const showFallback = () => {
+    if (document.getElementById(fallbackTo)) scrollToSection(fallbackTo);
+    else window.location.assign(`${PAGE_PATH}#${fallbackTo}`);
+  };
 
   return (
     <>
       <button
         type="button"
-        onClick={() => copy().catch(() => scrollToSection(fallbackTo))}
+        onClick={() => copy().catch(showFallback)}
         className={cn(
           className,
-          copied
-            ? 'border-accent-text text-accent-text'
-            : 'border-border text-ink hover:border-ink-muted'
+          variant === 'solid'
+            ? 'bg-accent text-white'
+            : copied
+              ? 'border-accent-text text-accent-text'
+              : 'border-border text-ink hover:border-ink-muted'
         )}
       >
         {/* Both labels share one grid cell, so the button keeps its width as they swap. */}

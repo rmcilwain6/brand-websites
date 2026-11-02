@@ -3,18 +3,13 @@
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
-// Subpath import keeps the core package's Zod schemas out of the client bundle.
-import { CAMPAIGN } from '@repo/core/campaigns';
-
 type Props = {
   name: string;
   /** The booker entered a voucher code. No amount is shown: values vary and are checked by hand. */
   voucherEntered?: boolean;
-  /** The booking was also an application to the campaign. */
-  applied?: boolean;
 };
 
-export const ConfirmationPanel = ({ name, voucherEntered = false, applied = false }: Props) => {
+export const ConfirmationPanel = ({ name, voucherEntered = false }: Props) => {
   const firstName = name.split(' ')[0] ?? name;
   const panelRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -33,7 +28,7 @@ export const ConfirmationPanel = ({ name, voucherEntered = false, applied = fals
       className="scroll-mt-6 rounded-card border border-border bg-sun px-8 py-14 text-center md:scroll-mt-24"
     >
       <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-soft">
-        {applied ? 'Application sent' : 'Request sent'}
+        Request sent
       </p>
       <h2
         ref={headingRef}
@@ -43,14 +38,8 @@ export const ConfirmationPanel = ({ name, voucherEntered = false, applied = fals
         You&apos;re all set, {firstName}.
       </h2>
       <p className="mx-auto mb-10 max-w-sm text-base leading-relaxed text-ink-muted">
-        {applied ? (
-          <>I&apos;ve got your application. {CAMPAIGN.copy.whatHappensNext}</>
-        ) : (
-          <>
-            I&apos;ve got your request. I&apos;ll be in touch to confirm the date and go over any
-            details.
-          </>
-        )}
+        I&apos;ve got your request. I&apos;ll be in touch to confirm the date and go over any
+        details.
       </p>
       {voucherEntered && (
         <p className="mx-auto -mt-6 mb-10 max-w-sm text-sm leading-relaxed text-ink-muted">
