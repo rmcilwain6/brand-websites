@@ -200,9 +200,10 @@ Settled on the design canvas and recorded on the Notion task "Passion Projects: 
 
 ### PR 14 · `feat/passion-projects-design`
 
-- Newsreader via `next/font`, exposed as a `font-serif` Tailwind family.
+- Newsreader via `next/font`, loaded in `app/passion-projects/layout.tsx` and exposed as a `font-campaign` Tailwind family. Not `font-serif`, which the site's decorative quote marks already use. PR 17's home block needs to load the font too if it uses it.
 - Shared components under `app/passion-projects/_components/`: `MastheadStrip` (props: season, right label; `as="header" | "footer"`), `OrangeBand`, `ArchCard` (image, feature number, name, one-liner, href), `SectionHeading`, and the existing `Placard` with a mono subline variant.
-- Check the components on a temporary preview route, removed before launch.
+- An `accent-text` colour token for small orange text, since the brand orange is too light to read at that size in light mode.
+- Check the components on a temporary preview route (`/passion-projects/preview`, not indexed). **Delete it before launch.**
 
 ### PR 15 · `feat/passion-projects-page`
 
