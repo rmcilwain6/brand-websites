@@ -31,6 +31,7 @@ export const bookingNotificationSubject = (data: BookingEmailData) =>
     `New booking: ${data.name}`,
     data.packageName,
     formatDateShort(data.preferredDate),
+    data.campaign && 'Passion Projects',
     data.referrer && 'Referral',
     data.voucherEntered && 'Voucher'
   ]

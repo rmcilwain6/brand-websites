@@ -17,6 +17,20 @@ const plain: BookingEmailData = {
   inquiryId: 'inq_plain'
 };
 
+const application: BookingEmailData = {
+  ...plain,
+  packageName: 'In Practice',
+  campaign: {
+    label: 'Passion Projects Winter 2026',
+    whatWorkingOn: 'A sewing business',
+    aboutIt: 'Three years in.',
+    link: '@jordan.sews',
+    othersInvolved: 'My sister',
+    acknowledgedAt: '2026-07-02T03:00:00.000Z',
+    ackVersion: 1
+  }
+};
+
 const text = async (html: Promise<string> | string) =>
   (await html)
     // React separates adjacent text and expressions with <!-- --> comments; drop them unspaced.
@@ -78,6 +92,51 @@ describe('booking notification email', () => {
     );
     expect(bookingNotificationSubject(plain)).toBe('New booking: Jordan Lee · Sat, Nov 21');
   });
+
+  it('shows the application answers and when they were acknowledged', async () => {
+    const out = await text(render(BookingNotification(application)));
+
+    expect(out).toContain('Applied: Passion Projects');
+    expect(out).toContain('Passion Projects Winter 2026 application');
+    expect(out).toContain('Working on A sewing business');
+    expect(out).toContain('About it Three years in.');
+    expect(out).toContain('Link @jordan.sews');
+    expect(out).toContain('Others involved My sister');
+    // 03:00 UTC is the evening before in BC.
+    expect(out).toContain('Acknowledged Jul 1, 2026, 8:00 PM PDT (wording v1)');
+  });
+
+  it('leaves out answers that were skipped', async () => {
+    const out = await text(
+      render(
+        BookingNotification({
+          ...application,
+          campaign: {
+            label: 'Passion Projects Winter 2026',
+            whatWorkingOn: 'A sewing business',
+            acknowledgedAt: '2026-11-02T03:00:00.000Z',
+            ackVersion: 1
+          }
+        })
+      )
+    );
+
+    expect(out).toContain('Working on A sewing business');
+    expect(out).not.toContain('About it');
+    expect(out).not.toContain('Others involved');
+  });
+
+  it('shows no campaign block on a regular booking', async () => {
+    const out = await text(render(BookingNotification(plain)));
+
+    expect(out).not.toContain('Passion Projects');
+  });
+
+  it('flags an application in the subject', () => {
+    expect(bookingNotificationSubject(application)).toBe(
+      'New booking: Jordan Lee · In Practice · Sat, Nov 21 · Passion Projects'
+    );
+  });
 });
 
 describe('booking confirmation email', () => {
@@ -113,6 +172,15 @@ describe('booking confirmation email', () => {
     expect(out).not.toContain('Voucher code');
     expect(out).not.toContain('Your notes');
     expect(out).not.toContain('This is an estimate');
+    expect(out).not.toContain('Passion Projects');
+  });
+
+  it('acknowledges an application without repeating the answers', async () => {
+    const out = await text(render(BookingConfirmation(application)));
+
+    expect(out).toContain('I’ve also got your application to be featured in Passion Projects.');
+    expect(out).toContain('within 24 to 48 hours');
+    expect(out).not.toContain('A sewing business');
   });
 });
 

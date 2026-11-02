@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { APPLICANT_STATUSES } from '../campaigns';
+
 export const BookingRequestSubmissionPayloadSchema = z.object({
   packageId: z.string().min(1, 'Package is required.'),
   timeSlotId: z.string().min(1).optional(),
@@ -25,7 +27,8 @@ export const BookingRequestStatusValues = [
 ] as const;
 
 export const BookingRequestUpdateSchema = z.object({
-  status: z.enum(BookingRequestStatusValues).optional()
+  status: z.enum(BookingRequestStatusValues).optional(),
+  applicantStatus: z.enum(APPLICANT_STATUSES).optional()
 });
 
 export type BookingRequestUpdate = z.infer<typeof BookingRequestUpdateSchema>;

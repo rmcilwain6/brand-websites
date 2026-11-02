@@ -1,9 +1,11 @@
 import {
   buildModifierLineItems,
+  campaignLabel,
   formatVoucherDiscount,
   heardFromLabel,
   normalizeVoucherCode,
-  toVoucherDiscount
+  toVoucherDiscount,
+  type CampaignAnswers
 } from '@repo/core';
 import { Prisma, prisma } from '@repo/db';
 
@@ -103,6 +105,7 @@ export const toBookingEmailData = (
       : undefined;
 
   const voucher = booking.referralVoucher;
+  const answers = booking.campaignAnswers as CampaignAnswers | null;
 
   return {
     name: inquiry.name,
@@ -139,6 +142,18 @@ export const toBookingEmailData = (
           check: checkEnteredVoucher(booking.voucherCodeEntered, enteredVoucher, now)
         }
       : undefined,
+    campaign:
+      booking.campaign && answers
+        ? {
+            label: campaignLabel(booking.campaign),
+            whatWorkingOn: answers.whatWorkingOn ?? undefined,
+            aboutIt: answers.aboutIt ?? undefined,
+            link: answers.link ?? undefined,
+            othersInvolved: answers.othersInvolved ?? undefined,
+            acknowledgedAt: answers.acknowledgedAt,
+            ackVersion: answers.ackVersion
+          }
+        : undefined,
     adminUrl: adminOrigin ? `${adminOrigin}/bookings/${booking.id}` : undefined
   };
 };

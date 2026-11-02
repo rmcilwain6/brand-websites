@@ -54,6 +54,21 @@ export const formatExpiry = (ymd: string) => {
   });
 };
 
+/** An ISO timestamp as Reed's local time: "Jul 1, 2026, 8:00 PM PDT". */
+export const formatTimestamp = (iso: string) => {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'America/Vancouver',
+    timeZoneName: 'short'
+  });
+};
+
 /** "14:30" → "2:30 PM". */
 export const formatTime = (hhmm: string) => {
   const [h, m] = hhmm.split(':').map(Number);

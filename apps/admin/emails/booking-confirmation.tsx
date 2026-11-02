@@ -1,4 +1,5 @@
 import { Text } from '@react-email/components';
+import { CAMPAIGN } from '@repo/core/campaigns';
 import * as React from 'react';
 
 import { formatDateLong, formatTime } from './components/format';
@@ -31,7 +32,8 @@ export const BookingConfirmation = ({
   notes,
   modifierLineItems,
   locationIdeas,
-  voucherEntered
+  voucherEntered,
+  campaign
 }: BookingEmailData) => {
   const firstName = name.trim().split(/\s+/)[0] ?? name;
 
@@ -43,6 +45,12 @@ export const BookingConfirmation = ({
         Thanks for your booking request. It’s come through, and I’ll be in touch soon to confirm the
         date and talk through the details. Nothing is booked until we’ve confirmed it together.
       </Text>
+      {campaign && (
+        <Text style={s.body}>
+          I’ve also got your application to be featured in Passion Projects.{' '}
+          {CAMPAIGN.copy.whatHappensNext}
+        </Text>
+      )}
 
       <Card>
         <Text style={{ ...s.eyebrow, margin: '0 0 12px' }}>Your request</Text>

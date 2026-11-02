@@ -56,6 +56,18 @@ export type BookingEmailData = {
   };
   /** The code the booker typed, exactly as typed, and what it matched. */
   voucherEntered?: { entered: string; check: VoucherCheck };
+  /** The booking is also an application to a campaign. The answers are Reed-only. */
+  campaign?: {
+    /** "Passion Projects Winter 2026" */
+    label: string;
+    whatWorkingOn?: string;
+    aboutIt?: string;
+    link?: string;
+    othersInvolved?: string;
+    /** ISO timestamp. */
+    acknowledgedAt: string;
+    ackVersion: number;
+  };
   /** This booking's page in the admin. */
   adminUrl?: string;
 };
