@@ -86,7 +86,7 @@ const PassionProjectsPage = async () => {
           id="refer"
           heading={
             <>
-              Somebody you know is <span className="italic">working on something.</span>
+              Somebody you know is <span className="block italic">working on something.</span>
             </>
           }
         >

@@ -12,16 +12,16 @@ type Props = {
 
 /**
  * The one "say something or do something" moment on a page: full width, brand orange and dark
- * Newsreader, in light and dark mode alike. Use one per page.
+ * Newsreader, in light and dark mode alike. Its contents line up with the page's content column.
+ * Use one per page.
  */
 export const OrangeBand = ({ heading, headingAs: Heading = 'h2', children, id }: Props) => (
-  <section
-    id={id}
-    className="grid scroll-mt-24 gap-5 bg-accent px-6 py-10 text-[#1b1a19] lg:grid-cols-[1fr_380px] lg:items-center lg:gap-16 lg:px-20 lg:py-14"
-  >
-    <Heading className="font-campaign text-[28px] font-normal leading-[1.1] tracking-[-0.01em] lg:text-[40px]">
-      {heading}
-    </Heading>
-    {children && <div className="flex flex-col gap-[18px]">{children}</div>}
+  <section id={id} className="scroll-mt-24 bg-accent text-[#1b1a19]">
+    <div className="mx-auto grid w-full max-w-[1280px] gap-5 px-6 py-10 lg:grid-cols-[1fr_380px] lg:items-center lg:gap-16 lg:px-20 lg:py-14">
+      <Heading className="font-campaign text-[32px] font-normal leading-[1.1] tracking-[-0.01em] lg:text-[48px] lg:leading-[1.05]">
+        {heading}
+      </Heading>
+      {children && <div className="flex flex-col gap-[18px]">{children}</div>}
+    </div>
   </section>
 );
