@@ -102,7 +102,8 @@ const PassionProjectsPage = async () => {
         <ApplyFlow packages={packages} timeSlots={timeSlots} locationWindows={locationWindows} />
       </div>
 
-      <div className="mt-[72px] lg:mt-[120px]">
+      {/* The negative margin cancels the root layout's space for the phone nav, so the strip meets the footer. */}
+      <div className="-mb-16 mt-[72px] md:mb-0 lg:mt-[120px]">
         <MastheadStrip
           season={CAMPAIGN.season}
           right="Kamloops · Victoria · Vancouver"
