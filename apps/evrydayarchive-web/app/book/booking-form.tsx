@@ -145,8 +145,12 @@ export const BookingForm = ({
   const [submittedApplication, setSubmittedApplication] = useState(false);
 
   // The open step, and the furthest step reached. Steps up to `furthestStep` can be reopened.
-  const [step, setStep] = useState(0);
-  const [furthestStep, setFurthestStep] = useState(0);
+  const [openIndex, setStep] = useState(0);
+  const [furthestIndex, setFurthestStep] = useState(0);
+  // The step list shrinks if the selection moves to a package without the campaign step, so keep
+  // both in range. Otherwise no step would be open and the form would be stuck.
+  const step = Math.min(openIndex, lastStep);
+  const furthestStep = Math.min(furthestIndex, lastStep);
   // What to focus once a newly opened step renders: a field with an error, or the step heading.
   const pendingFocus = useRef<string | null>(null);
 
