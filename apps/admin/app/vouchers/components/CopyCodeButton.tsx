@@ -2,8 +2,11 @@
 
 import { useState } from 'react';
 
-/** Copies a voucher code to the clipboard, with a brief "Copied" confirmation. */
-const CopyCodeButton = ({ code }: { code: string }) => {
+/**
+ * Copies text to the clipboard, with a brief "Copied" confirmation. `label` names what's copied
+ * for screen readers, for text too long to read out; a short code can stand for itself.
+ */
+const CopyCodeButton = ({ code, label }: { code: string; label?: string }) => {
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -20,7 +23,7 @@ const CopyCodeButton = ({ code }: { code: string }) => {
     <button
       type="button"
       onClick={copy}
-      aria-label={`Copy ${code}`}
+      aria-label={`Copy ${label ?? code}`}
       className="rounded border border-slate-200 px-1.5 py-0.5 text-xs font-medium text-slate-500 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700"
     >
       {copied ? 'Copied' : 'Copy'}

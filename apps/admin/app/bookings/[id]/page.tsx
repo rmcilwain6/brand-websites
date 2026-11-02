@@ -1,17 +1,21 @@
 import {
   buildModifierLineItems,
+  campaignLabel,
   formatVoucherDiscount,
   heardFromLabel,
   normalizeVoucherCode,
-  toVoucherDiscount
+  toVoucherDiscount,
+  type CampaignAnswers
 } from '@repo/core';
 import { prisma } from '@repo/db';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { formatTimestamp } from '../../../emails/components/format';
 import { VOUCHER_VERDICT } from '../../../emails/components/voucher-verdict';
 import { checkEnteredVoucher, sameName } from '../../lib/booking-email-data';
 
+import ApplicantStatusControl from './ApplicantStatusControl';
 import BookingActions from './BookingActions';
 import EnteredVoucherCard from './EnteredVoucherCard';
 import ReferralVoucherCard from './ReferralVoucherCard';
@@ -83,6 +87,7 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
   const payload = inquiry?.payload as BookingPayload | null;
   const selectedOptions = booking.selectedOptions as SelectedOptions | null;
   const heardFrom = heardFromLabel(booking.heardFrom);
+  const answers = booking.campaignAnswers as CampaignAnswers | null;
 
   // The voucher code the booker typed, and what it matches in the table.
   const enteredCode =
@@ -212,6 +217,41 @@ const BookingDetailPage = async ({ params }: { params: { id: string } }) => {
           {heardFrom && <Row label="Heard about us" value={heardFrom} />}
         </dl>
       </section>
+
+      {/* Campaign application */}
+      {booking.campaign && (
+        <section>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            {campaignLabel(booking.campaign)} application
+          </h2>
+          {answers && (
+            <dl className="mb-3 divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
+              {answers.whatWorkingOn && <Row label="Working on" value={answers.whatWorkingOn} />}
+              {answers.aboutIt && <Row label="About it" value={answers.aboutIt} multiline />}
+              {answers.link && (
+                <Row
+                  label="Link"
+                  value={answers.link}
+                  // Free text, so only a real web address becomes a link.
+                  href={/^https?:\/\//i.test(answers.link) ? answers.link : undefined}
+                />
+              )}
+              {answers.othersInvolved && (
+                <Row label="Others involved" value={answers.othersInvolved} multiline />
+              )}
+              <Row
+                label="Acknowledged"
+                value={`${formatTimestamp(answers.acknowledgedAt)} (wording v${answers.ackVersion})`}
+              />
+            </dl>
+          )}
+          <ApplicantStatusControl
+            bookingId={booking.id}
+            currentStatus={booking.applicantStatus ?? 'PENDING'}
+            applicantName={inquiry?.name ?? ''}
+          />
+        </section>
+      )}
 
       {/* Modifier receipt */}
       {modifierLineItems && modifierLineItems.length > 0 && (

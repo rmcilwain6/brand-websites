@@ -178,7 +178,8 @@ Target dates follow the Notion tasks: booking side by **Nov 2**, landing page by
 
 - Reed's notification email: campaign block with the answers and acknowledgement timestamp. Client confirmation gets one added line acknowledging the application. The distinct applicant confirmation email stays a stretch.
 - Admin bookings: campaign badge on the list, campaign filter, applicant status control on the booking detail.
-- Accepted and not-featured replies: copy from Reed, stored as templates Reed sends by hand for now.
+- Booking detail also shows the campaign answers and when they were acknowledged, next to the status control (spec §6.1).
+- Accepted and not-featured replies: stored as templates in `apps/admin/app/lib/campaign-replies.ts` and shown on the booking detail for the chosen status, for Reed to copy and send by hand. The wording is a draft until Reed writes the final copy.
 
 ### PR 13 · `refactor/builder-state`
 
