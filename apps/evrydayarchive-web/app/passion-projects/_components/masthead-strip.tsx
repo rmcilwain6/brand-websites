@@ -34,8 +34,9 @@ export const MastheadStrip = ({ season, right, as: Tag = 'header', href }: Props
     </>
   );
 
+  // The colour runs full width, and the contents line up with the site header's logo and button.
   const layoutCls = cn(
-    'flex flex-wrap items-baseline gap-x-2.5 gap-y-1 px-5 sm:gap-x-3.5 lg:px-20',
+    'mx-auto flex max-w-7xl flex-wrap items-baseline gap-x-2.5 gap-y-1 px-5 sm:gap-x-3.5 sm:px-6 lg:px-8',
     isHeader ? 'pb-3.5 pt-[18px] md:py-3.5' : 'py-5 lg:py-[22px]'
   );
 
