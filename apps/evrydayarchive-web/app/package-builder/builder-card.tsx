@@ -16,7 +16,7 @@ import { usePackageBuilder } from './use-package-builder';
 
 // ── Price helpers ────────────────────────────────────────────────────────────
 
-const formatPrice = (cents: number): string =>
+export const formatPrice = (cents: number): string =>
   new Intl.NumberFormat('en-CA', {
     style: 'currency',
     currency: 'CAD',
@@ -156,7 +156,7 @@ type ModifierRowProps = {
   onChange: (id: string, next: Partial<ControlState>) => void;
 };
 
-const ModifierRow = ({ item, allItems, onChange }: ModifierRowProps) => {
+export const ModifierRow = ({ item, allItems, onChange }: ModifierRowProps) => {
   const delta = itemPriceDelta(item);
   const isLocked = item.isRequired;
 

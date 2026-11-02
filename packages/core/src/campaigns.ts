@@ -12,6 +12,7 @@
 export const CAMPAIGN = {
   id: 'passion-projects-winter-2026',
   label: 'Passion Projects Winter 2026',
+  season: 'Winter 2026',
   /** Package slugs as they are in production. Renaming one in admin makes it ineligible. */
   eligibleSlugs: ['evryday-package', 'together', 'in-practice'],
   ackVersion: 1,
