@@ -114,8 +114,11 @@ export const SalonWall = () => {
         </p>
       </div>
 
-      {/* Rows scale with the width on phones and tablets, so frames keep their shape. */}
-      <div className="mt-4 grid grid-flow-dense auto-rows-[7.7vw] grid-cols-6 gap-1.5 lg:mt-0 lg:auto-rows-[40px] lg:grid-cols-12 lg:gap-3">
+      {/*
+        Rows scale with the width on phones and tablets, so frames keep their shape. Phones place
+        frames strictly in order so the numbers read 01 up; desktop packs them around the hero text.
+      */}
+      <div className="mt-4 grid auto-rows-[7.7vw] grid-cols-6 gap-1.5 lg:mt-0 lg:grid-flow-dense lg:auto-rows-[40px] lg:grid-cols-12 lg:gap-3">
         <div className="hidden flex-col justify-center pr-9 lg:flex lg:[grid-column:1/span_5] lg:[grid-row:1/span_11]">
           <HeroText />
         </div>

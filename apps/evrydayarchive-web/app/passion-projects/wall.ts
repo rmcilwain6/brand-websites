@@ -4,6 +4,8 @@
  * need portrait photos and landscape slots need landscape ones.
  *
  * Spans are columns × rows: 12 columns on desktop and 6 on phones. `phone: null` is desktop only.
+ * Phones show the slots in number order, so their spans have to tile the 6 columns with no holes,
+ * and only the slots at the end of the list can be left off.
  */
 
 export type WallSlot = {
@@ -28,7 +30,7 @@ export const WALL: WallSlot[] = [
     title: 'Jess & The Yota',
     subtitle: 'Kamloops · Jan 2026',
     desktop: [3, 9],
-    phone: [3, 7]
+    phone: [4, 9]
   },
   {
     number: '02',
@@ -37,7 +39,7 @@ export const WALL: WallSlot[] = [
     title: 'Julia & Benjamin',
     subtitle: 'Nanaimo · Jan 2026',
     desktop: [2, 7],
-    phone: [2, 6]
+    phone: [2, 5]
   },
   {
     number: '03',
@@ -46,7 +48,7 @@ export const WALL: WallSlot[] = [
     title: 'Science of Wine',
     subtitle: 'Kamloops · Mar 2026',
     desktop: [2, 5],
-    phone: [2, 5]
+    phone: [2, 4]
   },
   {
     number: '04',
@@ -73,7 +75,7 @@ export const WALL: WallSlot[] = [
     title: 'Nicole',
     subtitle: 'Victoria · Jan 2026',
     desktop: [3, 4],
-    phone: [4, 4]
+    phone: [4, 5]
   },
   {
     number: '07',
@@ -82,7 +84,7 @@ export const WALL: WallSlot[] = [
     title: 'Josue',
     subtitle: 'UVic · Feb 2026',
     desktop: [2, 6],
-    phone: [2, 6]
+    phone: [3, 7]
   },
   {
     number: '08',
@@ -90,7 +92,7 @@ export const WALL: WallSlot[] = [
     alt: 'A blue rally car kicking up snow on a forest road as two people watch',
     title: 'Big White Winter Rally',
     desktop: [3, 4],
-    phone: [4, 4]
+    phone: [3, 3]
   },
   {
     number: '09',
@@ -99,7 +101,7 @@ export const WALL: WallSlot[] = [
     title: 'Pinot',
     subtitle: 'Victoria · Feb 2026',
     desktop: [2, 4],
-    phone: [3, 5]
+    phone: [3, 4]
   },
   {
     number: '10',
@@ -108,7 +110,7 @@ export const WALL: WallSlot[] = [
     title: 'Nikki',
     subtitle: 'Victoria · Jan 2026',
     desktop: [2, 6],
-    phone: [3, 7]
+    phone: [2, 5]
   },
   {
     number: '11',
@@ -117,7 +119,7 @@ export const WALL: WallSlot[] = [
     title: 'Science of Wine',
     subtitle: 'Kamloops · Mar 2026',
     desktop: [3, 4],
-    phone: [3, 3]
+    phone: [4, 5]
   },
   {
     number: '12',
@@ -126,7 +128,7 @@ export const WALL: WallSlot[] = [
     title: 'Ruben',
     subtitle: 'UVic · Feb 2026',
     desktop: [2, 5],
-    phone: [2, 5]
+    phone: null
   },
   {
     number: '13',
@@ -135,7 +137,7 @@ export const WALL: WallSlot[] = [
     title: 'Kate & Carter',
     subtitle: 'Kamloops · Dec 2025',
     desktop: [3, 4],
-    phone: [4, 4]
+    phone: null
   },
   {
     number: '14',
