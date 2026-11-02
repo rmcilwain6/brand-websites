@@ -117,11 +117,8 @@ const Flow = ({
     <div className="flex flex-col gap-[22px] lg:gap-14">
       {!submitted && (
         <div className="grid gap-[22px] lg:grid-cols-[300px_1fr] lg:items-start lg:gap-16">
-          <SectionHeading
-            eyebrow="Apply"
-            description="Two quick questions pick the right package. You can change either answer and the builder follows."
-          >
-            Tell me a little about it
+          <SectionHeading description="Tell me a little about it. Two quick questions pick the right package. You can change either answer and the builder follows.">
+            Apply to be featured
           </SectionHeading>
 
           <div className="grid gap-[22px] sm:grid-cols-2 lg:gap-8">
@@ -271,12 +268,12 @@ export const ApplyFlow = ({ packages, timeSlots, locationWindows }: Props) => {
   );
 
   return (
-    <section id="apply" className="scroll-mt-24 px-6 pt-16 lg:px-0 lg:pt-[120px]">
+    <section id="apply" className="px-6 pt-16 lg:scroll-mt-16 lg:px-0 lg:pt-[120px]">
       {eligible.length > 0 ? (
         <Flow eligible={eligible} timeSlots={timeSlots} locationWindows={locationWindows} />
       ) : (
         <div className="flex flex-col gap-4">
-          <SectionHeading eyebrow="Apply">Tell me a little about it</SectionHeading>
+          <SectionHeading>Apply to be featured</SectionHeading>
           <p className="text-base leading-relaxed text-ink-muted">
             The form isn&apos;t loading right now.{' '}
             <Link href="/contact" className="text-accent-text underline underline-offset-2">
