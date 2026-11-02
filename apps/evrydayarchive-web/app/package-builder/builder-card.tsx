@@ -263,7 +263,7 @@ export const BuilderCard = ({ pkg, apply = false }: { pkg: PublicPackage; apply?
         </div>
 
         {/* ── Sticky price widget (desktop only) ───────────────────── */}
-        <aside className="sticky top-6 hidden w-52 shrink-0 lg:block">
+        <aside className="sticky top-24 hidden w-52 shrink-0 lg:block">
           <PriceWidget pkg={pkg} items={items} total={total} />
         </aside>
       </div>
