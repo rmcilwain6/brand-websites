@@ -567,7 +567,7 @@ export const BookingForm = ({
       </div>
 
       {selection && (
-        <aside className="hidden lg:block lg:w-80 lg:flex-none lg:sticky lg:top-8">
+        <aside className="hidden lg:block lg:w-80 lg:flex-none lg:sticky lg:top-24">
           <SelectionSummary selection={selection} variant="full" applying={applying} />
           <div className="mt-6 px-1">
             <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-soft">
