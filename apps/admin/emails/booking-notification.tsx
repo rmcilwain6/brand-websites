@@ -81,7 +81,15 @@ export const BookingNotification = (data: BookingEmailData) => {
           <DetailTable
             rows={[
               ['Working on', campaign.whatWorkingOn],
-              ['About it', campaign.aboutIt],
+              [
+                'About it',
+                campaign.aboutIt && (
+                  // Keeps the line breaks in what they wrote.
+                  <span key="about" style={{ whiteSpace: 'pre-wrap' }}>
+                    {campaign.aboutIt}
+                  </span>
+                )
+              ],
               ['Link', campaign.link],
               ['Others involved', campaign.othersInvolved],
               [

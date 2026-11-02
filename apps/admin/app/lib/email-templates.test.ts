@@ -106,6 +106,12 @@ describe('booking notification email', () => {
     expect(out).toContain('Acknowledged Jul 1, 2026, 8:00 PM PDT (wording v1)');
   });
 
+  it('keeps the line breaks in a longer answer', async () => {
+    const html = await render(BookingNotification(application));
+
+    expect(html).toContain('white-space:pre-wrap');
+  });
+
   it('leaves out answers that were skipped', async () => {
     const out = await text(
       render(
