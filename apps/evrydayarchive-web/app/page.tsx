@@ -6,6 +6,7 @@ import { fetchPublicGalleries, type GalleryListItem } from '@repo/core';
 
 import { getServerEnv } from './lib/env';
 import { HeroSection } from './components/hero-section';
+import { PassionProjectsTeaser } from './components/passion-projects-teaser';
 import { Frame } from './components/frame';
 import { Placard } from './components/placard';
 
@@ -133,6 +134,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── Passion Projects: the winter campaign's way in ───────────────── */}
+      <PassionProjectsTeaser />
 
       {/* ── Section 3: Featured galleries carousel ───────────────────────── */}
       {featured.length > 0 && (
