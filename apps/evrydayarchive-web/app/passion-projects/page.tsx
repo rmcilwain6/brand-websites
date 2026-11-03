@@ -77,8 +77,8 @@ const PassionProjectsPage = async () => {
 
       <div className={content}>
         <SalonWall />
-        <FeaturesRow features={FEATURES} season={CAMPAIGN.season} />
         <HowItWorks />
+        <FeaturesRow features={FEATURES} season={CAMPAIGN.season} />
       </div>
 
       <div className="mt-16 lg:mt-[110px]">

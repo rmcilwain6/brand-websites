@@ -1,4 +1,4 @@
-/** The published features. Empty until the first one, which hides the features row. */
+/** The published features. Until the first one, the features row shows coming-soon arches (`teasers.ts`). */
 export type Feature = {
   number: number;
   name: string;
