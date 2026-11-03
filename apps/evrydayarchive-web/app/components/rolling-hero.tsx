@@ -63,7 +63,7 @@ export const COMPACT_H_SCALE = 0.82;
 export const BLOCK_A_ITEMS: BlockPhoto[] = [
   // Primary portrait
   {
-    aspect: '4/5',
+    aspect: '2/3',
     photoH: 380,
     matStyle: 'neutral',
     top: 90,
@@ -160,7 +160,7 @@ export const BLOCK_B_ITEMS: BlockPhoto[] = [
     top: 40,
     left: 500,
     placardPosition: 'right-bottom',
-    placard: { title: 'Carter & Kate', subtitle: 'Kamloops, Dec 2025' },
+    placard: { title: 'Kate & Carter', subtitle: 'Kamloops, Dec 2025' },
     src: '/images/top-brand-images/kate&carter-wildlights-17.webp'
   },
   // Upper-right medium portrait
