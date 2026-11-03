@@ -12,7 +12,8 @@ import { ThemeToggle } from './theme-toggle';
 const NAV = [
   { href: '/portfolio', label: 'Portfolio' },
   { href: '/about', label: 'About' },
-  { href: '/packages', label: 'Packages' }
+  { href: '/packages', label: 'Packages' },
+  { href: '/passion-projects', label: 'Passion Projects' }
 ] as const;
 
 /**
@@ -75,8 +76,9 @@ export const SiteHeader = () => {
         {/* Nav bar */}
         <div className="h-16 border-b border-border bg-canvas">
           <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            {/* Logo */}
-            <div className="group relative">
+            {/* Logo. Below lg, the right margin keeps room for the stamp (absolutely positioned),
+                so it can't run into the nav on narrow screens. */}
+            <div className="group relative mr-[84px] lg:mr-0">
               <Link
                 href="/"
                 aria-label="Evryday Archive Co — home"
@@ -103,7 +105,7 @@ export const SiteHeader = () => {
             </div>
 
             {/* Nav links */}
-            <nav aria-label="Main navigation" className="flex items-center gap-8">
+            <nav aria-label="Main navigation" className="flex items-center gap-5 lg:gap-8">
               {NAV.map((link) => (
                 <NavLink key={link.href} href={link.href} label={link.label} />
               ))}
