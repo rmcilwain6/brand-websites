@@ -69,7 +69,7 @@ export const BLOCK_A_ITEMS: BlockPhoto[] = [
     top: 90,
     left: 500,
     placardPosition: 'top-right',
-    placard: { title: 'Rachel & David', subtitle: 'Victoria, Sept 2026' },
+    placard: { title: 'Rachel & David', subtitle: 'Victoria, Sep 2026' },
     src: '/images/top-brand-images/rachel-david-182.webp'
   },
   // Upper-left small portrait
@@ -113,7 +113,7 @@ export const BLOCK_A_ITEMS: BlockPhoto[] = [
     top: 340,
     left: 100,
     placardPosition: 'bottom-center',
-    placard: { title: '55+ BC Games', subtitle: 'Kamloops, Sept 2026' },
+    placard: { title: '55+ BC Games', subtitle: 'Kamloops, Sep 2026' },
     src: '/images/top-brand-images/55plus-bc-games-kamloops-hockey-65.webp'
   },
   // Lower-right small landscape
@@ -196,7 +196,7 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     top: 146,
     left: 605,
     placardPosition: 'bottom-left',
-    placard: { title: 'Carolyn & UPDOG', subtitle: 'Victoria, June 2026' },
+    placard: { title: 'Carolyn & UPDOG', subtitle: 'Victoria, Jun 2026' },
     src: '/images/top-brand-images/updog-22.webp'
   },
   // Upper-left landscape
@@ -207,7 +207,7 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     top: 25,
     left: 150,
     placardPosition: 'bottom-left',
-    placard: { title: 'Rachel & David', subtitle: 'Victoria, Sept 2026' },
+    placard: { title: 'Rachel & David', subtitle: 'Victoria, Sep 2026' },
     src: '/images/top-brand-images/rachel-david-167.webp'
   },
   // Lower-centre landscape
@@ -229,7 +229,7 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     top: 430,
     left: 10,
     placardPosition: 'bottom-center',
-    placard: { title: 'Ethan for The Rusted Rake', subtitle: 'Nanoose Bay, June 2026' },
+    placard: { title: 'Ethan for The Rusted Rake', subtitle: 'Nanoose Bay, Jun 2026' },
     src: '/images/top-brand-images/rr-brewing-19.webp'
   },
   // Right portrait (top)
