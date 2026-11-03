@@ -8,7 +8,8 @@
  * sigma 21 (60% of the frosted-glass blur Reed picked on the design canvas), saved as
  * `public/images/passion-projects/teaser-0N.webp`. Without one the arch shows a plain frosted fill.
  *
- * Sources: 01 urec-finishedimages-20, 02 nikki&nicole-jan15-08, 03 tedxvictoria2026-159.
+ * Sources: 01 urec-finishedimages-20, 02 nikki&nicole-jan15-08, 03 tedxvictoria2026-159,
+ * 04 vedant-headshots-1.
  */
 export type Teaser = {
   /** The question under the arch. */
@@ -20,5 +21,5 @@ export const TEASERS: Teaser[] = [
   { name: 'Someone you know?', src: '/images/passion-projects/teaser-01.webp' },
   { name: 'A business you love?', src: '/images/passion-projects/teaser-02.webp' },
   { name: 'You?', src: '/images/passion-projects/teaser-03.webp' },
-  { name: 'Someone down the street?', src: null }
+  { name: 'Someone down the street?', src: '/images/passion-projects/teaser-04.webp' }
 ];
