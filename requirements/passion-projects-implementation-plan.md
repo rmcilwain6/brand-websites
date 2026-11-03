@@ -234,6 +234,10 @@ Needed before the first feature publishes (target late November), not for launch
 ### PR 17 · `feat/passion-projects-nav-home`
 
 - Nav item and home page block (spec §8.1–8.2).
+- As built: **Passion Projects** is the last header link, after Packages, on desktop and in the phone menu. Between 768 and 1024px the nav's gaps narrow and the logo leaves room for the "EST. 2025" stamp, which would otherwise run into "Portfolio".
+- The block (`app/components/passion-projects-teaser.tsx`) sits between the philosophy section and Featured galleries, picked from the design canvas rounds (option P, frosted glass, at 60% blur). Eyebrow "Introducing Passion Projects · Winter 2026", "I need your help.", the short paragraph, three arches ("Someone you know?", "A business you love?", "You?") with "Coming soon" tags, "Who would you put in the spotlight?" and "See how it works" → `/passion-projects`. Text beside the arches from `xl`, stacked below that; phones scroll the arches sideways.
+- The arch photos are three portraits from past shoots with the blur baked into the files (`public/images/passion-projects/teaser-0*.webp`), so the sharp photos never reach the browser. Settings are in the component's comment. If the real features' photos go in later, blur them the same way.
+- Loads Newsreader for the home page, for this block.
 
 ### PR 18 · `feat/passion-projects-assets`
 
