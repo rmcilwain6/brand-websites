@@ -31,10 +31,10 @@ const IMAGES = '/images/passion-projects';
 export const WALL: WallSlot[] = [
   {
     number: '01',
-    src: `${IMAGES}/tedxvictoria2026-087.webp`,
-    alt: 'Three women in black with event lanyards, smiling under a TEDxVictoria "Ideas change everything" banner in a busy lobby',
-    title: 'TEDxVictoria Organizing Team',
-    subtitle: 'Victoria · Oct 2026',
+    src: `${IMAGES}/rr-brewing-3.webp`,
+    alt: 'A baker in a cap and flour-dusted apron pressing out dough on a steel counter, glancing up',
+    title: 'Yuki from The Rusted Rake Brewing Company',
+    subtitle: 'Nanoose Bay · Jun 2026',
     desktop: [3, 9],
     phone: [4, 9]
   },
@@ -112,46 +112,46 @@ export const WALL: WallSlot[] = [
   },
   {
     number: '10',
-    src: `${IMAGES}/tedxvictoria2026-163.webp`,
-    alt: 'A speaker standing alone on the red circle of a dark stage, mid-talk',
-    title: 'Naomi Casiro at TEDxVictoria 2026',
-    subtitle: 'Victoria · Oct 2026',
+    src: `${IMAGES}/urec-finishedimages-21.webp`,
+    alt: 'A young man in a pink shirt sitting on a park bench in low sun, looking off to the side',
+    title: 'Ruben from UREC',
+    subtitle: 'Victoria · Feb 2026',
     desktop: [2, 6],
     phone: [2, 5]
   },
   {
     number: '11',
-    src: `${IMAGES}/55plus-bc-games-kamloops-hockey-69.webp`,
-    alt: 'A lone goalie in red standing by the net in a big, near-empty arena',
-    title: 'Hockey at the 55+ BC Games',
-    subtitle: 'Kamloops · Sep 2026',
-    desktop: [3, 4],
-    phone: [4, 5]
-  },
-  {
-    number: '12',
-    src: `${IMAGES}/urec-finishedimages-21.webp`,
-    alt: 'A young man in a pink shirt sitting on a park bench in low sun, looking off to the side',
-    title: 'Ruben from UREC',
-    subtitle: 'Victoria · Feb 2026',
-    desktop: [2, 5],
-    phone: null
-  },
-  {
-    number: '13',
     src: `${IMAGES}/angus-1.webp`,
     alt: 'A blue rally car spraying snow as it slides past two people in bibs on a snowy forest road',
     title: 'Angus at Big White Winter Rally',
     subtitle: 'Kamloops · Dec 2025',
     desktop: [3, 4],
+    phone: [4, 5]
+  },
+  {
+    number: '12',
+    src: `${IMAGES}/tedxvictoria2026-163.webp`,
+    alt: 'A speaker standing alone on the red circle of a dark stage, mid-talk',
+    title: 'Naomi Casiro at TEDxVictoria 2026',
+    subtitle: 'Victoria · Oct 2026',
+    desktop: [2, 5],
+    phone: null
+  },
+  {
+    number: '13',
+    src: `${IMAGES}/55plus-bc-games-kamloops-hockey-69.webp`,
+    alt: 'A lone goalie in red standing by the net in a big, near-empty arena',
+    title: 'Hockey at the 55+ BC Games',
+    subtitle: 'Kamloops · Sep 2026',
+    desktop: [3, 4],
     phone: null
   },
   {
     number: '14',
-    src: `${IMAGES}/rr-brewing-3.webp`,
-    alt: 'A baker in a cap and flour-dusted apron pressing out dough on a steel counter, glancing up',
-    title: 'Yuki from The Rusted Rake Brewing Company',
-    subtitle: 'Nanoose Bay · Jun 2026',
+    src: `${IMAGES}/tedxvictoria2026-087.webp`,
+    alt: 'Three women in black with event lanyards, smiling under a TEDxVictoria "Ideas change everything" banner in a busy lobby',
+    title: 'TEDxVictoria Organizing Team',
+    subtitle: 'Victoria · Oct 2026',
     desktop: [2, 6],
     desktopAt: [11, 20],
     phone: null
