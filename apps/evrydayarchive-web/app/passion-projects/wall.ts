@@ -139,34 +139,26 @@ export const WALL: WallSlot[] = [
   },
   {
     number: '13',
-    src: `${IMAGES}/55plus-bc-games-kamloops-hockey-69.webp`,
-    alt: 'A lone goalie in red standing by the net in a big, near-empty arena',
-    title: 'Hockey at the 55+ BC Games',
-    subtitle: 'Kamloops · Sep 2026',
-    desktop: [3, 4],
-    phone: null
-  },
-  {
-    number: '14',
     src: `${IMAGES}/tedxvictoria2026-087.webp`,
     alt: 'Three women in black with event lanyards, smiling under a TEDxVictoria "Ideas change everything" banner in a busy lobby',
     title: 'TEDxVictoria Organizing Team',
     subtitle: 'Victoria · Oct 2026',
     desktop: [2, 6],
-    desktopAt: [11, 20],
+    desktopAt: [11, 19],
     phone: null
   },
   {
-    number: '15',
+    number: '14',
     src: `${IMAGES}/science-of-wine-2026-39.webp`,
     alt: 'A young man holding a wine bottle and cork, chatting with an older man holding a glass of red',
     title: 'Nic from Sagewood Winery',
     subtitle: 'Victoria · Mar 2026',
     desktop: [2, 5],
+    desktopAt: [6, 21],
     phone: null
   },
   {
-    number: '16',
+    number: '15',
     src: `${IMAGES}/tedxvictoria2026-107.webp`,
     alt: 'A performer in a cap and denim jacket singing into a microphone under blue light on a dark stage',
     title: 'PINDN at TEDxVictoria 2026',
@@ -175,12 +167,13 @@ export const WALL: WallSlot[] = [
     phone: null
   },
   {
-    number: '17',
+    number: '16',
     src: `${IMAGES}/tedxvictoria2026-173.webp`,
     alt: 'Three dancers on a blue-lit stage in front of giant TEDxVictoria letters',
     title: 'Broken Rhythms Dance Company',
     subtitle: 'Victoria · Oct 2026',
     desktop: [3, 4],
+    desktopAt: [8, 21],
     phone: null
   }
 ];
