@@ -70,15 +70,6 @@ export const PassionProjectsTeaser = () => (
         >
           Spring 2027
         </span>
-        <span
-          aria-hidden="true"
-          className={cn(
-            tabCls,
-            'ml-1.5 hidden h-[34px] border border-b-0 border-dashed border-ink-faint font-medium text-ink-faint sm:flex'
-          )}
-        >
-          +
-        </span>
       </div>
 
       <div className="rounded-b-2xl rounded-tr-2xl bg-sun px-5 py-10 sm:px-10 lg:py-[72px] xl:px-14">
