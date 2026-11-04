@@ -208,9 +208,9 @@ Settled on the design canvas and recorded on the Notion task "Passion Projects: 
 ### PR 15 · `feat/passion-projects-page`
 
 - Route `/passion-projects`.
-- Page order: masthead strip → salon wall with the hero text placed in its top-left (grid cols 1–5, rows 1–11) → features row → how it works → orange referral band ("Somebody you know is working on something.", the $15 note, share button) → staged apply flow → masthead footer.
+- Page order: masthead strip → salon wall with the hero text placed in its top-left (grid cols 1–5, rows 1–11) → how it works → features row → orange referral band ("Somebody you know is working on something.", the $15 note, share button) → staged apply flow → masthead footer.
 - **Salon wall.** 12-col grid, 40px rows, 12px gap, `grid-auto-flow: dense` on desktop; 6-col, 30px rows, 6px gap on phone. Slots come from `app/passion-projects/wall.ts` (image, alt, title, place, date, desktop span, phone span or `null` for desktop-only). The slot list and shapes are on the Notion landing page task ("Wall plan"); Reed fills it with photos exported as webp next to the home page images. Each frame has a number button: placard slides up on hover and focus (desktop); below 1024px, tapping a photo opens one caption bar instead, `aria-expanded` on the button, no transition under `prefers-reduced-motion`.
-- **Features row.** Hidden when no features are published. Arch cards in a row: desktop shows four, previous/next buttons slide by four (transform transition, disabled at the ends, counter like "1–4 of 9"); phone is a native horizontal scroll with `scroll-snap-type: x mandatory` and the next card peeking. A season tab is added when Spring 2027 starts, not now.
+- **Features row.** Until the first feature publishes, it shows four frosted "Coming soon" arches in the real row's frame (moved under How it works in PR 18). Arch cards in a row: desktop shows four, previous/next buttons slide by four (transform transition, disabled at the ends, counter like "1–4 of 9"); phone is a native horizontal scroll with `scroll-snap-type: x mandatory` and the next card peeking. A season tab is added when Spring 2027 starts, not now.
 - **Apply flow** (`id="apply"`, hero button scrolls to it smoothly, jump under reduced motion):
   1. **Questions.** Personal project or business? Just you or others involved? personal + solo → Evryday, personal + others → Together, business → In Practice. Chips with `aria-pressed`. Nothing below shows until both are answered. "Others too" also turns on In Practice's "Multiple people" toggle (2+ people, +$50), which the person can still change. It's found by that exact name in admin.
   2. **Package card.** Matched package name, base price, one-line reason, tabs to override with the other two eligible packages, then the builder rows from `usePackageBuilder` and the live total.
@@ -242,11 +242,17 @@ Needed before the first feature publishes (target late November), not for launch
 
 ### PR 18 · `feat/passion-projects-assets`
 
-Separate from #127. Waits on assets Reed is creating. The page works with the stand-ins until then.
+Reed widened this to a photo refresh for the home page as well as the campaign page.
 
-- **OG share image.** Replace the placeholder (`/logo/og-image.jpg`) in `app/passion-projects/page.tsx` with Reed's image, 1200x630.
-- **Wall photos.** Replace the stand-ins in `app/passion-projects/wall.ts`, keeping portrait photos in portrait slots and landscape in landscape. Check the phone crops, since slots 08 and 09 crop hardest. The note after applying uses two of these photos (`WALL[0]` and `WALL[2]`).
-- **Caption style.** Reed may restyle the wall captions once the real photos are in.
+- **Photos.** Reed's picks, converted to WebP at 1500px on the long edge (q80, metadata stripped, filenames lowercased with no `&`). Home photos live in `public/images/top-brand-images/`, campaign photos in `public/images/passion-projects/`. The source JPGs stay out of the repo.
+- **Home hero.** New photos and placards in the desktop rolling hero (`rolling-hero.tsx`, a few frames reshaped and nudged) and the phone hero (`mobile-hero.tsx`). Placards use three-letter months.
+- **Wall.** Reed's 17 photos, captions and alt text in `wall.ts`, led by the baker. `WallSlot` gained an optional `desktopAt: [column, row]` pin; slot 14 uses it to leave a gap under 09 and square off the bottom edge.
+- **Coming-soon arches.** Questions and blurred photos are shared in `app/passion-projects/teasers.ts` and `_components/teaser-arch.tsx`. The home block shows the first three; the features row shows all four until the first feature publishes, and now sits under How it works. Blur settings are in `teasers.ts`.
+- **Caption style.** Reed may still restyle the wall captions.
+
+### PR 18b · OG share image
+
+After the page design settles. Replace the placeholder (`/logo/og-image.jpg`) in `app/passion-projects/page.tsx` with Reed's image, 1200x630.
 
 ### Launch (Nov 6)
 
