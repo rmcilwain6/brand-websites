@@ -252,7 +252,9 @@ Reed widened this to a photo refresh for the home page as well as the campaign p
 
 ### PR 18b · OG share image
 
-After the page design settles. Replace the placeholder (`/logo/og-image.jpg`) in `app/passion-projects/page.tsx` with Reed's image, 1200x630.
+Built into PR 18's branch. Reed picked "OG B · Baker" from the visual language canvas: dark ground, logo and name, "Introducing / Passion Projects", and the baker (`rr-brewing-3`) in a tall panel with an orange edge. Exported at 1200x630 to `public/images/passion-projects/og/passion-projects-baker.jpg` and set as both `openGraph.images` and `twitter.images` in `app/passion-projects/page.tsx`, with alt text. The twitter block is needed because the root layout's would otherwise keep the site-wide image on X.
+
+Per-link alternates (`?v=<slug>`) are tracked in issue #130.
 
 ### Launch (Nov 6)
 
