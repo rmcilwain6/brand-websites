@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { CAMPAIGN } from '@repo/core/campaigns';
 
 const mocks = vi.hoisted(() => ({
   inquiryCreate: vi.fn(),
@@ -283,7 +284,7 @@ describe('POST /api/public/bookings', () => {
           link: '@sailboat.restored',
           othersInvolved: null,
           acknowledgedAt: expect.any(String),
-          ackVersion: 1
+          ackVersion: CAMPAIGN.ackVersion
         }
       });
     });

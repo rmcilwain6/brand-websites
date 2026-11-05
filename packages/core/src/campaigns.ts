@@ -15,14 +15,14 @@ export const CAMPAIGN = {
   season: 'Winter 2026',
   /** Package slugs as they are in production. Renaming one in admin makes it ineligible. */
   eligibleSlugs: ['evryday-package', 'together', 'in-practice'],
-  ackVersion: 1,
+  ackVersion: 2,
   /** Placeholder until the contract's feature section is written; bump ackVersion when it changes. */
   copy: {
     apply: 'Apply to be featured in Passion Projects',
     disclaimer:
-      "Featured sessions include a conversation while we shoot, recorded as audio only (no video), and a story on the website and Instagram. You read it before anything is published. Features are chosen for variety, and you'll be photographed either way.",
+      "Featured sessions include an interview while we shoot, recorded as audio only (no video), and a written feature on the website, shared on Instagram. I write it, built around what you tell me, and you get to read it before it goes live. Features are chosen for variety, and you'll be photographed either way.",
     acknowledgement:
-      'I understand what a featured session involves, including the audio recording of our conversation and the published story.',
+      'I understand what a featured session involves, including the audio recording of our interview and the published written feature.',
     whatHappensNext:
       "I'll reply within 24 to 48 hours, usually to set up a short call before anything is confirmed."
   }

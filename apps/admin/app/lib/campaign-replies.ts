@@ -10,7 +10,7 @@ const REPLIES: Partial<Record<ApplicantStatus, (firstName: string) => string>> =
 
 Thanks for applying to Passion Projects. I'd love to feature your work this round.
 
-Here's what that means: alongside your session, I'll record the audio of our conversation while we shoot (no video), and I'll write a story from it for the website and Instagram. You'll read it before anything is published.
+Here's what that means: alongside your session, I'll interview you while we shoot, recorded as audio only (no video), and then write a feature about you and your work for the website, with links to where people can find you. I'll share it on Instagram too. You'll get to read it before it goes live, and features will be published this winter.
 
 The contract covers the feature as well, and I'll send it once we've settled the date. If you have any questions before then, just reply to this email.
 
