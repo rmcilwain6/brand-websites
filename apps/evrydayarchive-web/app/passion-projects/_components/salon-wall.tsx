@@ -19,6 +19,7 @@ const Frame = ({
 }) => {
   const [desktopColumns, desktopRows] = slot.desktop;
   const [phoneColumns, phoneRows] = slot.phone ?? [0, 0];
+  const [desktopColumn, desktopRow] = slot.desktopAt ?? [];
 
   return (
     <div
@@ -26,6 +27,8 @@ const Frame = ({
         {
           '--dc': desktopColumns,
           '--dr': desktopRows,
+          '--dx': desktopColumn,
+          '--dy': desktopRow,
           '--pc': phoneColumns,
           '--pr': phoneRows
         } as CSSProperties
@@ -33,7 +36,9 @@ const Frame = ({
       className={cn(
         'group relative border-[3px] border-surface bg-surface lg:border-[6px]',
         '[grid-column:span_var(--pc)] [grid-row:span_var(--pr)]',
-        'lg:[grid-column:span_var(--dc)] lg:[grid-row:span_var(--dr)]',
+        slot.desktopAt
+          ? 'lg:[grid-column:var(--dx)/span_var(--dc)] lg:[grid-row:var(--dy)/span_var(--dr)]'
+          : 'lg:[grid-column:span_var(--dc)] lg:[grid-row:span_var(--dr)]',
         slot.phone ? 'block' : 'hidden lg:block'
       )}
     >

@@ -63,14 +63,14 @@ export const COMPACT_H_SCALE = 0.82;
 export const BLOCK_A_ITEMS: BlockPhoto[] = [
   // Primary portrait
   {
-    aspect: '4/5',
+    aspect: '2/3',
     photoH: 380,
-    matStyle: 'warm',
+    matStyle: 'neutral',
     top: 90,
     left: 500,
-    placardPosition: 'left-bottom',
-    placard: { title: 'Julia & Benjamin', subtitle: 'Nanaimo, Jan 2026' },
-    src: '/images/top-brand-images/julia-08.webp'
+    placardPosition: 'top-right',
+    placard: { title: 'Rachel & David', subtitle: 'Victoria, Sep 2026' },
+    src: '/images/top-brand-images/rachel-david-182.webp'
   },
   // Upper-left small portrait
   {
@@ -80,19 +80,19 @@ export const BLOCK_A_ITEMS: BlockPhoto[] = [
     top: 40,
     left: 250,
     placardPosition: 'left-bottom',
-    placard: { title: 'Pokémon Camp', subtitle: 'Victoria, Mar 2026' },
-    src: '/images/top-brand-images/drews-pokemon-camp-02.webp'
+    placard: { title: 'Julia & Benjamin', subtitle: 'Nanaimo, Jan 2026' },
+    src: '/images/top-brand-images/julia-08.webp'
   },
   // Lower-right small landscape
   {
     aspect: '3/2',
     photoH: 160,
-    matStyle: 'neutral',
+    matStyle: 'deep',
     top: 540,
     left: 450,
     placardPosition: 'right-middle',
-    placard: { title: 'Science of Wine', subtitle: 'Kamloops, Mar 2026' },
-    src: '/images/top-brand-images/science-of-wine-2026-9.webp'
+    placard: { title: 'Trefor Bazett', subtitle: 'Victoria, Oct 2026' },
+    src: '/images/top-brand-images/tedxvictoria2026-firstlook-14.webp'
   },
   // Upper-right small landscape
   {
@@ -113,8 +113,8 @@ export const BLOCK_A_ITEMS: BlockPhoto[] = [
     top: 340,
     left: 100,
     placardPosition: 'bottom-center',
-    placard: { title: 'Valleyview Alumni Game', subtitle: 'Kamloops, Dec 2025' },
-    src: '/images/top-brand-images/vv-2025-alumni-game-07.webp'
+    placard: { title: '55+ BC Games', subtitle: 'Kamloops, Sep 2026' },
+    src: '/images/top-brand-images/55plus-bc-games-kamloops-hockey-65.webp'
   },
   // Lower-right small landscape
   {
@@ -138,8 +138,8 @@ export const BLOCK_B_ITEMS: BlockPhoto[] = [
     top: 300,
     left: 460,
     placardPosition: 'bottom-right',
-    placard: { title: 'Kate & Carter', subtitle: 'Kamloops, Dec 2025' },
-    src: '/images/top-brand-images/kate&carter-wildlights-17.webp'
+    placard: { title: 'Lisa Lapointe', subtitle: 'Victoria, Oct 2026' },
+    src: '/images/top-brand-images/tedxvictoria2026-firstlook-12.webp'
   },
   // Upper-left portrait
   {
@@ -160,8 +160,8 @@ export const BLOCK_B_ITEMS: BlockPhoto[] = [
     top: 40,
     left: 500,
     placardPosition: 'right-bottom',
-    placard: { title: 'Big White Winter Rally', subtitle: 'Dec 2026' },
-    src: '/images/top-brand-images/angus-1.webp'
+    placard: { title: 'Kate & Carter', subtitle: 'Kamloops, Dec 2025' },
+    src: '/images/top-brand-images/kate&carter-wildlights-17.webp'
   },
   // Upper-right medium portrait
   {
@@ -182,33 +182,33 @@ export const BLOCK_B_ITEMS: BlockPhoto[] = [
     top: 430,
     left: 100,
     placardPosition: 'right-bottom',
-    placard: { title: 'Ruben', subtitle: 'UVic, Feb 2026' },
-    src: '/images/top-brand-images/urec-finishedimages-20.webp'
+    placard: { title: 'Josue', subtitle: 'UVic, Feb 2026' },
+    src: '/images/top-brand-images/urec-finishedimages-14.webp'
   }
 ];
 
 export const BLOCK_C_ITEMS: BlockPhoto[] = [
   // Primary portrait
   {
-    aspect: '2/3',
+    aspect: '4/5',
     photoH: 450,
     matStyle: 'deep',
     top: 146,
-    left: 650,
+    left: 605,
     placardPosition: 'bottom-left',
-    placard: { title: 'Valleyview Alumni Game', subtitle: 'Kamloops, Dec 2025' },
-    src: '/images/top-brand-images/vv-2025-alumni-game-26.webp'
+    placard: { title: 'Carolyn & UPDOG', subtitle: 'Victoria, Jun 2026' },
+    src: '/images/top-brand-images/updog-22.webp'
   },
   // Upper-left landscape
   {
-    aspect: '5/4',
+    aspect: '3/2',
     photoH: 250,
     matStyle: 'warm',
     top: 25,
-    left: 180,
+    left: 150,
     placardPosition: 'bottom-left',
-    placard: { title: 'Julia', subtitle: 'Nanaimo, Jan 2026' },
-    src: '/images/top-brand-images/julia-06.webp'
+    placard: { title: 'Rachel & David', subtitle: 'Victoria, Sep 2026' },
+    src: '/images/top-brand-images/rachel-david-167.webp'
   },
   // Lower-centre landscape
   {
@@ -216,21 +216,21 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     photoH: 170,
     matStyle: 'neutral',
     top: 360,
-    left: 320,
+    left: 290,
     placardPosition: 'bottom-left',
-    placard: { title: 'Pokémon Camp', subtitle: 'Victoria, Mar 2026' },
-    src: '/images/top-brand-images/drews-pokemon-camp-06.webp'
+    placard: { title: 'Science of Wine', subtitle: 'Kamloops, Mar 2026' },
+    src: '/images/top-brand-images/science-of-wine-2026-9.webp'
   },
   // Lower-left portrait
   {
     aspect: '4/5',
     photoH: 270,
-    matStyle: 'deep',
+    matStyle: 'neutral',
     top: 430,
-    left: 40,
-    placardPosition: 'left-bottom',
-    placard: { title: 'Nikki', subtitle: 'Victoria, Jan 2026' },
-    src: '/images/top-brand-images/nikki&nicole-jan15-08.webp'
+    left: 10,
+    placardPosition: 'bottom-center',
+    placard: { title: 'Ethan for The Rusted Rake', subtitle: 'Nanoose Bay, Jun 2026' },
+    src: '/images/top-brand-images/rr-brewing-19.webp'
   },
   // Right portrait (top)
   {
@@ -240,8 +240,8 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     top: 30,
     left: 1020,
     placardPosition: 'bottom-center',
-    placard: { title: 'Jess & The Yota', subtitle: 'Kamloops, Jan 2026' },
-    src: '/images/top-brand-images/jess&the-yota-10.webp'
+    placard: { title: 'Valleyview Alumni Game', subtitle: 'Kamloops, Dec 2025' },
+    src: '/images/top-brand-images/vv-2025-alumni-game-26.webp'
   },
   // Right portrait (bottom)
   {
@@ -251,8 +251,8 @@ export const BLOCK_C_ITEMS: BlockPhoto[] = [
     top: 400,
     left: 1020,
     placardPosition: 'bottom-center',
-    placard: { title: 'Josue', subtitle: 'UVic, Feb 2026' },
-    src: '/images/top-brand-images/urec-finishedimages-14.webp'
+    placard: { title: 'Elyse', subtitle: 'UVic, Feb 2026' },
+    src: '/images/top-brand-images/urec-finishedimages-v2-6.webp'
   }
 ];
 

@@ -27,9 +27,9 @@ const STACK_IMAGES: StackImage[] = [
     placard: { title: 'Julia & Benjamin', subtitle: 'Nanaimo, Jan 2026' }
   },
   {
-    src: '/images/top-brand-images/jess&the-yota-10.webp',
+    src: '/images/top-brand-images/rachel-david-182.webp',
     matStyle: 'neutral',
-    placard: { title: 'Jess & The Yota', subtitle: 'Kamloops, Jan 2026' }
+    placard: { title: 'Rachel & David', subtitle: 'Victoria, Sep 2026' }
   },
 
   {
@@ -65,25 +65,25 @@ const STACK_IMAGES: StackImage[] = [
   },
 
   {
-    src: '/images/top-brand-images/nikki&nicole-jan15-08.webp',
+    src: '/images/top-brand-images/updog-22.webp',
     matStyle: 'deep',
-    placard: { title: 'Nikki', subtitle: 'Victoria, Jan 2026' }
+    placard: { title: 'Carolyn & UPDOG', subtitle: 'Victoria, Jun 2026' }
   },
 
   {
-    src: '/images/top-brand-images/drews-pokemon-camp-02.webp',
+    src: '/images/top-brand-images/55plus-bc-games-kamloops-hockey-65.webp',
     matStyle: 'neutral',
-    placard: { title: 'Pokémon Camp', subtitle: 'Victoria, Mar 2026' }
+    placard: { title: '55+ BC Games', subtitle: 'Kamloops, Sep 2026' }
   },
   {
-    src: '/images/top-brand-images/vv-2025-alumni-game-07.webp',
+    src: '/images/top-brand-images/rr-brewing-19.webp',
     matStyle: 'warm',
-    placard: { title: 'Valleyview Alumni Game', subtitle: 'Kamloops, Dec 2025' }
+    placard: { title: 'Ethan for The Rusted Rake', subtitle: 'Nanoose Bay, Jun 2026' }
   },
   {
-    src: '/images/top-brand-images/urec-finishedimages-20.webp',
+    src: '/images/top-brand-images/urec-finishedimages-v2-6.webp',
     matStyle: 'neutral',
-    placard: { title: 'Ruben', subtitle: 'UVic, Feb 2026' }
+    placard: { title: 'Elyse', subtitle: 'UVic, Feb 2026' }
   }
 ];
 

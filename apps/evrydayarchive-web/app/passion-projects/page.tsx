@@ -26,6 +26,14 @@ const TITLE = 'Passion Projects | Evryday Archive Co';
 const DESCRIPTION =
   'Somewhere close by, someone is putting years into a craft, a project, or a business they love. Who would you put in the spotlight?';
 
+// Exported from "OG B · Baker" on the Passion Projects visual language canvas.
+const SHARE_IMAGE = {
+  url: '/images/passion-projects/og/passion-projects-baker.jpg',
+  width: 1200,
+  height: 630,
+  alt: 'Introducing Passion Projects from Evryday Archive Co, beside a photo of a baker pressing out dough'
+};
+
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
@@ -38,8 +46,14 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     url: '/passion-projects',
-    // A placeholder until the dynamic OG image work.
-    images: [{ url: '/logo/og-image.jpg', width: 1200, height: 630 }]
+    images: [SHARE_IMAGE]
+  },
+  // Also replaces the root layout's twitter block, which would otherwise keep the site-wide image.
+  twitter: {
+    card: 'summary_large_image',
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [SHARE_IMAGE]
   }
 };
 
@@ -77,8 +91,8 @@ const PassionProjectsPage = async () => {
 
       <div className={content}>
         <SalonWall />
-        <FeaturesRow features={FEATURES} season={CAMPAIGN.season} />
         <HowItWorks />
+        <FeaturesRow features={FEATURES} season={CAMPAIGN.season} />
       </div>
 
       <div className="mt-16 lg:mt-[110px]">

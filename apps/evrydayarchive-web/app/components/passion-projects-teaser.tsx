@@ -1,9 +1,9 @@
 import { Newsreader } from 'next/font/google';
-import Image from './img';
 import Link from 'next/link';
 
 import { cn } from '../lib/cn';
-import { featureLabel } from '../passion-projects/_components/feature-label';
+import { TeaserArch } from '../passion-projects/_components/teaser-arch';
+import { TEASERS } from '../passion-projects/teasers';
 
 // The campaign face. The rest of the site doesn't use it, so it's loaded for this block only.
 const newsreader = Newsreader({
@@ -13,17 +13,8 @@ const newsreader = Newsreader({
   display: 'swap'
 });
 
-/**
- * Stand-ins for the features to come. The blur is baked into these files, so the sharp photos never
- * reach the browser: 400×531 (the arch's 64:85), zoomed 1.15×, saturation 1.15, then a Gaussian
- * blur of sigma 21. That's 60% of the frosted-glass blur Reed picked on the design canvas.
- * Swap in the real features' photos the same way once they're chosen.
- */
-const TEASERS = [
-  { src: '/images/passion-projects/teaser-01.webp', name: 'Someone you know?' },
-  { src: '/images/passion-projects/teaser-02.webp', name: 'A business you love?' },
-  { src: '/images/passion-projects/teaser-03.webp', name: 'You?' }
-] as const;
+/** The home block shows three of the coming-soon arches (photos and questions in `teasers.ts`). */
+const HOME_TEASERS = TEASERS.slice(0, 3);
 
 const tabCls =
   'flex items-center rounded-t-[12px] px-3.5 font-mono text-[10px] uppercase tracking-[0.16em] sm:rounded-t-[14px] sm:px-5 sm:text-[11px]';
@@ -94,34 +85,16 @@ export const PassionProjectsTeaser = () => (
             aria-label="Features coming this winter"
             className="-mr-5 my-2 flex snap-x snap-mandatory gap-3.5 overflow-x-auto pr-5 pt-1 scrollbar-none [grid-area:arches] sm:-mr-10 sm:pr-10 md:mr-0 md:grid md:snap-none md:grid-cols-3 md:gap-6 md:overflow-visible md:pr-0 lg:my-4 xl:my-0 xl:self-center"
           >
-            {TEASERS.map((teaser, i) => (
+            {HOME_TEASERS.map((teaser, i) => (
               <li
-                key={teaser.src}
+                key={teaser.name}
                 className="pp-teaser flex w-[200px] flex-none snap-start flex-col md:w-auto"
               >
-                <span className="pp-teaser-arch relative block aspect-[64/85] overflow-hidden rounded-t-full bg-canvas">
-                  {/* Decorative: the blur is the point, so there's nothing to describe. */}
-                  <Image
-                    src={teaser.src}
-                    alt=""
-                    fill
-                    sizes="(min-width: 768px) 240px, 200px"
-                    className="object-cover"
-                  />
-                  <span className="pp-teaser-wash absolute inset-0" />
-                  <span className="absolute bottom-[18px] left-1/2 -translate-x-1/2">
-                    <span className="pp-teaser-sign block whitespace-nowrap bg-surface px-[9px] py-[5px] font-mono text-[10px] uppercase tracking-[0.14em] text-ink shadow-warm-sm">
-                      Coming soon
-                    </span>
-                  </span>
-                </span>
-                <span aria-hidden="true" className="h-1 bg-accent lg:h-[5px]" />
-                <span className="mt-3.5 font-mono text-[11px] uppercase tracking-[0.16em] text-accent-text">
-                  {featureLabel(i + 1)}
-                </span>
-                <span className="mt-1.5 font-campaign text-[22px] leading-[1.12] text-ink lg:text-[26px]">
-                  {teaser.name}
-                </span>
+                <TeaserArch
+                  teaser={teaser}
+                  number={i + 1}
+                  sizes="(min-width: 768px) 240px, 200px"
+                />
               </li>
             ))}
           </ul>
